@@ -26,8 +26,6 @@ export class StudentDashboard implements OnInit {
   private readonly _instructorService = inject(InstructorService);
   private readonly _reviewService = inject(ReviewService);
 
-  // Sidebar state
-  isCollapsed = signal<boolean>(false);
 
   // Dashboard data
   dashboardData = signal<StudentDashboardDto | null>(null);
@@ -43,7 +41,6 @@ export class StudentDashboard implements OnInit {
   ngOnInit(): void {
     this.loadDashboardData();
     this.loadTopInstructors(); // Fetch top instructors on init
-    this.checkScreenSize();
 
     // Listen for query params changes (for refresh after enrollment)
     this._route.queryParams.subscribe((params) => {
@@ -54,24 +51,12 @@ export class StudentDashboard implements OnInit {
     });
   }
 
-  toggleSidebar(): void {
-    this.isCollapsed.update(value => !value);
-  }
-
-  checkScreenSize(): void {
-    if (typeof window !== 'undefined') {
-      // Collapse sidebar on mobile by default
-      if (window.innerWidth <= 768) {
-        this.isCollapsed.set(true);
-      }
-    }
-  }
 
   loadTopInstructors(): void {
     this._instructorService.getTopInstructors(4).subscribe({
       next: (instructors) => {
         const mappedInstructors = instructors.map(instr => ({
-          id: instr.userId, 
+          id: instr.userId,
           name: instr.fullName,
           title: instr.bio || 'Instructor',
           avatarUrl: instr.photoUrl,
@@ -133,7 +118,7 @@ export class StudentDashboard implements OnInit {
 
   // Navigation methods
   navigateToCourse(courseId: string): void {
-    this._router.navigate(['/courses', courseId]);
+    this._router.navigate(['/student/courses', courseId]);
   }
 
   navigateToMyCourses(): void {
@@ -175,12 +160,22 @@ export class StudentDashboard implements OnInit {
   }
 
   navigateToInstructor(instructorId: string): void {
-    // Navigate to public courses list filtered by instructorId
-    this._router.navigate(['/courses'], { queryParams: { instructorId } });
+    // Navigate to courses list filtered by instructorId within student layout
+    this._router.navigate(['/student/all-courses'], { queryParams: { instructorId } });
   }
 
   navigateToInstructorProfile(instructorId: string): void {
-    this._router.navigate(['/profile', instructorId]);
+    this._router.navigate(['/student/instructor-profile', instructorId]);
+  }
+
+  buildImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+      return url;
+    }
+    const baseUrl = 'http://mahdacad.runasp.net/';
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return `${baseUrl}${cleanPath}`;
   }
 
 
@@ -206,16 +201,4 @@ export class StudentDashboard implements OnInit {
     this._router.navigate(['/student/profile']);
   }
 
-  handleSignOut(): void {
-    this._authService.logout().subscribe({
-      next: () => {
-        this._router.navigate(['/login']);
-      },
-      error: () => {
-        // Even if logout fails, clear local data and redirect
-        this._tokenService.clearAll();
-        this._router.navigate(['/login']);
-      },
-    });
-  }
 }

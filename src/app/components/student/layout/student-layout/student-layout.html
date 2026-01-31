@@ -1,0 +1,86 @@
+<div class="d-flex student-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.collapsed]="isCollapsed()">
+        <div class="sidebar-header">
+            <div class="logo-area">
+                <i class="bi bi-mortarboard-fill logo-icon"></i>
+                <span class="logo-text">MAHD Hub</span>
+            </div>
+            <button class="btn btn-sm btn-icon toggle-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
+                <i class="bi" [class.bi-chevron-left]="!isCollapsed()" [class.bi-chevron-right]="isCollapsed()"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: true}">
+                        <i class="bi bi-grid-fill"></i>
+                        <span class="link-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/browse-courses" routerLinkActive="active">
+                        <i class="bi bi-search"></i>
+                        <span class="link-text">Browse Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/my-courses" routerLinkActive="active">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                        <span class="link-text">My Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/my-groups" routerLinkActive="active">
+                        <i class="bi bi-people-fill"></i>
+                        <span class="link-text">My Groups</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/my-certificates" routerLinkActive="active">
+                        <i class="bi bi-award-fill"></i>
+                        <span class="link-text">Certificates</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/progress-tracking" routerLinkActive="active">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span class="link-text">Progress</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/payments" routerLinkActive="active">
+                        <i class="bi bi-credit-card-fill"></i>
+                        <span class="link-text">Payments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/support" routerLinkActive="active">
+                        <i class="bi bi-headset"></i>
+                        <span class="link-text">Support</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/student/profile" routerLinkActive="active">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="link-text">Profile</span>
+                    </a>
+                </li>
+
+                <li class="mt-auto nav-item footer-link">
+                    <a class="nav-link text-danger" (click)="handleSignOut()" style="cursor: pointer;">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="link-text">Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

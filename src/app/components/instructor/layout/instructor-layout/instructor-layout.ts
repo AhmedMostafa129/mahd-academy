@@ -4,6 +4,9 @@ import { Router, RouterModule } from '@angular/router';
 import { TokenService } from '../../../../core/services/TokenService/token-service';
 import { AuthService } from '../../../../core/services/auth/auth-service';
 
+import { SubscriptionService } from '../../../../core/services/SubscriptionService/subscription-service';
+import { NotificationService } from '../../../../core/services/NotificationService/notification-service';
+
 @Component({
     selector: 'app-instructor-layout',
     standalone: true,
@@ -15,6 +18,8 @@ export class InstructorLayout implements OnInit {
     private readonly _router = inject(Router);
     private readonly _tokenService = inject(TokenService);
     private readonly _authService = inject(AuthService);
+    private readonly _subscriptionService = inject(SubscriptionService);
+    private readonly _notificationService = inject(NotificationService);
 
     // Sidebar state
     isCollapsed = signal<boolean>(true);
@@ -22,10 +27,12 @@ export class InstructorLayout implements OnInit {
     // User info for sidebar
     instructorId = signal<string | null>(null);
     instructorName = signal<string | null>(null);
+    hasActiveSubscription = signal<boolean>(false);
 
     ngOnInit(): void {
         this.checkScreenSize();
         this.loadUserInfo();
+        this.checkSubscriptionStatus();
     }
 
     loadUserInfo(): void {
@@ -34,6 +41,22 @@ export class InstructorLayout implements OnInit {
             this.instructorId.set(user.userId);
             this.instructorName.set(user.fullName);
         }
+    }
+
+    checkSubscriptionStatus(): void {
+        const user = this._tokenService.getUser();
+        if (!user || !user.userId) return;
+
+        this._subscriptionService.getInstructorSubscription(user.userId).subscribe({
+            next: (sub) => {
+                // Strictly check for active status and expiry
+                const isValid = sub && sub.isActive && new Date(sub.endDate) > new Date();
+                this.hasActiveSubscription.set(!!isValid);
+            },
+            error: () => {
+                this.hasActiveSubscription.set(false);
+            }
+        });
     }
 
     toggleSidebar(): void {
@@ -55,6 +78,10 @@ export class InstructorLayout implements OnInit {
     }
 
     navigateToCourses(): void {
+        if (!this.hasActiveSubscription()) {
+            this._notificationService.showWarning('Access Denied', 'You must have an active subscription to manage courses within your plan.');
+            return;
+        }
         this._router.navigate(['/instructor/courses']);
     }
 

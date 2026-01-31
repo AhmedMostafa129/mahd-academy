@@ -4,7 +4,7 @@
   <div class="floating-element element-2">📚</div>
   <div class="floating-element element-3">⭐</div>
   <div class="floating-element element-4">💡</div>
-  
+
   <form (ngSubmit)="onSubmit()" class="course-form" novalidate>
     <header class="page-header">
       <h1>Create New Course</h1>
@@ -59,14 +59,22 @@
       </div>
     </div>
 
-    <!-- Thumbnail URL -->
+    <!-- Course Thumbnail -->
     <div class="form-group">
-      <label for="thumbnailUrl">Thumbnail URL (Optional)</label>
-      <input type="url" id="thumbnailUrl" [(ngModel)]="courseData.thumbnailUrl" name="thumbnailUrl"
-        placeholder="https://example.com/course-image.jpg" class="form-input" />
-      <div *ngIf="courseData.thumbnailUrl" class="thumbnail-preview">
+      <label for="thumbnail">Course Thumbnail (Optional)</label>
+      <div class="file-upload-wrapper">
+        <input type="file" id="thumbnail" (change)="onFileSelected($event)" accept="image/*" class="file-input" />
+        <div class="file-upload-design" (click)="thumbnailInput.click()">
+          <i class="upload-icon">📁</i>
+          <span *ngIf="!selectedFile">Choose Course Image or Drag & Drop</span>
+          <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+        </div>
+        <input type="file" #thumbnailInput style="display: none" (change)="onFileSelected($event)" accept="image/*">
+      </div>
+
+      <div *ngIf="thumbnailPreview()" class="thumbnail-preview">
         <p>Preview:</p>
-        <img [src]="courseData.thumbnailUrl" alt="Thumbnail Preview" onerror="this.style.display='none'">
+        <img [src]="thumbnailPreview()" alt="Thumbnail Preview">
       </div>
     </div>
 

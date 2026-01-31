@@ -36,7 +36,7 @@ import { InstructorMyCourses } from './components/instructor/my-courses/my-cours
 import { CreateCourse } from './components/instructor/create-course/create-course';
 import { EditCourse } from './components/instructor/edit-course/edit-course';
 import { ManageContent } from './components/instructor/manage-content/manage-content';
-import { UploadLecture } from './components/instructor/upload-lecture/upload-lecture'; // Re-import
+import { UploadLecture } from './components/instructor/upload-lecture/upload-lecture';
 import { ManageAssignments } from './components/instructor/manage-assignments/manage-assignments';
 import { CreateExam } from './components/instructor/create-exam/create-exam';
 import { MyExams } from './components/instructor/my-exams/my-exams';
@@ -62,6 +62,7 @@ import { adminGuardGuard } from './core/guards/admin-guard-guard';
 import { authGuardGuard } from './core/guards/auth-guard-guard';
 import { instructorSubscriptionGuard } from './core/guards/instructor-subscription-guard';
 import { InstructorLayout } from './components/instructor/layout/instructor-layout/instructor-layout';
+import { StudentLayout } from './components/student/layout/student-layout/student-layout';
 
 export const routes: Routes = [
   // Public Routes
@@ -97,41 +98,42 @@ export const routes: Routes = [
       { path: 'promo-codes', component: PromoCodesManagement },
       { path: 'groups', component: GroupList },
       { path: 'groups/:id', component: GroupDetails },
+      { path: 'all-courses', component: CoursesList },
+      { path: 'course-details/:id', component: CourseDetails },
+      { path: 'instructor-profile/:id', component: InstructorProfileComponent },
     ],
   },
 
-  // Student Routes
-  { path: 'student', component: StudentDashboard, canActivate: [studentGuardGuard] },
-  { path: 'student/browse-courses', component: BrowseCourses, canActivate: [studentGuardGuard] },
-  { path: 'student/explore-instructors', component: ExploreInstructorsComponent, canActivate: [studentGuardGuard] },
-  { path: 'student/my-courses', component: MyCourses, canActivate: [studentGuardGuard] },
-  { path: 'student/my-groups', component: MyGroups, canActivate: [studentGuardGuard] },
+  // Student Routes (layout + children)
   {
-    path: 'student/my-groups/:id',
-    component: StudentGroupDetails,
+    path: 'student',
+    component: StudentLayout,
     canActivate: [studentGuardGuard],
+    children: [
+      { path: '', component: StudentDashboard },
+      { path: 'browse-courses', component: BrowseCourses },
+      { path: 'explore-instructors', component: ExploreInstructorsComponent },
+      { path: 'my-courses', component: MyCourses },
+      { path: 'my-groups', component: MyGroups },
+      { path: 'my-groups/:id', component: StudentGroupDetails },
+      { path: 'my-certificates', component: MyCertificates },
+      { path: 'progress-tracking', component: ProgressTracking },
+      { path: 'progress/:enrollmentId', component: ProgressTracking },
+      { path: 'exams/:examId', component: QuizStart },
+      { path: 'exams/attempts/:attemptId', component: QuizResult },
+      { path: 'payments', component: StudentPayments },
+      { path: 'profile', component: StudentProfile },
+      { path: 'support', component: StudentSupport },
+      { path: 'all-courses', component: CoursesList },
+      { path: 'courses/:id', component: CourseDetails },
+      { path: 'courses/:id/content', component: CourseContent },
+      { path: 'instructor-profile/:id', component: InstructorProfileComponent },
+      { path: 'checkout', component: Checkout },
+      { path: 'payment-result', component: PaymentResult },
+    ],
   },
-  { path: 'student/my-certificates', component: MyCertificates, canActivate: [studentGuardGuard] },
-  {
-    path: 'student/progress-tracking',
-    component: ProgressTracking,
-    canActivate: [studentGuardGuard],
-  },
-  {
-    path: 'student/progress/:enrollmentId',
-    component: ProgressTracking,
-    canActivate: [studentGuardGuard],
-  },
-  { path: 'student/exams/:examId', component: QuizStart, canActivate: [studentGuardGuard] },
-  {
-    path: 'student/exams/attempts/:attemptId',
-    component: QuizResult,
-    canActivate: [studentGuardGuard],
-  },
-  { path: 'student/payments', component: StudentPayments, canActivate: [studentGuardGuard] },
+
   { path: 'checkout', component: Checkout, canActivate: [authGuardGuard] },
-  { path: 'student/profile', component: StudentProfile, canActivate: [studentGuardGuard] },
-  { path: 'student/support', component: StudentSupport, canActivate: [studentGuardGuard] },
 
   // Instructor Routes
   {
@@ -196,6 +198,9 @@ export const routes: Routes = [
         path: 'profile/view/:id',
         component: InstructorProfileComponent,
       },
+      { path: 'all-courses', component: CoursesList },
+      { path: 'public-courses/:id', component: CourseDetails },
+      { path: 'payment-result', component: PaymentResult },
     ],
   },
 ];

@@ -5,10 +5,7 @@
   <div class="floating-element element-3">⭐</div>
   <div class="floating-element element-4">💡</div>
 
-  <!-- Back Button - Positioned at top left -->
-  <div class="back-button-top-left">
-    <app-back-button></app-back-button>
-  </div>
+
 
   <!-- Header / Banner -->
   <header class="profile-header">
@@ -25,7 +22,7 @@
 
           <!-- Photo Upload Button (Overlay) -->
           <div *ngIf="isOwnProfile()" class="avatar-overlay" (click)="openPhotoDialog()">
-            <mat-icon>camera_alt</mat-icon>
+            <mat-icon>add</mat-icon>
           </div>
         </div>
         <div class="info-content">
@@ -50,6 +47,12 @@
               </div>
             </div>
           </ng-container>
+
+          <!-- Phone Number Display -->
+          <p class="phone-number" *ngIf="publicInstructor() as p">
+            <span class="phone-icon">📱</span>
+            <span class="phone-text">{{ p.phoneNumber || 'Not provided' }}</span>
+          </p>
 
           <div class="stats">
             <div class="stat-item">
@@ -93,9 +96,9 @@
     </div>
 
     <div class="courses-grid" *ngIf="courses().length > 0">
-      <mat-card *ngFor="let course of courses()" class="course-card" [routerLink]="['/course', course.courseId]">
-        <img mat-card-image [src]="course.thumbnailUrl || 'assets/images/default-course.jpg'" alt="Course thumbnail"
-          height="180">
+      <mat-card *ngFor="let course of courses()" class="course-card" [routerLink]="getCourseLink(course.courseId)">
+        <img mat-card-image [src]="buildImageUrl(course.thumbnailUrl) || 'assets/images/default-course.jpg'"
+          alt="Course thumbnail" height="180">
         <mat-card-content>
           <h3 class="course-title">{{ course.title }}</h3>
           <div class="course-meta">
@@ -142,7 +145,6 @@
 <div *ngIf="error() && !loading()" class="error-container">
   <mat-icon color="warn">error</mat-icon>
   <p>{{ error() }}</p>
-  <button mat-raised-button color="primary" routerLink="/">Go Home</button>
 </div>
 
 <!-- Photo Upload Dialog -->

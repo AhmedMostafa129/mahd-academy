@@ -24,7 +24,7 @@ export class SupportService {
       .set('pageSize', pageSize.toString());
 
     return this.http.get<SupportApiResponse<SupportTicketDto>>(
-      `http://mahd3.runasp.net/api/support/tickets/user/${userId}`,
+      `${this.apiUrl}/support/tickets/user/${userId}`,
       { params }
     );
   }
@@ -33,7 +33,7 @@ export class SupportService {
    * Create new support ticket
    */
   createTicket(data: SupportTicketCreateDto): Observable<SupportTicketDto> {
-    return this.http.post<SupportTicketDto>(`http://mahd3.runasp.net/api/support/tickets`, data);
+    return this.http.post<SupportTicketDto>(`${this.apiUrl}/support/tickets`, data);
   }
 
   /**
@@ -48,7 +48,7 @@ export class SupportService {
       .set('pageSize', pageSize.toString());
 
     return this.http.get<PagedResult<SupportTicketDto>>(
-      `http://mahd3.runasp.net/api/support/tickets`,
+      `${this.apiUrl}/support/tickets`,
       { params }
     );
   }
@@ -57,7 +57,7 @@ export class SupportService {
    * Get ticket by ID
    */
   getTicketById(id: string): Observable<SupportTicketDto> {
-    return this.http.get<SupportTicketDto>(`http://mahd3.runasp.net/api/support/tickets/${id}`);
+    return this.http.get<SupportTicketDto>(`${this.apiUrl}/support/tickets/${id}`);
   }
 
   /**
@@ -65,7 +65,7 @@ export class SupportService {
    */
   assignTicket(ticketId: string, adminId: string): Observable<any> {
     return this.http.put<any>(
-      `http://mahd3.runasp.net/api/support/tickets/${ticketId}/assign/${adminId}`,
+      `${this.apiUrl}/support/tickets/${ticketId}/assign/${adminId}`,
       {}
     );
   }
@@ -75,7 +75,7 @@ export class SupportService {
    */
   resolveTicket(ticketId: string): Observable<any> {
     return this.http.put<any>(
-      `http://mahd3.runasp.net/api/support/tickets/${ticketId}/resolve`,
+      `${this.apiUrl}/support/tickets/${ticketId}/resolve`,
       {}
     );
   }
@@ -84,6 +84,6 @@ export class SupportService {
    * Delete ticket (Admin only)
    */
   deleteTicket(ticketId: string): Observable<any> {
-    return this.http.delete<any>(`http://mahd3.runasp.net/api/support/tickets/${ticketId}`);
+    return this.http.delete<any>(`${this.apiUrl}/support/tickets/${ticketId}`);
   }
 }

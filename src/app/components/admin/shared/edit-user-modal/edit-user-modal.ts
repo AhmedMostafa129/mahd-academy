@@ -101,7 +101,7 @@ export class EditUserModalComponent implements OnChanges {
     private handleUserData(res: any) {
         this.user = res;
         // Check multiple possible field names for the image
-        const imageUrl = res.photoUrl || res.cover || res.Cover || res.avatar || null;
+        const imageUrl = res.PhotoUrl || res.photoUrl || res.imagePath || res.thumbnail || res.thumbnailUrl || res.cover || res.Cover || res.avatar || res.photo || null;
         this.imagePreview = this.buildImageUrl(imageUrl);
         console.log('Image preview from backend:', this.imagePreview);
 
@@ -268,7 +268,7 @@ export class EditUserModalComponent implements OnChanges {
         if (url.startsWith('http') || url.startsWith('data:')) return url;
         // If relative, assume standard base URL
         const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-        return `http://mahdlms.runasp.net/${cleanPath}`;
+        return `http://mahdacad.runasp.net/${cleanPath}`;
     }
 
     passwordMatchValidator(g: AbstractControl) {

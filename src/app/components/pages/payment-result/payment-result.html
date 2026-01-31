@@ -43,7 +43,8 @@
         </div>
         <div class="detail-item" *ngIf="verification()!.cardType">
           <span class="label">Payment Method</span>
-          <span class="value">{{ verification()!.cardType }} {{ verification()!.maskedCard ? '****' + verification()!.maskedCard : '' }}</span>
+          <span class="value">{{ verification()!.cardType }} {{ verification()!.maskedCard ? '****' +
+            verification()!.maskedCard : '' }}</span>
         </div>
         <div class="detail-item" *ngIf="verification()!.paidAt">
           <span class="label">Date</span>
@@ -61,9 +62,6 @@
       <button *ngIf="paymentType() === 'subscription'" class="btn btn-primary" (click)="goToSubscription()">
         <span class="btn-icon">🎯</span>
         View Subscription
-      </button>
-      <button class="btn btn-secondary" (click)="goToDashboard()">
-        Go to Dashboard
       </button>
     </div>
   </div>
@@ -93,9 +91,6 @@
       <button class="btn btn-primary" (click)="tryAgain()">
         <span class="btn-icon">🔄</span>
         Try Again
-      </button>
-      <button class="btn btn-secondary" (click)="goHome()">
-        Go to Home
       </button>
     </div>
   </div>

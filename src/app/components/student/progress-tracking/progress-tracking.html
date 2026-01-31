@@ -3,16 +3,12 @@
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
   <div class="bg-orb orb-3"></div>
-  
+
   <header class="page-header">
     <h1>Progress Tracking</h1>
     <p class="subtitle">
       View your progress across all enrolled courses.
     </p>
-    <button class="btn-back-dashboard" (click)="goToDashboard()">
-      <i class="fas fa-arrow-left"></i>
-      <span>Back to Dashboard</span>
-    </button>
   </header>
 
   <!-- Loading State -->
@@ -29,19 +25,13 @@
     <aside class="courses-list">
       <h2 class="section-title">My Courses</h2>
 
-      <div
-        *ngIf="!enrollments() || enrollments().length === 0"
-        class="state state-empty small"
-      >
+      <div *ngIf="!enrollments() || enrollments().length === 0" class="state state-empty small">
         <p>No enrollments yet.</p>
       </div>
 
       <ul *ngIf="enrollments() && enrollments().length > 0">
-        <li
-          *ngFor="let e of enrollments()"
-          (click)="selectEnrollment(e)"
-          [class.selected]="selectedEnrollment()?.enrollmentId === e.enrollmentId"
-        >
+        <li *ngFor="let e of enrollments()" (click)="selectEnrollment(e)"
+          [class.selected]="selectedEnrollment()?.enrollmentId === e.enrollmentId">
           <div class="course-name">{{ e.courseName || 'Course' }}</div>
           <div class="course-progress">
             {{ e.progressPercentage | number : '1.0-0' }}%
@@ -66,10 +56,7 @@
             Overall Progress
           </div>
           <div class="progress-bar">
-            <div
-              class="progress-fill"
-              [style.width.%]="selected.progressPercentage"
-            ></div>
+            <div class="progress-fill" [style.width.%]="selected.progressPercentage"></div>
           </div>
           <span class="progress-label">
             {{ selected.progressPercentage | number : '1.0-0' }}% Complete

@@ -21,11 +21,14 @@
     <!-- Hero Section -->
     <section class="course-hero">
       <div class="course-thumbnail" *ngIf="course()!.thumbnailUrl">
-        <img [src]="course()!.thumbnailUrl" [alt]="course()!.title" [attr.title]="course()!.title" />
+        <img [src]="buildImageUrl(course()!.thumbnailUrl)" [alt]="course()!.title" [attr.title]="course()!.title" />
       </div>
       <div class="course-header">
         <h1 class="course-title">{{ course()!.title }}</h1>
-        <p class="course-instructor">👤 {{ course()!.instructorName || 'Unknown Instructor' }}</p>
+        <p class="course-instructor" (click)="navigateToInstructorProfile($event, course()!.instructorId)"
+          style="cursor: pointer;">
+          👤 {{ course()!.instructorName || 'Unknown Instructor' }}
+        </p>
 
         <div class="course-meta">
           <span class="rating">⭐ {{ course()!.averageRating | number:'1.1-1' }}</span>
@@ -95,11 +98,6 @@
   </div>
 
   <!-- Payment Modal -->
-  <app-payment-modal
-    [data]="paymentModalData()"
-    [isOpen]="showPaymentModal()"
-    (closeModal)="closePaymentModal()"
-    (paymentSuccess)="onPaymentSuccess($event)"
-    (paymentError)="onPaymentError($event)"
-  ></app-payment-modal>
+  <app-payment-modal [data]="paymentModalData()" [isOpen]="showPaymentModal()" (closeModal)="closePaymentModal()"
+    (paymentSuccess)="onPaymentSuccess($event)" (paymentError)="onPaymentError($event)"></app-payment-modal>
 </div>

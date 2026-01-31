@@ -6,6 +6,11 @@ import { environment } from '../environments/environment';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
 
+  // Check if the request is for the n8n chatbot - skip auth logic
+  if (req.url.includes('n8n.cloud')) {
+    return next(req);
+  }
+
   // Clone the request and add headers
   const clonedReq = req.clone({
     setHeaders: {

@@ -30,7 +30,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
   display: block;
   min-height: 100vh;
   background-color: #f7fafc;
-  padding: 2.5rem 0; // Changed from 2.5rem 3rem to remove side padding
+  padding: 2.5rem 20px; // Added 20px horizontal padding
   box-sizing: border-box;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   position: relative;

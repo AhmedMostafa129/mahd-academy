@@ -30,25 +30,25 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
   animation: float 8s ease-in-out infinite;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
   z-index: 0;
-  
+
   &.element-1 {
     top: 10%;
     left: 5%;
     animation-delay: 0s;
   }
-  
+
   &.element-2 {
     top: 20%;
     right: 10%;
     animation-delay: 2s;
   }
-  
+
   &.element-3 {
     bottom: 25%;
     left: 8%;
     animation-delay: 4s;
   }
-  
+
   &.element-4 {
     bottom: 15%;
     right: 15%;
@@ -99,7 +99,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
       background: rgba(255, 255, 255, 0.3);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
       transform: translateY(-3px);
-      
+
       &::before {
         width: 300px;
         height: 300px;
@@ -314,6 +314,26 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
       border-color: #a5d6a7;
     }
   }
+
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 2;
+    min-width: 280px;
+
+    input {
+      width: 100%;
+      min-width: unset; // Override base min-width for wrapper usage
+    }
+
+    .input-helper {
+      font-size: 0.8rem;
+      color: $text-light;
+      font-style: italic;
+      padding-left: 0.5rem;
+    }
+  }
 }
 
 .btn-primary {
@@ -348,7 +368,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(28, 111, 43, 0.4);
-    
+
     &::before {
       width: 300px;
       height: 300px;
@@ -397,7 +417,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     background: #fee2e2;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-    
+
     &::before {
       width: 300px;
       height: 300px;
@@ -516,7 +536,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     &:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(28, 111, 43, 0.4);
-      
+
       &::before {
         width: 300px;
         height: 300px;
@@ -564,6 +584,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -571,21 +592,28 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
+
   33% {
     transform: translateY(-20px) translateX(10px);
   }
+
   66% {
     transform: translateY(10px) translateX(-15px);
   }
@@ -595,7 +623,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
   .group-details-container {
     padding: 1rem;
   }
-  
+
   .group-details-header {
     padding: 1.5rem;
 
@@ -603,7 +631,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
       h1 {
         font-size: 1.8rem;
       }
-      
+
       p {
         font-size: 1rem;
       }

@@ -4,12 +4,10 @@
   <div class="floating-element element-2">⭐</div>
   <div class="floating-element element-3">📈</div>
   <div class="floating-element element-4">🎯</div>
-  
+
   <div class="header">
     <div class="header-content">
-      <button class="btn-back" (click)="goBack()">
-        ← Back to Dashboard
-      </button>
+
       <h1>My Subscription</h1>
       <div class="spacer"></div>
     </div>
@@ -19,7 +17,7 @@
     <div class="spinner"></div>
     <p>Loading subscription...</p>
   </div>
-  
+
   <div *ngIf="error()" class="error">{{ error() }}</div>
 
   <!-- Current Subscription -->
@@ -62,7 +60,7 @@
         </div>
       </div>
       <div class="subscription-actions">
-        <button *ngIf="isSubscriptionActive()" class="btn-cancel" (click)="cancelSubscription()">
+        <button *ngIf="isSubscriptionActive()" class="btn-cancel" (click)="openCancelModal()">
           Cancel Subscription
         </button>
         <button *ngIf="!isSubscriptionActive()" class="btn-renew" (click)="renewSubscription()">
@@ -89,39 +87,39 @@
         <p>No packages available at the moment.</p>
       </div>
       <div *ngIf="packages() && packages().length > 0" class="packages-grid">
-      <div *ngFor="let pkg of packages()" class="package-card">
-        <div class="package-header">
-          <h3>{{ pkg.name }}</h3>
-          <div class="price-container">
-            <div class="package-price">{{ formatCurrency(pkg.price) }}</div>
-            <div class="price-label">per month</div>
-          </div>
-        </div>
-        <div class="package-body">
-          <p class="description">{{ pkg.description }}</p>
-          <div class="package-features">
-            <div class="feature-item">
-              <span class="feature-label">Duration:</span>
-              <span class="feature-value">{{ pkg.durationDays }} days</span>
-            </div>
-            <div class="feature-item">
-              <span class="feature-label">Storage:</span>
-              <span class="feature-value">{{ pkg.storageLimitMB }} MB</span>
-            </div>
-            <div class="feature-item">
-              <span class="feature-label">Max Students:</span>
-              <span class="feature-value">{{ pkg.maxStudentsCapacity }}</span>
-            </div>
-            <div *ngIf="pkg.commissionPercentage" class="feature-item">
-              <span class="feature-label">Commission:</span>
-              <span class="feature-value">{{ pkg.commissionPercentage }}%</span>
+        <div *ngFor="let pkg of packages()" class="package-card">
+          <div class="package-header">
+            <h3>{{ pkg.name }}</h3>
+            <div class="price-container">
+              <div class="package-price">{{ formatCurrency(pkg.price) }}</div>
+              <div class="price-label">per month</div>
             </div>
           </div>
+          <div class="package-body">
+            <p class="description">{{ pkg.description }}</p>
+            <div class="package-features">
+              <div class="feature-item">
+                <span class="feature-label">Duration:</span>
+                <span class="feature-value">{{ pkg.durationDays }} days</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Storage:</span>
+                <span class="feature-value">{{ pkg.storageLimitMB }} MB</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Max Students:</span>
+                <span class="feature-value">{{ pkg.maxStudentsCapacity }}</span>
+              </div>
+              <div *ngIf="pkg.commissionPercentage" class="feature-item">
+                <span class="feature-label">Commission:</span>
+                <span class="feature-value">{{ pkg.commissionPercentage }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="package-actions">
+            <button class="btn-subscribe" (click)="openSubscribeModal(pkg)">Subscribe</button>
+          </div>
         </div>
-        <div class="package-actions">
-          <button class="btn-subscribe" (click)="openSubscribeModal(pkg)">Subscribe</button>
-        </div>
-      </div>
       </div>
     </ng-container>
   </div>
@@ -159,12 +157,8 @@
           <div class="promo-code-section">
             <div *ngIf="!appliedPromoCode()" class="promo-input-group">
               <div class="promo-input">
-                <input
-                  type="text"
-                  [(ngModel)]="promoCode"
-                  placeholder="Enter promo code (optional)"
-                  class="promo-input-field"
-                />
+                <input type="text" [(ngModel)]="promoCode" placeholder="Enter promo code (optional)"
+                  class="promo-input-field" />
                 <button class="btn-apply" (click)="applyPromoCode()">Apply</button>
               </div>
               <div *ngIf="promoCodeError()" class="error-message">{{ promoCodeError() }}</div>
@@ -206,11 +200,26 @@
   </div>
 
   <!-- Paymob Payment Modal -->
-  <app-payment-modal
-    [data]="paymentModalData()"
-    [isOpen]="showPaymentModal()"
-    (closeModal)="closePaymentModal()"
-    (paymentSuccess)="onPaymentSuccess($event)"
-    (paymentError)="onPaymentError($event)"
-  ></app-payment-modal>
+  <app-payment-modal [data]="paymentModalData()" [isOpen]="showPaymentModal()" (closeModal)="closePaymentModal()"
+    (paymentSuccess)="onPaymentSuccess($event)" (paymentError)="onPaymentError($event)"></app-payment-modal>
+
+  <!-- Cancel Confirmation Modal -->
+  <div *ngIf="showCancelModal()" class="cancel-modal-overlay" (click)="closeCancelModal()">
+    <div class="cancel-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeCancelModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="cancel-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h3>Confirm Cancellation</h3>
+      <p class="cancel-message">
+        Are you sure you want to cancel your subscription? You will lose access to premium features once it expires.
+      </p>
+      <div class="modal-actions-confirm">
+        <button class="btn-cancel-action" (click)="closeCancelModal()">No, Keep it</button>
+        <button class="btn-confirm-action" (click)="cancelSubscription()">Yes, Cancel Subscription</button>
+      </div>
+    </div>
+  </div>
 </div>

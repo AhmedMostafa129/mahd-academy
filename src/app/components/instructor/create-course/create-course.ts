@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CourseService } from '../../../core/services/CourseService/course-service';
 import { TokenService } from '../../../core/services/TokenService/token-service';
+import { FileService } from '../../../core/services/FileService/file-service';
 import { CreateCourseDto, CourseVisibility } from '../../../core/interfaces/course.interface';
 
 @Component({
@@ -17,6 +18,7 @@ export class CreateCourse {
   private readonly _router = inject(Router);
   private readonly _courseService = inject(CourseService);
   private readonly _tokenService = inject(TokenService);
+  private readonly _fileService = inject(FileService);
 
   // Form data
   courseData: CreateCourseDto = {
@@ -29,6 +31,8 @@ export class CreateCourse {
     category: 'General' // Default category
   };
 
+  selectedFile: File | null = null;
+  thumbnailPreview = signal<string | null>(null);
   submitting = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -38,6 +42,21 @@ export class CreateCourse {
     { value: CourseVisibility.Private, label: 'Private' }
   ];
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.error.set(null);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.thumbnailPreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit(): void {
     if (!this.validateForm()) {
       return;
@@ -46,6 +65,10 @@ export class CreateCourse {
     this.submitting.set(true);
     this.error.set(null);
 
+    this.createCourse();
+  }
+
+  private createCourse(): void {
     // Set instructor ID from current user
     const user = this._tokenService.getUser();
     if (user && user.userId) {
@@ -62,6 +85,11 @@ export class CreateCourse {
     payload.visibility = Number(payload.visibility);
     payload.popular = !!payload.popular;
 
+    // We don't send thumbnailUrl here if we are uploading via separate endpoint
+    if (this.selectedFile) {
+      delete payload.thumbnailUrl;
+    }
+
     if (!payload.thumbnailUrl) {
       delete payload.thumbnailUrl;
     }
@@ -70,9 +98,25 @@ export class CreateCourse {
 
     this._courseService.createCourse(payload).subscribe({
       next: (course) => {
-        this.submitting.set(false);
-        // Redirect to Add Lesson page instead of course content
-        this._router.navigate(['/instructor/courses', course.courseId, 'lessons', 'create']);
+        if (this.selectedFile && course.courseId) {
+          // Upload thumbnail now that we have the course ID
+          this._courseService.uploadThumbnail(course.courseId, this.selectedFile).subscribe({
+            next: () => {
+              this.submitting.set(false);
+              this._router.navigate(['/instructor/courses', course.courseId, 'lessons', 'create']);
+            },
+            error: (err) => {
+              console.error('Error uploading thumbnail after creation:', err);
+              // Course was created, but thumbnail failed. Still navigate but maybe show a warning?
+              // For now, let's just navigate since the course exists.
+              this.submitting.set(false);
+              this._router.navigate(['/instructor/courses', course.courseId, 'lessons', 'create']);
+            }
+          });
+        } else {
+          this.submitting.set(false);
+          this._router.navigate(['/instructor/courses', course.courseId, 'lessons', 'create']);
+        }
       },
       error: (err) => {
         console.error('Error creating course:', err);

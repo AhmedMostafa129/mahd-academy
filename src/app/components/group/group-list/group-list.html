@@ -1,7 +1,6 @@
 <div class="groups-container">
   <header class="groups-header">
     <div>
-      <app-back-button></app-back-button>
       <h1>Groups</h1>
       <p>Manage and explore your learning groups</p>
     </div>
@@ -24,11 +23,7 @@
     <section class="toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          placeholder="Search groups by name or description…"
-        />
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search groups by name or description…" />
       </div>
     </section>
 
@@ -67,21 +62,15 @@
 
     <!-- Pagination -->
     <div *ngIf="totalPages() > 1" class="pagination">
-      <button
-        (click)="pageNumber.set(pageNumber() - 1); loadGroups()"
-        [disabled]="pageNumber() === 1"
-        class="pagination-button"
-      >
+      <button (click)="pageNumber.set(pageNumber() - 1); loadGroups()" [disabled]="pageNumber() === 1"
+        class="pagination-button">
         ← Previous
       </button>
       <span class="pagination-info">
         Page {{ pageNumber() }} of {{ totalPages() }}
       </span>
-      <button
-        (click)="pageNumber.set(pageNumber() + 1); loadGroups()"
-        [disabled]="pageNumber() === totalPages()"
-        class="pagination-button"
-      >
+      <button (click)="pageNumber.set(pageNumber() + 1); loadGroups()" [disabled]="pageNumber() === totalPages()"
+        class="pagination-button">
         Next →
       </button>
     </div>

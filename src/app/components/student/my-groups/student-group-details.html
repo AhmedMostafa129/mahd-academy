@@ -4,7 +4,7 @@
   <div class="floating-element element-2">📚</div>
   <div class="floating-element element-3">⭐</div>
   <div class="floating-element element-4">💡</div>
-  
+
   <!-- Loading State -->
   <div *ngIf="loading()" class="state state-loading">
     <div class="spinner"></div>
@@ -25,7 +25,6 @@
   <div *ngIf="!loading() && !error() && group()" class="group-details-content">
     <!-- Header -->
     <header class="page-header">
-      <app-back-button></app-back-button>
       <div class="header-content">
         <h1>{{ group()!.name }}</h1>
         <p class="subtitle">{{ group()!.description || 'No description available' }}</p>
@@ -72,18 +71,11 @@
       </div>
 
       <div *ngIf="courses().length > 0" class="courses-grid">
-        <div
-          *ngFor="let course of courses(); trackBy: trackByCourseId"
-          class="course-card"
-          (click)="navigateToCourse(course.courseId)"
-        >
+        <div *ngFor="let course of courses(); trackBy: trackByCourseId" class="course-card"
+          (click)="navigateToCourse(course.courseId)">
           <div class="course-thumbnail-wrapper">
-            <img
-              *ngIf="course.thumbnailUrl"
-              [src]="course.thumbnailUrl"
-              [alt]="course.title"
-              class="course-thumbnail"
-            />
+            <img *ngIf="course.thumbnailUrl" [src]="course.thumbnailUrl" [alt]="course.title"
+              class="course-thumbnail" />
             <div *ngIf="!course.thumbnailUrl" class="course-thumbnail-placeholder">📚</div>
           </div>
 
@@ -98,11 +90,8 @@
             </p>
 
             <div class="card-actions">
-              <button
-                type="button"
-                class="btn btn-primary"
-                (click)="navigateToCourse(course.courseId); $event.stopPropagation()"
-              >
+              <button type="button" class="btn btn-primary"
+                (click)="navigateToCourse(course.courseId); $event.stopPropagation()">
                 <span class="btn-icon">▶️</span>
                 View Course
               </button>

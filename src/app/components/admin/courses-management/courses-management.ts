@@ -4,13 +4,13 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../../core/services/DashboardService/dashboard-admin';
 import { AdminService } from '../../../core/services/AdminService/admin-service';
-import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 import { EditCourseModalComponent } from '../shared/edit-course-modal/edit-course-modal';
 
 @Component({
   selector: 'app-courses-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmModalComponent, EditCourseModalComponent],
+  imports: [CommonModule, FormsModule, EditCourseModalComponent],
   templateUrl: './courses-management.html',
   styleUrls: ['./courses-management.scss']
 })
@@ -21,11 +21,9 @@ export class CoursesManagement {
   // Search
   searchTerm: string = '';
 
-  // Modal
-  showModal = false;
-  modalTitle = 'Delete Course';
-  modalMessage = 'Are you sure you want to delete this course?';
-  selectedId: string | null = null;
+  // Delete Modal
+  showDeleteModal = false;
+  selectedId: string | null = null; // Storing ID for deletion
 
   // Edit Modal
   showEditModal = false;
@@ -34,7 +32,8 @@ export class CoursesManagement {
   constructor(
     private dashboardService: DashboardService,
     private adminService: AdminService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -98,24 +97,23 @@ export class CoursesManagement {
 
   onDelete(id: string) {
     this.selectedId = id;
-    this.showModal = true;
+    this.showDeleteModal = true;
   }
 
   confirmDelete() {
     if (this.selectedId) {
       this.adminService.deleteCourse(this.selectedId).subscribe({
         next: () => {
-          console.log('Course deleted successfully');
+          this.notificationService.showSuccess('Success', 'Course deleted successfully');
           this.courses = this.courses.filter(c =>
             (c.id || c._id || c.courseId) !== this.selectedId
           );
-          this.showModal = false;
-          this.selectedId = null;
+          this.closeDeleteModal();
         },
         error: (err) => {
           console.error('Failed to delete course', err);
-          alert('Failed to delete course: ' + (err.error?.message || err.message));
-          this.showModal = false;
+          this.notificationService.showError('Error', 'Failed to delete course: ' + (err.error?.message || err.message));
+          this.closeDeleteModal();
         }
       });
     }
@@ -132,11 +130,11 @@ export class CoursesManagement {
 
     // Clean path and prepend base URL
     const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-    return `http://mahdlms.runasp.net/${cleanPath}`;
+    return `http://mahdacad.runasp.net/${cleanPath}`;
   }
 
-  cancelDelete() {
-    this.showModal = false;
+  closeDeleteModal() {
+    this.showDeleteModal = false;
     this.selectedId = null;
   }
 }

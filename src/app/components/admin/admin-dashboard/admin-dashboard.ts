@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DashboardService } from '../../../core/services/DashboardService/dashboard-admin';
 import { AdminService } from '../../../core/services/AdminService/admin-service';
 import { SupportService } from '../../../core/services/Support/support';
+import { AuthService } from '../../../core/services/auth/auth-service';
 import { CommonModule } from '@angular/common';
 import { forkJoin, interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
@@ -50,18 +51,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
 
   // Modal State
-  // Modal State
   showAddUserModal = false;
+
+  userName: string = 'Admin';
 
   private pollingSub: Subscription | undefined;
 
   constructor(
     private dashboardService: DashboardService,
     private adminService: AdminService,
-    private supportService: SupportService
+    private supportService: SupportService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.fullName) {
+      this.userName = currentUser.fullName;
+    }
     this.loadDashboard();
     this.startPolling();
   }

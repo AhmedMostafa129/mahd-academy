@@ -23,25 +23,25 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     animation: float 8s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     z-index: 0;
-    
+
     &.element-1 {
       top: 10%;
       left: 5%;
       animation-delay: 0s;
     }
-    
+
     &.element-2 {
       top: 20%;
       right: 10%;
       animation-delay: 2s;
     }
-    
+
     &.element-3 {
       bottom: 25%;
       left: 8%;
       animation-delay: 4s;
     }
-    
+
     &.element-4 {
       bottom: 15%;
       right: 15%;
@@ -89,7 +89,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         background: white;
         box-shadow: 0 6px 16px rgba(30, 27, 75, 0.25);
         transform: translateY(-3px);
-        
+
         &::before {
           width: 300px;
           height: 300px;
@@ -149,7 +149,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
       &:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
-        
+
         &::before {
           width: 300px;
           height: 300px;
@@ -295,7 +295,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
       &:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 30px rgba(28, 111, 43, 0.4);
-        
+
         &::before {
           width: 300px;
           height: 300px;
@@ -495,12 +495,20 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
           }
 
           .btn-delete {
-            background: #fee2e2;
-            color: #dc2626;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 
             &:hover:not(:disabled) {
-              background: #fecaca;
+              background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
               transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            }
+
+            &:disabled {
+              background: #fee2e2;
+              color: #fca5a5;
+              box-shadow: none;
             }
           }
         }
@@ -689,6 +697,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -696,22 +705,162 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
+
   33% {
     transform: translateY(-20px) translateX(10px);
   }
+
   66% {
     transform: translateY(10px) translateX(-15px);
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: scaleIn 0.3s ease-out;
+    overflow: hidden;
+
+    &.delete-modal {
+      border-top: 5px solid #ef4444;
+    }
+
+    .modal-body {
+      padding: 2rem;
+      text-align: center;
+
+      .warning-icon {
+        font-size: 3rem;
+        background: #fee2e2;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        animation: pulse 2s infinite;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: $text-dark;
+        margin-bottom: 0.75rem;
+      }
+
+      p {
+        color: $text-light;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+
+        button {
+          padding: 0.75rem 1.5rem;
+          border-radius: 10px;
+          border: none;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          flex: 1;
+
+          &.btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+
+            &:hover {
+              background: #e2e8f0;
+            }
+          }
+
+          &.btn-confirm-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
 }

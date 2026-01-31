@@ -34,25 +34,25 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     animation: float 8s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     z-index: 0;
-    
+
     &.element-1 {
         top: 10%;
         left: 5%;
         animation-delay: 0s;
     }
-    
+
     &.element-2 {
         top: 20%;
         right: 10%;
         animation-delay: 2s;
     }
-    
+
     &.element-3 {
         bottom: 25%;
         left: 8%;
         animation-delay: 4s;
     }
-    
+
     &.element-4 {
         bottom: 15%;
         right: 15%;
@@ -60,167 +60,9 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     }
 }
 
-.instructor-page {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    min-height: 100vh;
-}
+// .instructor-page removed (using parent layout)
 
-// Sidebar Styles (Copied from Instructor Dashboard for consistency)
-.sidebar {
-    background: white;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #e2e8f0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    z-index: 10;
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 3rem;
-        padding-left: 0.5rem;
-
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            background: $primary-gradient;
-            color: white;
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
-            font-weight: 800;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 6px rgba(28, 111, 43, 0.3);
-        }
-
-        div {
-            h1 {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: $text-dark;
-                margin: 0;
-                line-height: 1.2;
-            }
-
-            p {
-                font-size: 0.85rem;
-                color: $text-light;
-                margin: 0;
-            }
-        }
-    }
-
-    .nav {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex: 1;
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-radius: 12px;
-            color: $text-light;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-
-            .nav-icon {
-                font-size: 1.25rem;
-                transition: transform 0.3s ease;
-            }
-
-            &::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 0;
-                height: 0;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.3);
-                transform: translate(-50%, -50%);
-                transition: width 0.6s ease, height 0.6s ease;
-            }
-
-            &:hover {
-                background: #f7fafc;
-                color: #1c6f2b;
-                transform: translateX(5px);
-
-                .nav-icon {
-                    transform: scale(1.1);
-                }
-
-                &::before {
-                    width: 300px;
-                    height: 300px;
-                }
-            }
-
-            &.active {
-                background: linear-gradient(90deg, rgba(28, 111, 43, 0.15) 0%, transparent 100%);
-                color: #1c6f2b;
-                border-left: 4px solid #1c6f2b;
-            }
-        }
-    }
-
-    .sign-out {
-        margin-top: auto;
-        padding: 1rem;
-        border: none;
-        background: #fff5f5;
-        color: #e53e3e;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        position: relative;
-        overflow: hidden;
-
-        &::before {
-            content: '🚪';
-            font-size: 1.2rem;
-        }
-
-        &::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        &:hover {
-            background: #fed7d7;
-            
-            &::after {
-                width: 300px;
-                height: 300px;
-            }
-        }
-    }
-}
+// Sidebar Styles removed (using parent layout)
 
 .dashboard-content {
     padding: 2.5rem 3rem;
@@ -294,7 +136,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         &:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(28, 111, 43, 0.4);
-            
+
             &::after {
                 width: 300px;
                 height: 300px;
@@ -403,7 +245,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
                 &:hover {
                     background: #edf2f7;
                     color: $text-dark;
-                    
+
                     &::before {
                         width: 300px;
                         height: 300px;
@@ -505,6 +347,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         opacity: 0;
         transform: translateY(24px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -512,21 +355,28 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 }
 
 @keyframes bounce {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-10px);
     }
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) translateX(0);
     }
+
     33% {
         transform: translateY(-20px) translateX(10px);
     }
+
     66% {
         transform: translateY(10px) translateX(-15px);
     }
@@ -534,19 +384,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 
 // Responsive
 @media (max-width: 1024px) {
-    .instructor-page {
-        grid-template-columns: 200px 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .instructor-page {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        display: none; // Match dashboard behavior
-    }
+    // instructor-page styles removed
 
     .dashboard-content {
         padding: 1.5rem;

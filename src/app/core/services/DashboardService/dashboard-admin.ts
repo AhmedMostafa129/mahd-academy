@@ -25,7 +25,41 @@ export class DashboardService {
 
   // قائمة الكورسات
   getCourses(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/courses`);
+    return this.http.get<any>(`${this.baseUrl}/courses`).pipe(
+      map(response => {
+        let items = [];
+        if (Array.isArray(response)) items = response;
+        else if (response && Array.isArray(response.data)) items = response.data;
+        else if (response && Array.isArray(response.courses)) items = response.courses;
+        else if (response && Array.isArray(response.items)) items = response.items;
+
+        return items.map((c: any) => this.mapCourse(c));
+      })
+    );
+  }
+
+  private mapCourse(course: any): any {
+    if (!course) return course;
+    // Normalize courseId
+    const courseId = course.courseId || course.id || course._id || '';
+
+    // Normalize isPublished
+    let isPublished = false;
+    if (course.isPublished !== undefined) {
+      isPublished = !!course.isPublished;
+    } else if (course.is_published !== undefined) {
+      isPublished = !!course.is_published;
+    } else if (course.Published !== undefined) {
+      isPublished = !!course.Published;
+    } else if (course.status !== undefined) {
+      const s = String(course.status).toLowerCase();
+      isPublished = s === 'published' || s === 'active' || s === '1' || course.status === 1;
+    } else if (course.visibility !== undefined) {
+      const v = String(course.visibility).toLowerCase();
+      isPublished = v === '0' || v === 'public' || v === 'published' || course.visibility === 0;
+    }
+
+    return { ...course, courseId, isPublished };
   }
 
   // قائمة المدربين

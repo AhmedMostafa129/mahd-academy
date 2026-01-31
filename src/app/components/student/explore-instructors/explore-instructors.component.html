@@ -38,7 +38,7 @@
           <div class="card-bg"></div>
           <div class="avatar-container">
             @if (instr.photoUrl) {
-              <img [src]="instr.photoUrl" [alt]="instr.fullName" class="avatar-img" (error)="handleImageError($event)">
+              <img [src]="buildImageUrl(instr.photoUrl)" [alt]="instr.fullName" class="avatar-img" (error)="handleImageError($event)">
               <!-- Fallback placeholder hidden by default, shown by error handler if needed -->
               <div class="avatar-placeholder" style="display: none;">
                 {{ instr.fullName.charAt(0).toUpperCase() }}

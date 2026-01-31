@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 import { LessonService } from '../../../core/services/LectureService/lecture-service';
 import { CourseService } from '../../../core/services/CourseService/course-service';
 import { ReviewService } from '../../../core/services/ReviewService/review-service';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 import { LessonDto, LessonCreateDto, LessonContentType } from '../../../core/interfaces/lesson.interface';
-import { CourseDto } from '../../../core/interfaces/course.interface';
+import { CourseDto, UpdateCourseDto, CourseVisibility } from '../../../core/interfaces/course.interface';
 
 @Component({
   selector: 'app-manage-content',
@@ -22,6 +24,7 @@ export class ManageContent implements OnInit {
   // Course-level reviews (students' reviews for this course)
   courseReviews = signal<any[]>([]);
   private readonly _reviewService = inject(ReviewService);
+  private readonly _notificationService = inject(NotificationService);
 
   courseId = signal<string | null>(null);
   course = signal<CourseDto | null>(null);
@@ -29,9 +32,12 @@ export class ManageContent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   deleting = signal<string | null>(null);
-  
-  // Delete modal state
+
+  // Modal states
   showDeleteModal = signal<boolean>(false);
+  showLessonDeleteModal = signal<boolean>(false);
+  showPublishModal = signal<boolean>(false);
+  lessonToDeleteId = signal<string | null>(null);
 
   // Content type options
   contentTypeOptions = [
@@ -68,12 +74,44 @@ export class ManageContent implements OnInit {
   togglePublishStatus(): void {
     const course = this.course();
     if (!course) return;
+    this.showPublishModal.set(true);
+  }
+
+  closePublishModal(): void {
+    this.showPublishModal.set(false);
+  }
+
+  // New logic for dual buttons
+  attemptPublish(): void {
+    const course = this.course();
+    if (!course) return;
 
     if (course.isPublished) {
-      if (!confirm('Are you sure you want to unpublish this course? It will be hidden from students.')) return;
+      this._notificationService.showInfo('Already Published', 'Refusing to publish: This course is already live.');
+      return;
+    }
+    this.showPublishModal.set(true);
+  }
+
+  attemptUnpublish(): void {
+    const course = this.course();
+    if (!course) return;
+
+    if (!course.isPublished) {
+      this._notificationService.showInfo('Already Private', 'Refusing to unpublish: This course is already in draft mode.');
+      return;
+    }
+    this.showPublishModal.set(true);
+  }
+
+  confirmPublishToggle(): void {
+    const course = this.course();
+    if (!course) return;
+
+    this.closePublishModal();
+    if (course.isPublished) {
       this.unpublishCourse(course.courseId);
     } else {
-      if (!confirm('Ready to publish? Your course will be visible to all students.')) return;
       this.publishCourse(course.courseId);
     }
   }
@@ -83,13 +121,14 @@ export class ManageContent implements OnInit {
     this._courseService.publishCourse(courseId).subscribe({
       next: () => {
         this.publishing.set(false);
-        // Update local state
+        // Optimistic update
         this.course.update(c => c ? { ...c, isPublished: true } : null);
-        alert('Course published successfully! 🚀');
+        this._notificationService.showSuccess('Success', 'Course published successfully! 🚀');
       },
       error: (err) => {
         console.error('Error publishing course:', err);
         this.error.set(err.message || 'Failed to publish course');
+        this._notificationService.showError('Error', 'Failed to publish course');
         this.publishing.set(false);
       }
     });
@@ -97,15 +136,37 @@ export class ManageContent implements OnInit {
 
   unpublishCourse(courseId: string): void {
     this.publishing.set(true);
-    this._courseService.unpublishCourse(courseId).subscribe({
+
+    // 1. First call the unpublish endpoint as requested
+    this._courseService.unpublishCourse(courseId).pipe(
+      switchMap(() => {
+        // 2. Then FORCE the visibility status to Private using updateCourse
+        // This ensures backend persistence even if unpublish endpoint is flaky
+        const current = this.course();
+        if (!current) throw new Error('Course not found');
+
+        const updateData: UpdateCourseDto = {
+          title: current.title,
+          description: current.description,
+          price: current.price,
+          thumbnailUrl: current.thumbnailUrl,
+          popular: current.popular,
+          visibility: CourseVisibility.Private // Force Private
+        };
+
+        return this._courseService.updateCourse(courseId, updateData);
+      })
+    ).subscribe({
       next: () => {
         this.publishing.set(false);
-        // Update local state
-        this.course.update(c => c ? { ...c, isPublished: false } : null);
+        // Optimistic update
+        this.course.update(c => c ? { ...c, isPublished: false, visibility: CourseVisibility.Private } : null);
+        this._notificationService.showSuccess('Success', 'Course unpublished successfully');
       },
       error: (err) => {
         console.error('Error unpublishing course:', err);
         this.error.set(err.message || 'Failed to unpublish course');
+        this._notificationService.showError('Error', 'Failed to unpublish course');
         this.publishing.set(false);
       }
     });
@@ -162,11 +223,11 @@ export class ManageContent implements OnInit {
 
   viewLessonContent(lesson: LessonDto): void {
     if (!lesson.contentUrl) {
-      alert('No content URL available for this lesson.');
+      this._notificationService.showError('Content Error', 'No content URL available for this lesson.');
       return;
     }
 
-    const baseUrl = 'http://mahdlms.runasp.net/';
+    const baseUrl = 'http://mahdacad.runasp.net/';
     const fullUrl = lesson.contentUrl.startsWith('http')
       ? lesson.contentUrl
       : `${baseUrl}${lesson.contentUrl}`;
@@ -175,19 +236,33 @@ export class ManageContent implements OnInit {
   }
 
   deleteLesson(lessonId: string): void {
-    const courseId = this.courseId();
-    if (!courseId) return;
+    this.openLessonDeleteModal(lessonId);
+  }
 
-    if (!confirm('Are you sure you want to delete this lesson?')) {
-      return;
-    }
+  openLessonDeleteModal(lessonId: string): void {
+    this.lessonToDeleteId.set(lessonId);
+    this.showLessonDeleteModal.set(true);
+  }
+
+  closeLessonDeleteModal(): void {
+    this.showLessonDeleteModal.set(false);
+    this.lessonToDeleteId.set(null);
+  }
+
+  confirmDeleteLesson(): void {
+    const lessonId = this.lessonToDeleteId();
+    const courseId = this.courseId();
+    if (!courseId || !lessonId) return;
 
     this.deleting.set(lessonId);
+    this.closeLessonDeleteModal();
 
     this._lessonService.deleteLesson(courseId, lessonId).subscribe({
       next: () => {
         this.lessons.set(this.lessons().filter(l => l.lessonId !== lessonId));
         this.deleting.set(null);
+        // Sync course stats
+        this.course.update(c => c ? { ...c, lessonsCount: this.lessons().length } : null);
       },
       error: (err) => {
         console.error('Error deleting lesson:', err);
@@ -226,27 +301,27 @@ export class ManageContent implements OnInit {
   navigateToCoursesList(): void {
     this._router.navigate(['/instructor/courses']);
   }
-  
+
   // New methods for course deletion
   confirmDeleteCourse(): void {
     this.showDeleteModal.set(true);
   }
-  
+
   closeDeleteModal(): void {
     this.showDeleteModal.set(false);
   }
-  
+
   deleteCourse(): void {
     const courseId = this.courseId();
     if (!courseId) return;
-    
+
     this.deleting.set('course');
-    
+
     this._courseService.deleteCourse(courseId).subscribe({
       next: () => {
         this.deleting.set(null);
         this.closeDeleteModal();
-        alert('Course deleted successfully!');
+        this._notificationService.showSuccess('Success', 'Course deleted successfully!');
         this._router.navigate(['/instructor/courses']);
       },
       error: (err) => {

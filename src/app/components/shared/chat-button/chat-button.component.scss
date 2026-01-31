@@ -1,0 +1,66 @@
+.chat-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border: none;
+    border-radius: 50%;
+    background-color: #10b981;
+    color: var(--mat-sys-on-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: pulse 2s infinite;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.chat-icon {
+    font-size: 28px;
+    line-height: 1;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+/* Rotate icon when chat is open - controlled by parent */
+.chat-open .chat-icon {
+    transform: rotate(180deg);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.6);
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .chat-fab {
+        bottom: 16px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .chat-icon {
+        font-size: 24px;
+    }
+}

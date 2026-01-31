@@ -12,6 +12,7 @@ import {
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { PaymentModal } from '../../shared/payment-modal/payment-modal';
 import { PaymentModalData, PaymentInitializationResponse } from '../../../core/interfaces/payment.interface';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 @Component({
   selector: 'app-instructor-subscription',
@@ -24,6 +25,7 @@ export class InstructorSubscription implements OnInit {
   private readonly _subscriptionService = inject(SubscriptionService);
   private readonly _tokenService = inject(TokenService);
   private readonly _router = inject(Router);
+  private readonly _notificationService = inject(NotificationService);
 
   packages = signal<SubscriptionPackageDto[]>([]);
   currentSubscription = signal<InstructorSubscriptionDto | null>(null);
@@ -40,6 +42,9 @@ export class InstructorSubscription implements OnInit {
   showPaymentModal = signal<boolean>(false);
   paymentModalData = signal<PaymentModalData | null>(null);
   pendingSubscriptionId = signal<string | null>(null);
+
+  // Cancellation modal state
+  showCancelModal = signal<boolean>(false);
 
   ngOnInit(): void {
     this.loadPackages();
@@ -146,9 +151,14 @@ export class InstructorSubscription implements OnInit {
     // Create subscription first, then process payment
     this._subscriptionService.subscribe(subscribeData).subscribe({
       next: (subscription: any) => {
+        // NOTE: We do NOT reload the current subscription here.
+        // The user request is to keep the old/active subscription visible
+        // until the payment for the new one is fully confirmed.
+        // Reloading here would potentially show the new 'Pending' subscription.
+
         const subscriptionId = subscription.subscriptionId || subscription.SubscriptionId || subscription.id;
         this.pendingSubscriptionId.set(subscriptionId);
-        
+
         // Show payment modal for Paymob payment
         const finalPrice = this.calculateFinalPrice();
         this.paymentModalData.set({
@@ -158,14 +168,14 @@ export class InstructorSubscription implements OnInit {
           amount: finalPrice,
           currency: 'EGP',
 
-          
+
           subscriptionId: subscriptionId,
           customerEmail: user.email || '',
           customerFirstName: user.firstName || user.fullName?.split(' ')[0] || '',
           customerLastName: user.lastName || user.fullName?.split(' ').slice(1).join(' ') || '',
           customerPhone: user.phone || '',
         });
-        
+
         this.closeSubscribeModal();
         this.showPaymentModal.set(true);
       },
@@ -194,7 +204,7 @@ export class InstructorSubscription implements OnInit {
 
   applyPromoCode(): void {
     const code = this.promoCode().trim();
-    
+
     if (!code) {
       this.promoCodeError.set('Please enter a promo code');
       return;
@@ -231,11 +241,11 @@ export class InstructorSubscription implements OnInit {
     if (!pkg) return 0;
 
     let finalPrice = pkg.price;
-    
+
     if (promo) {
       const discount = (pkg.price * promo.discountPercentage) / 100;
-      const actualDiscount = promo.maxDiscountAmount 
-        ? Math.min(discount, promo.maxDiscountAmount) 
+      const actualDiscount = promo.maxDiscountAmount
+        ? Math.min(discount, promo.maxDiscountAmount)
         : discount;
       finalPrice = Math.max(0, pkg.price - actualDiscount);
     }
@@ -250,46 +260,74 @@ export class InstructorSubscription implements OnInit {
     if (!pkg || !promo) return 0;
 
     const discount = (pkg.price * promo.discountPercentage) / 100;
-    return promo.maxDiscountAmount 
-      ? Math.min(discount, promo.maxDiscountAmount) 
+    return promo.maxDiscountAmount
+      ? Math.min(discount, promo.maxDiscountAmount)
       : discount;
+  }
+
+  openCancelModal(): void {
+    this.showCancelModal.set(true);
+  }
+
+  closeCancelModal(): void {
+    this.showCancelModal.set(false);
   }
 
   cancelSubscription(): void {
     const subscription = this.currentSubscription();
     if (!subscription) return;
 
-    if (!confirm('Are you sure you want to cancel your subscription?')) return;
-
     this._subscriptionService.cancelSubscription(subscription.subscriptionId).subscribe({
       next: () => {
-        alert('Subscription cancelled successfully');
+        this._notificationService.showSuccess('Success', 'Subscription cancelled successfully');
+        this.closeCancelModal();
         this.loadCurrentSubscription();
       },
       error: (err) => {
         console.error('Error cancelling subscription:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to cancel subscription');
         this.error.set(err.message || 'Failed to cancel subscription');
+        this.closeCancelModal();
       },
     });
   }
 
   renewSubscription(): void {
     const subscription = this.currentSubscription();
-    if (!subscription) return;
+    const user = this._tokenService.getUser();
+
+    if (!subscription || !user || !user.userId) return;
 
     this._subscriptionService.renewSubscription(subscription.subscriptionId).subscribe({
-      next: () => {
-        alert('Subscription renewed successfully!');
-        this.loadCurrentSubscription();
+      next: (newSubscription: any) => {
+        this._notificationService.showSuccess('Success', 'Renewal process initiated!');
+
+        const subscriptionId = newSubscription.subscriptionId || newSubscription.SubscriptionId || newSubscription.id;
+        this.pendingSubscriptionId.set(subscriptionId);
+
+        // Find package info if possible, or use current subscription data
+        this.paymentModalData.set({
+          type: 'subscription',
+          itemName: subscription.packageName || 'Subscription Renewal',
+          itemDescription: `Renewal for ${subscription.packageName}`,
+          amount: subscription.finalPrice,
+          currency: 'EGP',
+          subscriptionId: subscriptionId,
+          customerEmail: user.email || '',
+          customerFirstName: user.firstName || user.fullName?.split(' ')[0] || '',
+          customerLastName: user.lastName || user.fullName?.split(' ').slice(1).join(' ') || '',
+          customerPhone: user.phone || '',
+        });
+
+        this.showPaymentModal.set(true);
       },
       error: (err) => {
         console.error('Error renewing subscription:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to renew subscription');
         this.error.set(err.message || 'Failed to renew subscription');
       },
     });
   }
 
-  goBack(): void {
-    this._router.navigate(['/instructor']);
-  }
+
 }

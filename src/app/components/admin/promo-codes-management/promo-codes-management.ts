@@ -8,6 +8,7 @@ import {
   PromoCodeCreateDto,
   PagedResult,
 } from '../../../core/interfaces/subscription.interface';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 @Component({
   selector: 'app-promo-codes-management',
@@ -19,6 +20,7 @@ import {
 export class PromoCodesManagement implements OnInit {
   private readonly _subscriptionService = inject(SubscriptionService);
   private readonly _router = inject(Router);
+  private readonly _notificationService = inject(NotificationService);
 
   promoCodes = signal<PromoCodeDto[]>([]);
   loading = signal<boolean>(true);
@@ -31,6 +33,8 @@ export class PromoCodesManagement implements OnInit {
 
   showCreateModal = signal<boolean>(false);
   showEditModal = signal<boolean>(false);
+  showDeleteModal = signal<boolean>(false);
+  promoCodeToDeleteId = signal<string | null>(null);
   selectedPromoCode = signal<PromoCodeDto | null>(null);
 
   formData: any = {
@@ -54,7 +58,7 @@ export class PromoCodesManagement implements OnInit {
     this._subscriptionService.getAllPromoCodes(page, this.pageSize()).subscribe({
       next: (result: any) => {
         let promoCodesList: PromoCodeDto[] = [];
-        
+
         if (result && result.Data && Array.isArray(result.Data)) {
           promoCodesList = result.Data;
         } else if (result && result.data && Array.isArray(result.data)) {
@@ -62,7 +66,7 @@ export class PromoCodesManagement implements OnInit {
         } else if (Array.isArray(result)) {
           promoCodesList = result;
         }
-        
+
         this.promoCodes.set(promoCodesList);
         this.pageNumber.set(result?.pageNumber || page);
         this.pageSize.set(result?.pageSize || 10);
@@ -148,18 +152,18 @@ export class PromoCodesManagement implements OnInit {
 
   createPromoCode(): void {
     const data = this.formData;
-    
+
     // Validation
     if (!data.code || data.code.trim() === '') {
       this.error.set('Promo code is required');
       return;
     }
-    
+
     if (!data.description || data.description.trim() === '') {
       this.error.set('Description is required');
       return;
     }
-    
+
     if (data.discountPercentage <= 0 || data.discountPercentage > 100) {
       this.error.set('Discount percentage must be between 0 and 100');
       return;
@@ -177,12 +181,13 @@ export class PromoCodesManagement implements OnInit {
 
     this._subscriptionService.createPromoCode(promoCodeData).subscribe({
       next: () => {
-        alert('Promo code created successfully');
+        this._notificationService.showSuccess('Success', 'Promo code created successfully');
         this.closeCreateModal();
         this.loadPromoCodes(this.pageNumber());
       },
       error: (err) => {
         console.error('Error creating promo code:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to create promo code');
         this.error.set(err.message || 'Failed to create promo code');
       },
     });
@@ -216,28 +221,47 @@ export class PromoCodesManagement implements OnInit {
 
     this._subscriptionService.updatePromoCode(code.promoCodeId, promoCodeData).subscribe({
       next: () => {
-        alert('Promo code updated successfully');
+        this._notificationService.showSuccess('Success', 'Promo code updated successfully');
         this.closeEditModal();
         this.loadPromoCodes(this.pageNumber());
       },
       error: (err) => {
         console.error('Error updating promo code:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to update promo code');
         this.error.set(err.message || 'Failed to update promo code');
       },
     });
   }
 
   deletePromoCode(promoCodeId: string): void {
-    if (!confirm('Are you sure you want to delete this promo code?')) return;
+    this.openDeleteModal(promoCodeId);
+  }
 
-    this._subscriptionService.deletePromoCode(promoCodeId).subscribe({
+  openDeleteModal(promoCodeId: string): void {
+    this.promoCodeToDeleteId.set(promoCodeId);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal.set(false);
+    this.promoCodeToDeleteId.set(null);
+  }
+
+  confirmDelete(): void {
+    const id = this.promoCodeToDeleteId();
+    if (!id) return;
+
+    this._subscriptionService.deletePromoCode(id).subscribe({
       next: () => {
-        alert('Promo code deleted successfully');
+        this._notificationService.showSuccess('Success', 'Promo code deleted successfully');
         this.loadPromoCodes(this.pageNumber());
+        this.closeDeleteModal();
       },
       error: (err) => {
         console.error('Error deleting promo code:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to delete promo code');
         this.error.set(err.message || 'Failed to delete promo code');
+        this.closeDeleteModal();
       },
     });
   }

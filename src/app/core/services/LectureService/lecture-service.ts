@@ -25,7 +25,7 @@ export class LessonService {
       .set('pageSize', pageSize.toString());
 
     return this.http.get<any>(
-      `http://mahd3.runasp.net/api/courses/${courseId}/lessons`,
+      `${this.apiUrl}/courses/${courseId}/lessons`,
       { params }
     ).pipe(
       map(response => {
@@ -56,21 +56,21 @@ export class LessonService {
    * Get lesson by ID
    */
   getLessonById(courseId: string, lessonId: string): Observable<LessonDto> {
-    return this.http.get<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}`);
+    return this.http.get<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}`);
   }
 
   /**
    * Get lesson by ID (Instructor specific endpoint)
    */
   getInstructorLessonById(courseId: string, lessonId: string): Observable<LessonDto> {
-    return this.http.get<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}/instructor`);
+    return this.http.get<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}/instructor`);
   }
 
   /**
    * Add lesson to course (Instructor or Admin)
    */
   addLesson(courseId: string, data: LessonCreateDto): Observable<LessonDto> {
-    return this.http.post<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons`, data);
+    return this.http.post<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons`, data);
   }
 
   /**
@@ -90,7 +90,7 @@ export class LessonService {
     // Append the file. Backend likely interprets 'file' or checks generic IFormFile
     formData.append('file', file);
 
-    return this.http.post<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons`, formData);
+    return this.http.post<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons`, formData);
   }
 
   /**
@@ -111,21 +111,21 @@ export class LessonService {
       formData.append('file', file);
     }
 
-    return this.http.put<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}`, formData);
+    return this.http.put<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}`, formData);
   }
 
   /**
    * Update lesson (Instructor or Admin)
    */
   updateLesson(courseId: string, lessonId: string, data: LessonCreateDto): Observable<LessonDto> {
-    return this.http.put<LessonDto>(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}`, data);
+    return this.http.put<LessonDto>(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}`, data);
   }
 
   /**
    * Delete lesson (Instructor or Admin)
    */
   deleteLesson(courseId: string, lessonId: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}`);
+    return this.http.delete(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}`);
   }
 
   /**
@@ -137,7 +137,7 @@ export class LessonService {
     formData.append('ContentFile', file); // Parameter name as per user req
 
     return this.http.post<LessonDto>(
-      `http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}/content`,
+      `${this.apiUrl}/courses/${courseId}/lessons/${lessonId}/content`,
       formData,
       {
         reportProgress: true,
@@ -151,6 +151,6 @@ export class LessonService {
    * Mark lesson as complete for current student (Student or Admin)
    */
   markLessonAsComplete(courseId: string, lessonId: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/courses/${courseId}/lessons/${lessonId}/complete`, {});
+    return this.http.post(`${this.apiUrl}/courses/${courseId}/lessons/${lessonId}/complete`, {});
   }
 }

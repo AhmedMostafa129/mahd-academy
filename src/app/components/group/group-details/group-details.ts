@@ -8,12 +8,13 @@ import { TokenService } from '../../../core/services/TokenService/token-service'
 import { GroupDto } from '../../../core/interfaces/group.interface';
 import { CourseDto } from '../../../core/interfaces/course.interface';
 import { UserDto } from '../../../core/interfaces/i-user';
-import { BackButton } from '../../shared/back-button/back-button';
+import { AdminService } from '../../../core/services/AdminService/admin-service';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 @Component({
   selector: 'app-group-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './group-details.html',
   styleUrl: './group-details.scss',
 })
@@ -196,15 +197,117 @@ export class GroupDetails implements OnInit {
     });
   }
 
+  private readonly _adminService = inject(AdminService);
+  private readonly _notificationService = inject(NotificationService);
+
   addStudent(): void {
     const groupId = this.groupId();
-    const email = this.newStudentEmail().trim();
-    if (!groupId || !email) return;
+    const input = this.newStudentEmail().trim();
+    if (!groupId || !input) return;
 
     this.adding.set(true);
-    const maybeId = email;
-    this._groupService.addStudentToGroup(groupId, maybeId).subscribe({
+
+    const isEmail = input.includes('@');
+
+    if (isEmail) {
+      console.log('🔍 Global lookup by email:', input);
+      this._adminService.getUserByEmail(input).subscribe({
+        next: (user: any) => {
+          if (user) {
+            console.log('✅ User found via email:', user);
+            this.handleResolvedUser(groupId, user);
+          } else {
+            console.warn('⚠️ No user found via email, trying name-based search as fallback...');
+            this.searchAndAddStudent(groupId, input, true);
+          }
+        },
+        error: (err: any) => {
+          console.error('❌ Email search error:', err);
+          this.searchAndAddStudent(groupId, input, true);
+        }
+      });
+    } else {
+      // Direct GUID or name search
+      const isGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input);
+      if (isGuid) {
+        this._adminService.getUserById(input).subscribe({
+          next: (user: any) => this.handleResolvedUser(groupId, user),
+          error: () => this.executeAddStudent(groupId, input) // Direct try if info fetch fails
+        });
+      } else {
+        this.searchAndAddStudent(groupId, input);
+      }
+    }
+  }
+
+  private handleResolvedUser(groupId: string, user: any): void {
+    if (!user) {
+      this.handleUserNotFound();
+      return;
+    }
+
+    const userId = user.userId || user.id;
+    const role = user.role !== undefined ? user.role : user.Role;
+
+    // Role 2 = Student. Also check for string 'Student'
+    const isStudent = (Number(role) === 2 || String(role).toLowerCase() === 'student');
+
+    if (isStudent && userId) {
+      console.log('✅ Valid student resolved:', userId);
+      this.executeAddStudent(groupId, userId);
+    } else if (userId) {
+      console.warn('❌ User found but is not a student. Role:', role);
+      this._notificationService.showError('Not a Student', `The user "${user.fullName || user.email}" is registered as an ${String(role).toLowerCase() || 'other role'}, not a student.`);
+      this.adding.set(false);
+    } else {
+      this.handleUserNotFound();
+    }
+  }
+
+  private searchAndAddStudent(groupId: string, search: string, isFallback: boolean = false): void {
+    // Search globally (role=undefined) to be robust
+    this._adminService.getAllUsers(1, 10, search).subscribe({
+      next: (result: any) => {
+        const items = result.items || result.data || result.Data || (Array.isArray(result) ? result : []);
+        console.log(`🔍 Global search results for "${search}":`, items.length);
+
+        if (items.length === 0) {
+          this.handleUserNotFound();
+          return;
+        }
+
+        // Filter for students on frontend
+        const students = items.filter((u: any) => {
+          const role = u.role !== undefined ? u.role : u.Role;
+          return Number(role) === 2 || String(role).toLowerCase() === 'student';
+        });
+
+        if (students.length === 1) {
+          const student = students[0];
+          console.log('✅ Exactly one student found via search:', student);
+          this.executeAddStudent(groupId, student.userId || student.id);
+        } else if (students.length > 1) {
+          this._notificationService.showWarning('Multiple Matches', `Found ${students.length} students matching "${search}". Please use their exact email.`);
+          this.adding.set(false);
+        } else {
+          // Found users but none are students
+          const firstUser = items[0];
+          const role = firstUser.role !== undefined ? firstUser.role : firstUser.Role;
+          this._notificationService.showError('Student Not Found', `Found "${firstUser.fullName || firstUser.email}" but they are registered as ${String(role).toLowerCase()}.`);
+          this.adding.set(false);
+        }
+      },
+      error: (err: any) => {
+        console.error('❌ Search failed:', err);
+        this.handleUserNotFound();
+      }
+    });
+  }
+
+  private executeAddStudent(groupId: string, userId: string): void {
+    this._groupService.addStudentToGroup(groupId, userId).subscribe({
       next: () => {
+        this._notificationService.showSuccess('Success', 'Student added to group successfully');
         this.loadStudents(groupId);
         this.newStudentEmail.set('');
         this.showAddStudent.set(false);
@@ -213,9 +316,15 @@ export class GroupDetails implements OnInit {
       error: (err) => {
         console.error('Error adding student to group:', err);
         this.error.set(err.message || 'Failed to add student. Ensure the ID/email is correct.');
+        this._notificationService.showError('Error', 'Failed to add student to group');
         this.adding.set(false);
       },
     });
+  }
+
+  private handleUserNotFound(): void {
+    this._notificationService.showError('User Not Found', 'Could not find any student matching this email or name.');
+    this.adding.set(false);
   }
 
   toggleShowAddCourse(): void {

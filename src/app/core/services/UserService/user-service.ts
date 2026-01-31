@@ -12,34 +12,34 @@ export class UserService {
   private apiUrl = environment.apiUrl;
 
   getUserById(id: string): Observable<UserProfileResponse> {
-    return this.http.get<UserProfileResponse>(`http://mahd3.runasp.net/api/users/${id}`);
+    return this.http.get<UserProfileResponse>(`${this.apiUrl}/users/${id}`);
   }
 
   updateUser(id: string, data: UserUpdateDto): Observable<UserDto> {
-    return this.http.put<UserDto>(`http://mahd3.runasp.net/api/users/${id}`, data);
+    return this.http.put<UserDto>(`${this.apiUrl}/users/${id}`, data);
   }
 
   // Phone number management methods
   addPhoneNumber(id: string, phoneNumber: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/users/${id}/phones`, { phoneNumber });
+    return this.http.post(`${this.apiUrl}/users/${id}/phones`, { phoneNumber });
   }
 
   updatePhoneNumber(id: string, phoneNumber: string): Observable<any> {
-    return this.http.put(`http://mahd3.runasp.net/api/users/${id}/phones`, { phoneNumber });
+    return this.http.put(`${this.apiUrl}/users/${id}/phones`, { phoneNumber });
   }
 
   removePhoneNumber(id: string, phoneNumber: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/users/${id}/phones/${phoneNumber}`);
+    return this.http.delete(`${this.apiUrl}/users/${id}/phones/${phoneNumber}`);
   }
 
   setPrimaryPhoneNumber(id: string, phoneNumber: string): Observable<any> {
-    return this.http.put(`http://mahd3.runasp.net/api/users/${id}/phones/${phoneNumber}/set-primary`, {});
+    return this.http.put(`${this.apiUrl}/users/${id}/phones/${phoneNumber}/set-primary`, {});
   }
 
   // Upload user photo
   uploadUserPhoto(id: string, photoFile: File): Observable<any> {
     const formData = new FormData();
     formData.append('photo', photoFile);
-    return this.http.post(`http://mahd3.runasp.net/api/users/${id}/photo`, formData);
+    return this.http.post(`${this.apiUrl}/users/${id}/photo`, formData);
   }
 }

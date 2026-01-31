@@ -7,16 +7,13 @@
 
   <!-- Header with back button and centered title -->
   <div class="header-container">
-    <!-- Back Button -->
-    <div class="back-button-container">
-      <app-back-button></app-back-button>
-    </div>
-    
+
+
     <!-- Centered Title -->
     <div class="header">
       <h1>Earnings</h1>
     </div>
-    
+
     <!-- Spacer to balance the layout -->
     <div class="spacer"></div>
   </div>
@@ -33,18 +30,36 @@
 
     <!-- Courses List -->
     <div class="courses-section">
-      <h2>Courses Earnings</h2>
-      <div *ngIf="courses().length === 0" class="empty-state">
-        <p>No courses yet</p>
+      <div class="section-header">
+        <h2>Courses Earnings</h2>
+        <span class="course-count">{{ courses().length }} Courses Total</span>
       </div>
-      <div *ngIf="courses().length > 0" class="courses-list">
-        <div *ngFor="let course of courses()" class="course-item" (click)="loadPaymentsForCourse(course.courseId)">
-          <div class="course-info">
-            <h3>{{ course.title }}</h3>
-            <p>{{ course.enrollmentCount || 0 }} enrollments</p>
-          </div>
-          <div class="course-revenue">
-            {{ formatCurrency(course.price * (course.enrollmentCount || 0)) }}
+
+      <div *ngIf="courses().length === 0" class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>No courses found in your account.</p>
+      </div>
+
+      <div *ngIf="courses().length > 0" class="courses-table">
+        <div class="table-header">
+          <span class="col-title">Course Title</span>
+          <span class="col-students">Students</span>
+          <span class="col-revenue">Total Income</span>
+        </div>
+
+        <div class="table-body">
+          <div *ngFor="let course of courses()" class="table-row" (click)="loadPaymentsForCourse(course.courseId)">
+            <div class="col-title">
+              <h3>{{ course.title }}</h3>
+              <span class="price-badge">Price: {{ formatCurrency(course.price) }}</span>
+            </div>
+            <div class="col-students">
+              <span class="count">{{ course.actualEnrollments }}</span>
+              <span class="label">enrolls</span>
+            </div>
+            <div class="col-revenue">
+              {{ formatCurrency(course.actualRevenue) }}
+            </div>
           </div>
         </div>
       </div>

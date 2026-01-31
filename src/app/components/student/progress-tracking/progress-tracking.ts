@@ -92,7 +92,4 @@ export class ProgressTracking implements OnInit {
     });
   }
 
-  goToDashboard(): void {
-    this._router.navigate(['/student/dashboard']);
-  }
 }

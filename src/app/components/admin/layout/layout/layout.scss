@@ -75,9 +75,9 @@ $active-color: $primary;
         width: 100%;
       }
 
-      // Hide toggle button in collapsed mode (optional, based on preference)
+      // Hide toggle button in hover-to-expand mode
       .toggle-btn {
-        display: none;
+        display: none !important;
       }
     }
 
@@ -115,7 +115,7 @@ $active-color: $primary;
         }
 
         .toggle-btn {
-          display: block; // Show toggle if needed
+          display: none !important;
         }
       }
     }
@@ -159,8 +159,7 @@ $active-color: $primary;
   }
 
   .toggle-btn {
-    color: $text-muted;
-    cursor: pointer;
+    display: none !important;
     background: transparent;
     border: none;
     transition: color 0.2s;

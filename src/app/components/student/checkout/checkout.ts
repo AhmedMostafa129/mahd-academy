@@ -9,6 +9,8 @@ import { TokenService } from '../../../core/services/TokenService/token-service'
 import { CourseDto } from '../../../core/interfaces/course.interface';
 import { PaymentCreateDto } from '../../../core/interfaces/payment.interface';
 
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -23,12 +25,28 @@ export class Checkout implements OnInit {
   private readonly _courseService = inject(CourseService);
   private readonly _enrollmentService = inject(EnrollmentService);
   private readonly _tokenService = inject(TokenService);
+  private readonly _notificationService = inject(NotificationService);
 
   course = signal<CourseDto | null>(null);
   loading = signal<boolean>(true);
   processing = signal<boolean>(false);
   error = signal<string | null>(null);
   success = signal<boolean>(false);
+
+  // Success Modal State
+  showIdModal = signal<boolean>(false);
+  studentId: string = '';
+
+  closeIdModal(): void {
+    this.showIdModal.set(false);
+    this._router.navigate(['/student/dashboard']);
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.studentId).then(() => {
+      this._notificationService.showSuccess('Copied', 'ID copied to clipboard');
+    });
+  }
 
   // Payment form data
   cardNumber = '';
@@ -48,7 +66,36 @@ export class Checkout implements OnInit {
       return;
     }
 
-    this.loadCourseDetails(this.courseId);
+    // Check if user is logged in
+    const user = this._tokenService.getUser();
+    if (user && user.userId) {
+      this.checkIfAlreadyEnrolled(user.userId, this.courseId);
+    } else {
+      this.loadCourseDetails(this.courseId);
+    }
+  }
+
+  checkIfAlreadyEnrolled(userId: string, courseId: string): void {
+    this.loading.set(true);
+    // Fetch user enrollments to check if already enrolled
+    // Using a large pageSize to cover most cases, ideally backend should have a specific endpoint check
+    this._enrollmentService.getEnrollmentsByStudent(userId, 1, 100).subscribe({
+      next: (result) => {
+        const isEnrolled = result.items.some(e => e.courseId === courseId);
+
+        if (isEnrolled) {
+          this._notificationService.showInfo('Already Enrolled', 'You are already enrolled in this course.');
+          this._router.navigate(['/student/my-courses']);
+        } else {
+          this.loadCourseDetails(courseId);
+        }
+      },
+      error: (err) => {
+        console.error('Error checking enrollment:', err);
+        // If check fails, proceed to load course but log error
+        this.loadCourseDetails(courseId);
+      }
+    });
   }
 
   loadCourseDetails(courseId: string): void {
@@ -111,11 +158,11 @@ export class Checkout implements OnInit {
             next: () => {
               this.success.set(true);
               this.processing.set(false);
+              this._notificationService.showSuccess('Success', 'Enrollment successful!');
 
-              // Redirect to success page or dashboard after 2 seconds
-              setTimeout(() => {
-                this._router.navigate(['/student/payments']);
-              }, 2000);
+              // Set student ID and show modal
+              this.studentId = user.userId;
+              this.showIdModal.set(true);
             },
             error: (err) => {
               console.error('❌ Enrollment error:', err);

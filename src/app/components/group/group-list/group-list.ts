@@ -5,12 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { GroupService } from '../../../core/services/GroupService/group-service';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { GroupDto, PagedResult } from '../../../core/interfaces/group.interface';
-import { BackButton } from '../../shared/back-button/back-button';
 
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './group-list.html',
   styleUrl: './group-list.scss',
 })

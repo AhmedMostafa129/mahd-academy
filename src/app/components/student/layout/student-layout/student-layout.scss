@@ -1,0 +1,278 @@
+/* Student Layout Styles - Matching Admin Design */
+$primary: #10b981; // Student green
+$sidebar-bg: #ffffff;
+$sidebar-width: 260px;
+$sidebar-collapsed-width: 70px;
+$text-color: #333;
+$text-light: #718096;
+$hover-bg: #f8f9fa;
+$active-bg: rgba($primary, 0.1);
+$active-color: $primary;
+
+:host {
+    display: block;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.student-layout {
+    height: 100vh;
+    background-color: #f3f4f6;
+    display: flex;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: $sidebar-width;
+    background: $sidebar-bg;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+    z-index: 1000;
+    overflow: hidden;
+
+    // Collapsed State Logic
+    &.collapsed {
+        width: $sidebar-collapsed-width;
+
+        // Hide text elements in collapsed state
+        .logo-text,
+        .link-text {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+            transition: opacity 0.2s, visibility 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link {
+            justify-content: center;
+            padding: 12px 0;
+
+            i {
+                margin-right: 0;
+                font-size: 1.4rem;
+            }
+        }
+
+        .sidebar-header {
+            padding: 20px 0;
+            justify-content: center;
+
+            .logo-area {
+                justify-content: center;
+                width: 100%;
+            }
+
+            // Hide toggle button in hover-to-expand mode
+            .toggle-btn {
+                display: none !important;
+            }
+        }
+
+        // Hover State Logic (Expand on Hover)
+        &:hover {
+            width: $sidebar-width;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+
+            .logo-text,
+            .link-text {
+                opacity: 1;
+                visibility: visible;
+                width: auto;
+                transition: opacity 0.3s 0.1s;
+            }
+
+            .nav-link {
+                justify-content: flex-start;
+                padding: 10px 16px;
+
+                i {
+                    margin-right: 14px;
+                    font-size: 1.25rem;
+                }
+            }
+
+            .sidebar-header {
+                padding: 24px 24px 20px;
+                justify-content: space-between;
+
+                .logo-area {
+                    justify-content: flex-start;
+                    width: auto;
+                }
+
+                .toggle-btn {
+                    display: none !important;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+
+        &.collapsed {
+            transform: translateX(0);
+            width: $sidebar-collapsed-width;
+        }
+    }
+}
+
+.sidebar-header {
+    padding: 24px 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    white-space: nowrap;
+
+    .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: $primary;
+        font-weight: 700;
+        font-size: 1.4rem;
+
+        .logo-icon {
+            font-size: 1.8rem;
+            min-width: 30px;
+            text-align: center;
+        }
+    }
+
+    .toggle-btn {
+        display: none !important;
+        background: transparent;
+        border: none;
+        transition: color 0.2s;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 16px;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+    }
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin-bottom: 4px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    color: #555;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+
+    i {
+        font-size: 1.25rem;
+        margin-right: 14px;
+        color: #999;
+        transition: color 0.2s, margin-right 0.2s;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    &:hover {
+        background-color: $hover-bg;
+        color: $primary;
+        transform: translateX(3px);
+
+        i {
+            color: $primary;
+        }
+    }
+
+    &.active {
+        background-color: $active-bg;
+        color: $active-color;
+        font-weight: 600;
+
+        i {
+            color: $active-color;
+        }
+    }
+}
+
+.footer-link {
+    margin-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 10px;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    width: calc(100vw - #{$sidebar-collapsed-width});
+    max-width: calc(100vw - #{$sidebar-collapsed-width});
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    margin-left: $sidebar-collapsed-width;
+    transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: #f7fafc;
+}
+
+/* Sidebar NOT collapsed (manually expanded) */
+.sidebar:not(.collapsed)~.main-content {
+    margin-left: $sidebar-width;
+    width: calc(100vw - #{$sidebar-width});
+    max-width: calc(100vw - #{$sidebar-width});
+}
+
+/* Sidebar Hover Effect: Shift main content */
+.sidebar.collapsed:hover~.main-content {
+    margin-left: $sidebar-width;
+    width: calc(100vw - #{$sidebar-width});
+    max-width: calc(100vw - #{$sidebar-width});
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100vw;
+        max-width: 100vw;
+    }
+}

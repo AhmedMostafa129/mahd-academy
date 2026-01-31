@@ -2,12 +2,8 @@
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
   <div class="bg-orb orb-3"></div>
-  
-  <!-- Back Button -->
-  <div class="back-button-container">
-    <app-back-button></app-back-button>
-  </div>
-  
+
+
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-content">
@@ -43,18 +39,13 @@
   <div *ngIf="!loading() && !error() && enrollments().length > 0" class="courses-container">
     <!-- Grid Layout -->
     <div class="courses-grid">
-      <div *ngFor="let enrollment of enrollments(); trackBy: trackByEnrollmentId" 
-           class="course-card" 
-           [attr.data-enrollment-id]="enrollment.enrollmentId">
-        
+      <div *ngFor="let enrollment of enrollments(); trackBy: trackByEnrollmentId" class="course-card"
+        [attr.data-enrollment-id]="enrollment.enrollmentId">
+
         <!-- Course Thumbnail -->
         <div class="course-thumbnail-wrapper">
-          <img 
-            *ngIf="getCourseThumbnail(enrollment)" 
-            [src]="getCourseThumbnail(enrollment)" 
-            [alt]="getCourseTitleDisplay(enrollment)"
-            class="course-thumbnail"
-            (error)="onImageError($event)">
+          <img *ngIf="getCourseThumbnail(enrollment)" [src]="getCourseThumbnail(enrollment)"
+            [alt]="getCourseTitleDisplay(enrollment)" class="course-thumbnail" (error)="onImageError($event)">
           <div *ngIf="!getCourseThumbnail(enrollment)" class="course-thumbnail-placeholder">
             🎓
           </div>
@@ -88,9 +79,8 @@
             </div>
             <div class="progress-bar-wrapper">
               <div class="progress-bar">
-                <div class="progress-fill" 
-                     [style.width.%]="getProgressDisplay(enrollment)"
-                     [ngClass]="'progress-' + (enrollment.isCompleted ? 'completed' : 'active')">
+                <div class="progress-fill" [style.width.%]="getProgressDisplay(enrollment)"
+                  [ngClass]="'progress-' + (enrollment.isCompleted ? 'completed' : 'active')">
                 </div>
               </div>
             </div>
@@ -104,30 +94,20 @@
 
           <!-- Action Buttons -->
           <div class="card-actions">
-            <button 
-              type="button" 
-              class="btn btn-primary" 
-              (click)="navigateToCourse(enrollment.courseId)"
+            <button type="button" class="btn btn-primary" (click)="navigateToCourse(enrollment.courseId)"
               [disabled]="loading() || !enrollment.courseId">
               <span class="btn-icon">▶️</span>
               {{ !enrollment.courseId ? 'Course Unavailable' : 'Continue Course' }}
             </button>
 
-            <button 
-              type="button" 
-              class="btn btn-secondary" 
-              (click)="navigateToProgress(enrollment.enrollmentId)"
+            <button type="button" class="btn btn-secondary" (click)="navigateToProgress(enrollment.enrollmentId)"
               [disabled]="loading()">
               <span class="btn-icon">📊</span>
               View Progress
             </button>
 
-            <button 
-              *ngIf="enrollment.isCompleted" 
-              type="button" 
-              class="btn btn-success" 
-              (click)="navigateToCertificate(enrollment.enrollmentId)"
-              [disabled]="loading()">
+            <button *ngIf="enrollment.isCompleted" type="button" class="btn btn-success"
+              (click)="navigateToCertificate(enrollment.enrollmentId)" [disabled]="loading()">
               <span class="btn-icon">🎓</span>
               Certificate
             </button>
@@ -139,10 +119,7 @@
     <!-- Pagination -->
     <div *ngIf="totalPages() > 1" class="pagination-section">
       <nav class="pagination">
-        <button 
-          type="button" 
-          class="page-btn prev-btn" 
-          [disabled]="pageNumber() === 1 || loading()" 
+        <button type="button" class="page-btn prev-btn" [disabled]="pageNumber() === 1 || loading()"
           (click)="goToPage(pageNumber() - 1)">
           <span class="btn-icon">⬅️</span>
           Previous
@@ -153,10 +130,7 @@
           <span class="page-stats">({{ enrollments().length }} courses)</span>
         </span>
 
-        <button 
-          type="button" 
-          class="page-btn next-btn" 
-          [disabled]="pageNumber() === totalPages() || loading()" 
+        <button type="button" class="page-btn next-btn" [disabled]="pageNumber() === totalPages() || loading()"
           (click)="goToPage(pageNumber() + 1)">
           Next
           <span class="btn-icon">➡️</span>

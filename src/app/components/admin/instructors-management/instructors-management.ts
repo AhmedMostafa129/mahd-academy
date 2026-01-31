@@ -145,7 +145,7 @@ export class InstructorsManagement implements OnInit {
 
         // Otherwise, prepend the API base URL
         const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-        return `http://mahdlms.runasp.net/${cleanPath}`;
+        return `http://mahdacad.runasp.net/${cleanPath}`;
     }
 
     onEdit(id: string) {

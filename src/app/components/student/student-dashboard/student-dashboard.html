@@ -1,342 +1,252 @@
-<div class="student-dashboard">
-  <aside class="sidebar" [class.collapsed]="isCollapsed()">
-    <div class="sidebar-header">
-      <div class="brand">
-        <div class="brand-icon">MH</div>
-        <div *ngIf="!isCollapsed()">
-          <h1>MAHD</h1>
-          <p>Student Panel</p>
+<!-- Loading State -->
+<div *ngIf="loading()" class="loading-state">
+  <div class="spinner"></div>
+  <p>Loading your dashboard…</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error() && !loading()" class="error-state">
+  <p>{{ error() }}</p>
+  <button (click)="loadDashboardData()">Retry</button>
+</div>
+
+<!-- Dashboard Content -->
+<div *ngIf="!loading() && !error() && dashboardData()">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Hero Welcome Section -->
+  <section class="hero-welcome">
+    <div class="hero-content">
+      <div class="welcome-badge">
+        <span class="badge-icon">✨</span>
+        <span>Welcome Back to Learning</span>
+      </div>
+
+      <h1 class="hero-title">
+        Your Success Journey <br />
+        <span class="gradient-text">Starts Here</span>
+      </h1>
+
+      <p class="hero-description">
+        Hello <strong>{{ dashboardData()!.studentName }}</strong>! 👋<br />
+        Continue your learning path and achieve your goals with our comprehensive courses.
+      </p>
+
+      <!-- Stats Summary -->
+      <div class="stats-summary">
+        <div class="stat-card anim-delay-1">
+          <div class="stat-icon">📚</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalEnrollments }}</div>
+            <div class="stat-label">Total Enrollments</div>
+          </div>
+        </div>
+
+        <div class="stat-card anim-delay-2">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.completedCourses }}</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+
+        <div class="stat-card anim-delay-3">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.inProgressCourses }}</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+        </div>
+
+        <div class="stat-card anim-delay-4">
+          <div class="stat-icon">📈</div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.averageProgress | number : '1.0-0' }}%</div>
+            <div class="stat-label">Avg Progress</div>
+          </div>
         </div>
       </div>
-      <button class="toggle-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
-        <i class="bi" [class.bi-chevron-left]="!isCollapsed()" [class.bi-chevron-right]="isCollapsed()"></i>
+
+      <div class="hero-actions">
+        <button class="btn-hero-primary" (click)="navigateToBrowseCourses()">
+          <span>Explore Courses</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <button class="btn-hero-secondary" (click)="navigateToMyCourses()">
+          <span class="play-icon">▶</span>
+          <span>Continue Learning</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-illustration">
+      <!-- Animated Background Elements -->
+      <div class="floating-element element-1">💡</div>
+      <div class="floating-element element-2">🎓</div>
+      <div class="floating-element element-3">⭐</div>
+      <div class="floating-element element-4">📖</div>
+
+      <!-- Main Illustration -->
+      <div class="illustration-container">
+        <div class="illustration-bg-circle circle-1"></div>
+        <div class="illustration-bg-circle circle-2"></div>
+        <div class="illustration-bg-circle circle-3"></div>
+
+        <!-- Student Learning Illustration -->
+        <div class="student-illustration">
+          <div class="desk">
+            <div class="laptop">
+              <div class="laptop-screen">
+                <div class="screen-content">
+                  <div class="brand-name">
+                    <span class="char" style="--char-index: 0">M</span>
+                    <span class="char" style="--char-index: 1">A</span>
+                    <span class="char" style="--char-index: 2">H</span>
+                    <span class="char" style="--char-index: 3">D</span>
+                  </div>
+                </div>
+              </div>
+              <div class="laptop-base"></div>
+            </div>
+            <div class="book book-1">
+              <div class="book-spine"></div>
+            </div>
+            <div class="book book-2">
+              <div class="book-spine"></div>
+            </div>
+            <div class="coffee-cup">
+              <div class="steam steam-1"></div>
+              <div class="steam steam-2"></div>
+              <div class="steam steam-3"></div>
+            </div>
+            <div class="plant">
+              <div class="pot"></div>
+              <div class="leaf leaf-1"></div>
+              <div class="leaf leaf-2"></div>
+              <div class="leaf leaf-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievement Badges -->
+        <div class="achievement-badge badge-1">
+          <span class="badge-emoji">🏆</span>
+          <span class="badge-text">Top Learner</span>
+        </div>
+        <div class="achievement-badge badge-2">
+          <span class="badge-emoji">🔥</span>
+          <span class="badge-text">On Fire!</span>
+        </div>
+        <div class="achievement-badge badge-3">
+          <span class="badge-emoji">💯</span>
+          <span class="badge-text">100% Engaged</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instructors Section -->
+  <section class="content-section" *ngIf="displayInstructors().length > 0">
+    <div class="section-header">
+      <h2>Top Instructors</h2>
+      <button class="btn-secondary" (click)="navigateToExploreInstructors()">
+        Explore Instructors
       </button>
     </div>
 
-    <nav class="nav">
-      <a class="nav-item active">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Dashboard</span>
-      </a>
-      <a class="nav-item" (click)="navigateToBrowseCourses()">
-        <span class="nav-icon">🔍</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Browse Courses</span>
-      </a>
-      <a class="nav-item" (click)="navigateToMyCourses()">
-        <span class="nav-icon">📚</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">My Courses</span>
-      </a>
-      <a class="nav-item" (click)="navigateToMyGroups()">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">My Groups</span>
-      </a>
-      <a class="nav-item" (click)="navigateToCertificates()">
-        <span class="nav-icon">🏆</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Certificates</span>
-      </a>
-      <a class="nav-item" (click)="navigateToProgress()">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Progress</span>
-      </a>
-      <a class="nav-item" (click)="navigateToPayments()">
-        <span class="nav-icon">💳</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Payments</span>
-      </a>
-      <a class="nav-item" (click)="navigateToSupport()">
-        <span class="nav-icon">🎫</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Support</span>
-      </a>
-      <a class="nav-item" (click)="navigateToProfile()">
-        <span class="nav-icon">👤</span>
-        <span class="nav-label" *ngIf="!isCollapsed()">Profile</span>
-      </a>
-    </nav>
-
-    <button class="sign-out" type="button" (click)="handleSignOut()">
-      <span class="nav-icon">🚪</span>
-      <span *ngIf="!isCollapsed()">Sign Out</span>
-    </button>
-  </aside>
-
-  <main class="dashboard">
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
-    <!-- Loading State -->
-    <div *ngIf="loading()" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading your dashboard…</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error() && !loading()" class="error-state">
-      <p>{{ error() }}</p>
-      <button (click)="loadDashboardData()">Retry</button>
-    </div>
-
-    <!-- Dashboard Content -->
-    <div *ngIf="!loading() && !error() && dashboardData()">
-      <!-- Hero Welcome Section -->
-      <section class="hero-welcome">
-        <div class="hero-content">
-          <div class="welcome-badge">
-            <span class="badge-icon">✨</span>
-            <span>Welcome Back to Learning</span>
+    <div class="instructors-grid">
+      <div *ngFor="let instr of displayInstructors(); trackBy: trackByInstructorId" class="instructor-card">
+        <div class="card-top"></div>
+        <div class="avatar-wrap">
+          <img *ngIf="instr.avatarUrl" [src]="buildImageUrl(instr.avatarUrl)" alt="Instructor avatar"
+            class="avatar-img" />
+          <span *ngIf="!instr.avatarUrl" class="avatar-emoji">👨‍🏫</span>
+        </div>
+        <div class="card-body">
+          <p class="name">{{ instr.name }}</p>
+          <p class="role">{{ instr.title || instr.role }}</p>
+          <div class="rating-row" *ngIf="instr.rating || instr.totalStudents">
+            <span class="stars" *ngIf="instr.rating">
+              {{ getStarRating(instr.rating) }}
+            </span>
+            <span class="course-count" *ngIf="instr.totalStudents">
+              📚 {{ instr.totalStudents }} Courses
+            </span>
           </div>
+          <div class="card-actions">
+            <button class="btn-primary" (click)="navigateToInstructor(instr.id); $event.stopPropagation()">
+              View Courses
+            </button>
+            <button class="btn btn-secondary" (click)="navigateToInstructorProfile(instr.id); $event.stopPropagation()">
+              Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-          <h1 class="hero-title">
-            Your Success Journey <br />
-            <span class="gradient-text">Starts Here</span>
-          </h1>
-
-          <p class="hero-description">
-            Hello <strong>{{ dashboardData()!.studentName }}</strong
-            >! 👋<br />
-            Continue your learning path and achieve your goals with our comprehensive courses.
+  <!-- Recent Enrollments -->
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Recent Enrollments</h2>
+      <button class="btn-secondary" (click)="navigateToMyCourses()">View All</button>
+    </div>
+    <div *ngIf="recentEnrollments.length === 0" class="empty-state">
+      <div class="empty-icon">📚</div>
+      <h3>No enrollments yet</h3>
+      <p>Start learning by enrolling in a course!</p>
+    </div>
+    <div *ngIf="recentEnrollments.length > 0" class="enrollments-list">
+      <div *ngFor="let enrollment of recentEnrollments" class="enrollment-card"
+        (click)="navigateToCourse(enrollment.courseId)">
+        <div class="enrollment-info">
+          <h3>{{ enrollment.courseTitle }}</h3>
+          <p class="instructor">By {{ enrollment.instructorName }}</p>
+          <p class="enrollment-date">
+            Enrolled: {{ enrollment.enrollmentDate | date : 'short' }}
           </p>
-
-          <!-- Stats Summary -->
-          <div class="stats-summary">
-            <div class="stat-card anim-delay-1">
-              <div class="stat-icon">📚</div>
-              <div class="stat-content">
-                <div class="stat-value">{{ stats.totalEnrollments }}</div>
-                <div class="stat-label">Total Enrollments</div>
-              </div>
-            </div>
-
-            <div class="stat-card anim-delay-2">
-              <div class="stat-icon">✅</div>
-              <div class="stat-content">
-                <div class="stat-value">{{ stats.completedCourses }}</div>
-                <div class="stat-label">Completed</div>
-              </div>
-            </div>
-
-            <div class="stat-card anim-delay-3">
-              <div class="stat-icon">⚡</div>
-              <div class="stat-content">
-                <div class="stat-value">{{ stats.inProgressCourses }}</div>
-                <div class="stat-label">In Progress</div>
-              </div>
-            </div>
-
-            <div class="stat-card anim-delay-4">
-              <div class="stat-icon">📈</div>
-              <div class="stat-content">
-                <div class="stat-value">{{ stats.averageProgress | number : '1.0-0' }}%</div>
-                <div class="stat-label">Avg Progress</div>
-              </div>
-            </div>
+        </div>
+        <div class="enrollment-progress"
+          (click)="navigateToProgressWithEnrollment(enrollment.enrollmentId); $event.stopPropagation()">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="enrollment.progressPercentage"></div>
           </div>
-
-          <div class="hero-actions">
-            <button class="btn-hero-primary" (click)="navigateToBrowseCourses()">
-              <span>Explore Courses</span>
-              <span class="btn-arrow">→</span>
-            </button>
-            <button class="btn-hero-secondary" (click)="navigateToMyCourses()">
-              <span class="play-icon">▶</span>
-              <span>Continue Learning</span>
-            </button>
-          </div>
+          <p class="progress-text">{{ enrollment.progressPercentage }}% Complete</p>
         </div>
-
-        <div class="hero-illustration">
-          <!-- Animated Background Elements -->
-          <div class="floating-element element-1">💡</div>
-          <div class="floating-element element-2">🎓</div>
-          <div class="floating-element element-3">⭐</div>
-          <div class="floating-element element-4">📖</div>
-
-          <!-- Main Illustration -->
-          <div class="illustration-container">
-            <div class="illustration-bg-circle circle-1"></div>
-            <div class="illustration-bg-circle circle-2"></div>
-            <div class="illustration-bg-circle circle-3"></div>
-
-            <!-- Student Learning Illustration -->
-            <div class="student-illustration">
-              <div class="desk">
-                <div class="laptop">
-                  <div class="laptop-screen">
-                    <div class="screen-content">
-                      <div class="brand-name">
-                        <span class="char" style="--char-index: 0">M</span>
-                        <span class="char" style="--char-index: 1">A</span>
-                        <span class="char" style="--char-index: 2">H</span>
-                        <span class="char" style="--char-index: 3">D</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="laptop-base"></div>
-                </div>
-                <div class="book book-1">
-                  <div class="book-spine"></div>
-                </div>
-                <div class="book book-2">
-                  <div class="book-spine"></div>
-                </div>
-                <div class="coffee-cup">
-                  <div class="steam steam-1"></div>
-                  <div class="steam steam-2"></div>
-                  <div class="steam steam-3"></div>
-                </div>
-                <div class="plant">
-                  <div class="pot"></div>
-                  <div class="leaf leaf-1"></div>
-                  <div class="leaf leaf-2"></div>
-                  <div class="leaf leaf-3"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Achievement Badges -->
-            <div class="achievement-badge badge-1">
-              <span class="badge-emoji">🏆</span>
-              <span class="badge-text">Top Learner</span>
-            </div>
-            <div class="achievement-badge badge-2">
-              <span class="badge-emoji">🔥</span>
-              <span class="badge-text">On Fire!</span>
-            </div>
-            <div class="achievement-badge badge-3">
-              <span class="badge-emoji">💯</span>
-              <span class="badge-text">100% Engaged</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Instructors & Reviews -->
-      <section class="content-section" *ngIf="displayInstructors().length > 0">
-        <div class="section-header">
-          <h2>Top Instructors</h2>
-          <button class="btn-secondary" (click)="navigateToExploreInstructors()">
-            Explore Instructors
-          </button>
-        </div>
-
-        <div class="instructors-grid">
-          <div
-            *ngFor="let instr of displayInstructors(); trackBy: trackByInstructorId"
-            class="instructor-card"
-          >
-            <div class="card-top"></div>
-
-            <div class="avatar-wrap">
-              <span class="avatar-emoji">👨‍🏫</span>
-            </div>
-
-            <div class="card-body">
-              <p class="name">{{ instr.name }}</p>
-              <p class="role">{{ instr.title || instr.role }}</p>
-
-              <!-- Rating & Student Count -->
-              <div class="rating-row" *ngIf="instr.rating || instr.totalStudents">
-                <span class="stars" *ngIf="instr.rating" [title]="instr.rating + ' out of 5'">
-                  {{ getStarRating(instr.rating) }}
-                </span>
-                <span class="course-count" *ngIf="instr.totalStudents">
-                  📚 {{ instr.totalStudents }} Courses
-                </span>
-              </div>
-
-              <p class="review-snippet" *ngIf="instr.latestReview">
-                "{{ instr.latestReview.text | slice : 0 : 85 }}..."
-              </p>
-
-              <div class="card-actions">
-                <button
-                  class="btn-primary"
-                  (click)="navigateToInstructor(instr.id); $event.stopPropagation()"
-                >
-                  View Courses
-                </button>
-                <button 
-                  class="btn btn-secondary" 
-                  (click)="navigateToInstructorProfile(instr.id); $event.stopPropagation()"
-                >
-                  Instructor Profile
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Recent Enrollments -->
-      <section class="content-section">
-        <div class="section-header">
-          <h2>Recent Enrollments</h2>
-          <button class="btn-secondary" (click)="navigateToMyCourses()">View All</button>
-        </div>
-        <div *ngIf="recentEnrollments.length === 0" class="empty-state">
-          <div class="empty-icon">📚</div>
-          <h3>No enrollments yet</h3>
-          <p>Start learning by enrolling in a course!</p>
-        </div>
-        <div *ngIf="recentEnrollments.length > 0" class="enrollments-list">
-          <div
-            *ngFor="let enrollment of recentEnrollments"
-            class="enrollment-card"
-            (click)="navigateToCourse(enrollment.courseId)"
-          >
-            <div class="enrollment-info">
-              <h3>{{ enrollment.courseTitle }}</h3>
-              <p class="instructor">By {{ enrollment.instructorName }}</p>
-              <p class="enrollment-date">
-                Enrolled: {{ enrollment.enrollmentDate | date : 'short' }}
-              </p>
-            </div>
-            <div
-              class="enrollment-progress"
-              (click)="
-                navigateToProgressWithEnrollment(enrollment.enrollmentId); $event.stopPropagation()
-              "
-            >
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="enrollment.progressPercentage"></div>
-              </div>
-              <p class="progress-text">{{ enrollment.progressPercentage }}% Complete</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Upcoming Exams -->
-      <section class="content-section">
-        <div class="section-header">
-          <h2>Upcoming Exams</h2>
-        </div>
-        <div *ngIf="upcomingExams.length === 0" class="empty-state">
-          <div class="empty-icon">📝</div>
-          <h3>No upcoming exams</h3>
-          <p>You're all caught up!</p>
-        </div>
-        <div *ngIf="upcomingExams.length > 0" class="exams-list">
-          <div
-            *ngFor="let exam of upcomingExams"
-            class="exam-card"
-            (click)="navigateToExam(exam.examId)"
-          >
-            <div class="exam-info">
-              <h3>{{ exam.examTitle }}</h3>
-              <p class="course-name">{{ exam.courseTitle }}</p>
-              <div class="exam-details">
-                <span *ngIf="exam.startDate">
-                  <strong>Start:</strong> {{ exam.startDate | date : 'short' }}
-                </span>
-                <span *ngIf="exam.endDate">
-                  <strong>End:</strong> {{ exam.endDate | date : 'short' }}
-                </span>
-                <span> <strong>Duration:</strong> {{ exam.durationMinutes }} minutes </span>
-              </div>
-            </div>
-            <button class="btn-primary">Take Exam</button>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
-  </main>
+  </section>
+
+  <!-- Upcoming Exams -->
+  <section class="content-section">
+    <div class="section-header">
+      <h2>Upcoming Exams</h2>
+    </div>
+    <div *ngIf="upcomingExams.length === 0" class="empty-state">
+      <div class="empty-icon">📝</div>
+      <h3>No upcoming exams</h3>
+      <p>You're all caught up!</p>
+    </div>
+    <div *ngIf="upcomingExams.length > 0" class="exams-list">
+      <div *ngFor="let exam of upcomingExams" class="exam-card" (click)="navigateToExam(exam.examId)">
+        <div class="exam-info">
+          <h3>{{ exam.examTitle }}</h3>
+          <p class="course-name">{{ exam.courseTitle }}</p>
+          <div class="exam-details">
+            <span *ngIf="exam.startDate">
+              <strong>Start:</strong> {{ exam.startDate | date : 'short' }}
+            </span>
+            <span *ngIf="exam.endDate">
+              <strong>End:</strong> {{ exam.endDate | date : 'short' }}
+            </span>
+            <span> <strong>Duration:</strong> {{ exam.durationMinutes }} minutes </span>
+          </div>
+        </div>
+        <button class="btn-primary">Take Exam</button>
+      </div>
+    </div>
+  </section>
 </div>

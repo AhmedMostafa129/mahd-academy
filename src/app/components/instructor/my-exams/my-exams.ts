@@ -7,12 +7,15 @@ import { TokenService } from '../../../core/services/TokenService/token-service'
 import { CourseService } from '../../../core/services/CourseService/course-service';
 import { ExamDto, PagedResult, ExamQuestionDto } from '../../../core/interfaces/exam.interface';
 import { CourseDto } from '../../../core/interfaces/course.interface';
-import { BackButton } from '../../shared/back-button/back-button';
+
+
+import { SubscriptionService } from '../../../core/services/SubscriptionService/subscription-service';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 @Component({
   selector: 'app-my-exams',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './my-exams.html',
   styleUrl: './my-exams.scss',
 })
@@ -22,11 +25,9 @@ export class MyExams implements OnInit {
   private readonly _examService = inject(ExamService);
   private readonly _courseService = inject(CourseService);
   private readonly _tokenService = inject(TokenService);
+  private readonly _subscriptionService = inject(SubscriptionService);
+  private readonly _notificationService = inject(NotificationService);
 
-
-  goBack(): void {
-    window.history.back();
-  }
 
   exams = signal<ExamDto[]>([]);
   courses = signal<CourseDto[]>([]);
@@ -35,12 +36,32 @@ export class MyExams implements OnInit {
   selectedCourseId = signal<string | null>(null);
   deleting = signal<string | null>(null);
 
+  // Subscription state
+  hasActiveSubscription = signal<boolean>(false);
+
   expandedExamId = signal<string | null>(null);
   questionsMap = signal<Map<string, ExamQuestionDto[]>>(new Map());
   loadingQuestions = signal<boolean>(false);
 
   ngOnInit(): void {
     this.loadInstructorCourses();
+    this.checkSubscriptionStatus();
+  }
+
+  checkSubscriptionStatus(): void {
+    const user = this._tokenService.getUser();
+    if (!user || !user.userId) return;
+
+    this._subscriptionService.getInstructorSubscription(user.userId).subscribe({
+      next: (sub) => {
+        // Strictly check for active status and expiry
+        const isValid = sub && sub.isActive && new Date(sub.endDate) > new Date();
+        this.hasActiveSubscription.set(!!isValid);
+      },
+      error: () => {
+        this.hasActiveSubscription.set(false);
+      }
+    });
   }
 
   loadInstructorCourses(): void {
@@ -124,6 +145,12 @@ export class MyExams implements OnInit {
   }
 
   createExam(): void {
+    if (!this.hasActiveSubscription()) {
+      this._notificationService.showWarning('Access Denied', 'You must have an active subscription to create exams.');
+      this._router.navigate(['/instructor/subscription']);
+      return;
+    }
+
     const courseId = this.selectedCourseId();
     if (courseId) {
       this._router.navigate(['/instructor/exams/create'], {
@@ -172,15 +199,33 @@ export class MyExams implements OnInit {
     });
   }
 
+  // Delete Modal State
+  showDeleteModal = signal<boolean>(false);
+  examIdToDelete = signal<string | null>(null);
+
   deleteExam(examId: string): void {
-    if (!confirm('Are you sure you want to delete this exam? This action cannot be undone.')) {
-      return;
-    }
+    this.examIdToDelete.set(examId);
+    this.showDeleteModal.set(true);
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal.set(false);
+    this.examIdToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const examId = this.examIdToDelete();
+    if (!examId) return;
 
     this.deleting.set(examId);
+    this.showDeleteModal.set(false); // Close modal immediately
+
     this._examService.deleteExam(examId).subscribe({
       next: () => {
         this.deleting.set(null);
+        this.examIdToDelete.set(null);
+        this._notificationService.showSuccess('Success', 'Exam deleted successfully');
+
         // Reload exams for current course
         const courseId = this.selectedCourseId();
         if (courseId) {
@@ -189,8 +234,9 @@ export class MyExams implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting exam:', err);
-        alert(err.message || 'Failed to delete exam');
+        this._notificationService.showError('Error', err.message || 'Failed to delete exam');
         this.deleting.set(null);
+        this.examIdToDelete.set(null);
       },
     });
   }

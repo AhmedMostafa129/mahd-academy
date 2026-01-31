@@ -28,14 +28,17 @@ export class GroupService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.http.get<any>(`http://mahd3.runasp.net/api/groups`, { params }).pipe(
-      map(response => ({
-        items: response.data || response.items || [],
-        totalCount: response.totalRecords || response.totalCount || 0,
-        pageNumber: response.pageNumber,
-        pageSize: response.pageSize,
-        totalPages: response.totalPages
-      }))
+    return this.http.get<any>(`${this.apiUrl}/groups`, { params }).pipe(
+      map(response => {
+        const items = response.data || response.Data || response.items || response.results || (Array.isArray(response) ? response : []);
+        return {
+          items: items,
+          totalCount: response.totalRecords || response.totalCount || items.length,
+          pageNumber: response.pageNumber || pageNumber,
+          pageSize: response.pageSize || pageSize,
+          totalPages: response.totalPages || Math.ceil((response.totalRecords || items.length) / pageSize)
+        };
+      })
     );
   }
 
@@ -43,7 +46,9 @@ export class GroupService {
    * Get group by ID
    */
   getGroupById(id: string): Observable<GroupDto> {
-    return this.http.get<GroupDto>(`http://mahd3.runasp.net/api/groups/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/groups/${id}`).pipe(
+      map(res => res.data || res.Data || res)
+    );
   }
 
   /**
@@ -55,16 +60,19 @@ export class GroupService {
       .set('pageSize', pageSize.toString());
 
     return this.http.get<any>(
-      `http://mahd3.runasp.net/api/groups/instructor/${instructorId}`,
+      `${this.apiUrl}/groups/instructor/${instructorId}`,
       { params }
     ).pipe(
-      map(response => ({
-        items: response.data || response.items || [],
-        totalCount: response.totalRecords || response.totalCount || 0,
-        pageNumber: response.pageNumber,
-        pageSize: response.pageSize,
-        totalPages: response.totalPages
-      }))
+      map(response => {
+        const items = response.data || response.Data || response.items || response.results || (Array.isArray(response) ? response : []);
+        return {
+          items: items,
+          totalCount: response.totalRecords || response.totalCount || items.length,
+          pageNumber: response.pageNumber || pageNumber,
+          pageSize: response.pageSize || pageSize,
+          totalPages: response.totalPages || Math.ceil((response.totalRecords || items.length) / pageSize)
+        };
+      })
     );
   }
 
@@ -72,49 +80,49 @@ export class GroupService {
    * Create group (Instructor or Admin)
    */
   createGroup(data: CreateGroupDto): Observable<GroupDto> {
-    return this.http.post<GroupDto>(`http://mahd3.runasp.net/api/groups`, data);
+    return this.http.post<GroupDto>(`${this.apiUrl}/groups`, data);
   }
 
   /**
    * Update group (Instructor or Admin)
    */
   updateGroup(id: string, data: UpdateGroupDto): Observable<GroupDto> {
-    return this.http.put<GroupDto>(`http://mahd3.runasp.net/api/groups/${id}`, data);
+    return this.http.put<GroupDto>(`${this.apiUrl}/groups/${id}`, data);
   }
 
   /**
    * Delete group (Instructor or Admin)
    */
   deleteGroup(id: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/groups/${id}`);
+    return this.http.delete(`${this.apiUrl}/groups/${id}`);
   }
 
   /**
    * Add student to group (Instructor or Admin)
    */
   addStudentToGroup(groupId: string, studentId: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/groups/${groupId}/students/${studentId}`, {});
+    return this.http.post(`${this.apiUrl}/groups/${groupId}/students/${studentId}`, {});
   }
 
   /**
    * Add course to group (Instructor or Admin)
    */
   addCourseToGroup(groupId: string, courseId: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/groups/${groupId}/courses/${courseId}`, {});
+    return this.http.post(`${this.apiUrl}/groups/${groupId}/courses/${courseId}`, {});
   }
 
   /**
    * Get courses by group ID
    */
   getCoursesByGroupId(groupId: string): Observable<CourseDto[]> {
-    return this.http.get<CourseDto[]>(`http://mahd3.runasp.net/api/groups/${groupId}/courses`);
+    return this.http.get<CourseDto[]>(`${this.apiUrl}/groups/${groupId}/courses`);
   }
 
   /**
    * Get students in a group
    */
   getGroupStudents(groupId: string): Observable<UserDto[]> {
-    return this.http.get<UserDto[]>(`http://mahd3.runasp.net/api/groups/${groupId}/students`);
+    return this.http.get<UserDto[]>(`${this.apiUrl}/groups/${groupId}/students`);
   }
 
   /**
@@ -126,16 +134,19 @@ export class GroupService {
       .set('pageSize', pageSize.toString());
 
     return this.http.get<any>(
-      `http://mahd3.runasp.net/api/groups/student/${studentId}`,
+      `${this.apiUrl}/groups/student/${studentId}/groups`,
       { params }
     ).pipe(
-      map(response => ({
-        items: response.data || response.items || [],
-        totalCount: response.totalRecords || response.totalCount || 0,
-        pageNumber: response.pageNumber,
-        pageSize: response.pageSize,
-        totalPages: response.totalPages
-      }))
+      map(response => {
+        const items = response.data || response.Data || response.items || response.results || (Array.isArray(response) ? response : []);
+        return {
+          items: items,
+          totalCount: response.totalRecords || response.totalCount || items.length,
+          pageNumber: response.pageNumber || pageNumber,
+          pageSize: response.pageSize || pageSize,
+          totalPages: response.totalPages || Math.ceil((response.totalRecords || items.length) / pageSize)
+        };
+      })
     );
   }
 
@@ -143,13 +154,13 @@ export class GroupService {
    * Remove course from group
    */
   removeCourseFromGroup(groupId: string, courseId: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/groups/${groupId}/courses/${courseId}`);
+    return this.http.delete(`${this.apiUrl}/groups/${groupId}/courses/${courseId}`);
   }
 
   /**
    * Remove student from group (Instructor or Admin)
    */
   removeStudentFromGroup(groupId: string, studentId: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/groups/${groupId}/students/${studentId}`);
+    return this.http.delete(`${this.apiUrl}/groups/${groupId}/students/${studentId}`);
   }
 }

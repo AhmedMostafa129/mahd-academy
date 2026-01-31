@@ -12,7 +12,7 @@
                     <i class="bi bi-cash-coin"></i>
                 </div>
                 <div class="content">
-                    <h3>Total Revenue (This Month)</h3>
+                    <h3>Total Revenue (Subscriptions + Sales)</h3>
                     <div class="amount" [class.loading]="loading()">
                         {{ monthlyRevenue() | currency:'USD':'symbol':'1.0-0' }}
                     </div>
@@ -31,41 +31,63 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Course Name</th>
                         <th>Instructor</th>
-                        <th class="text-center">Total Sales</th>
+                        <th>Subscription Plan</th>
+                        <th>Cost</th>
+                        <th class="text-center">Student Count</th>
                         <th class="text-right">Total Revenue</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let course of courseRevenues()">
+                    <tr *ngFor="let instructor of instructorsData()">
                         <td>
-                            <div class="course-info">
-                                <span class="course-title">{{ course.courseTitle }}</span>
+                            <div class="instructor-info d-flex align-items-center">
+                                <div class="avatar-circle me-3"
+                                    [style.background-image]="instructor.photoUrl ? 'url(' + instructor.photoUrl + ')' : ''"
+                                    style="width: 40px; height: 40px; background-size: cover; background-position: center; border-radius: 50%; background-color: #eee; display: flex; align-items: center; justify-content: center;">
+                                    <span *ngIf="!instructor.photoUrl" class="text-muted fw-bold">{{
+                                        instructor.name.charAt(0) }}</span>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ instructor.name }}</div>
+                                    <small class="text-muted">{{ instructor.email }}</small>
+                                </div>
                             </div>
                         </td>
                         <td>
-                            <div class="instructor-info">
-                                <i class="bi bi-person-circle"></i>
-                                <span>{{ course.instructorName }}</span>
+                            <div class="d-flex flex-column">
+                                <span class="badge mb-1"
+                                    [class.bg-success]="instructor.subscriptionPlan !== 'No Active Plan' && instructor.subscriptionPlan !== 'Expired / Inactive'"
+                                    [class.bg-secondary]="instructor.subscriptionPlan === 'No Active Plan'"
+                                    [class.bg-warning]="instructor.subscriptionPlan === 'Expired / Inactive'">
+                                    {{ instructor.subscriptionPlan }}
+                                </span>
+                                <small *ngIf="instructor.subscriptionEndDate" class="text-muted"
+                                    style="font-size: 0.75rem;">
+                                    Ends: {{ instructor.subscriptionEndDate | date:'mediumDate' }}
+                                </small>
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span class="badge sales-badge">{{ course.totalSales }} Sales</span>
-                        </td>
-                        <td class="text-right">
-                            <span class="revenue-amount">{{ course.totalRevenue | currency:'USD':'symbol':'1.0-0'
+                        <td>
+                            <span class="fw-medium">{{ instructor.subscriptionCost | currency:'USD':'symbol':'1.0-0'
                                 }}</span>
                         </td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark">{{ instructor.studentCount }} Students</span>
+                        </td>
+                        <td class="text-right">
+                            <span class="fw-bold text-success">{{ instructor.totalRevenue |
+                                currency:'USD':'symbol':'1.0-0' }}</span>
+                        </td>
                     </tr>
-                    <tr *ngIf="courseRevenues().length === 0 && !loading()">
-                        <td colspan="4" class="text-center py-5 text-muted">
-                            <i class="bi bi-receipt d-block mb-2" style="font-size: 2rem;"></i>
-                            No payment records found
+                    <tr *ngIf="instructorsData().length === 0 && !loading()">
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-person-slash d-block mb-2" style="font-size: 2rem;"></i>
+                            No instructors found
                         </td>
                     </tr>
                     <tr *ngIf="loading()">
-                        <td colspan="4" class="text-center py-5">
+                        <td colspan="5" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>

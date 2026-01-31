@@ -4,7 +4,7 @@
   <div class="floating-element element-2">📚</div>
   <div class="floating-element element-3">⭐</div>
   <div class="floating-element element-4">💡</div>
-  
+
   <!-- Loading State -->
   <div *ngIf="loading()" class="loading-state">
     <p>Loading group details...</p>
@@ -19,7 +19,6 @@
   <!-- Group Details -->
   <div *ngIf="!loading() && !error() && group()">
     <header class="group-details-header">
-      <app-back-button></app-back-button>
       <div class="header-content">
         <h1>{{ group()!.name }}</h1>
         <p>{{ group()!.description }}</p>
@@ -65,15 +64,14 @@
           </div>
         </div>
         <div *ngIf="showAddStudent()" class="add-student-form">
-          <p class="hint">Enter student ID or email (paste ID if available)</p>
-          <input
-            type="text"
-            [ngModel]="newStudentEmail()"
-            (ngModelChange)="newStudentEmail.set($event)"
-            placeholder="Student ID or email"
-          />
-          <button class="btn-primary" (click)="addStudent()" [disabled]="adding()">
-            {{ adding() ? 'Adding...' : 'Add' }}
+          <p class="hint">Search for a student to add to this group</p>
+          <div class="input-wrapper">
+            <input type="text" [ngModel]="newStudentEmail()" (ngModelChange)="newStudentEmail.set($event)"
+              placeholder="Enter student's email or full name..." (keyup.enter)="addStudent()" />
+            <span class="input-helper">Examples: "student@example.com" or "John Doe"</span>
+          </div>
+          <button class="btn-primary" (click)="addStudent()" [disabled]="adding() || !newStudentEmail().trim()">
+            {{ adding() ? 'Searching & Adding...' : 'Add Student' }}
           </button>
         </div>
         <div *ngIf="students().length === 0" class="empty-state">
@@ -87,11 +85,8 @@
               <h4>{{ student.fullName }}</h4>
               <p class="student-email">{{ student.email }}</p>
             </div>
-            <button
-              (click)="removeStudent(student.userId)"
-              [disabled]="removing() === student.userId"
-              class="btn-remove"
-            >
+            <button (click)="removeStudent(student.userId)" [disabled]="removing() === student.userId"
+              class="btn-remove">
               {{ removing() === student.userId ? 'Removing...' : 'Remove' }}
             </button>
           </div>
@@ -110,18 +105,10 @@
         </div>
         <div *ngIf="showAddCourse()" class="add-course-form">
           <label for="available-course">Select a course to add</label>
-          <select
-            id="available-course"
-            [ngModel]="selectedCourseId()"
-            (ngModelChange)="selectedCourseId.set($event)"
-          >
+          <select id="available-course" [ngModel]="selectedCourseId()" (ngModelChange)="selectedCourseId.set($event)">
             <option *ngFor="let c of availableCourses()" [value]="c.courseId">{{ c.title }}</option>
           </select>
-          <button
-            class="btn-primary"
-            (click)="addCourse()"
-            [disabled]="adding() || !selectedCourseId()"
-          >
+          <button class="btn-primary" (click)="addCourse()" [disabled]="adding() || !selectedCourseId()">
             {{ adding() ? 'Adding...' : 'Add Course' }}
           </button>
         </div>
@@ -134,14 +121,12 @@
           <div *ngFor="let course of courses()" class="course-card">
             <div class="course-info">
               <h4>{{ course.title }}</h4>
-              <p class="course-description">{{ course.description | slice:0:100 }}{{ course.description.length > 100 ? '...' : '' }}</p>
+              <p class="course-description">{{ course.description | slice:0:100 }}{{ course.description.length > 100 ?
+                '...' : '' }}</p>
               <p class="course-instructor">By {{ course.instructorName || 'Unknown' }}</p>
             </div>
-            <button
-              (click)="removeCourse(course.courseId)"
-              [disabled]="removing() === course.courseId"
-              class="btn-remove"
-            >
+            <button (click)="removeCourse(course.courseId)" [disabled]="removing() === course.courseId"
+              class="btn-remove">
               {{ removing() === course.courseId ? 'Removing...' : 'Remove' }}
             </button>
           </div>

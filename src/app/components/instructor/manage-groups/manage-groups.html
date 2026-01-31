@@ -1,104 +1,70 @@
-<div class="instructor-page">
-    <!-- Floating decorative elements -->
-    <div class="floating-element element-1">👥</div>
-    <div class="floating-element element-2">📚</div>
-    <div class="floating-element element-3">⭐</div>
-    <div class="floating-element element-4">💡</div>
-    
-    <!-- Sidebar (Reused structure or component) -->
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">LH</div>
-            <div>
-                <h1>LearnHub</h1>
-                <p>Instructor Panel</p>
-            </div>
+<!-- Floating decorative elements -->
+<div class="floating-element element-1">👥</div>
+<div class="floating-element element-2">📚</div>
+<div class="floating-element element-3">⭐</div>
+<div class="floating-element element-4">💡</div>
+
+<!-- Main Content -->
+<main class="dashboard-content">
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1>Manage Groups</h1>
+            <p>Manage and explore your learning groups</p>
+        </div>
+        <button class="btn-create" (click)="createGroup()">Create Group</button>
+    </header>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="loading-state">
+        <p>Loading groups...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error() && !loading()" class="error-state">
+        <p>{{ error() }}</p>
+        <button class="btn-create" (click)="loadGroups()">Retry</button>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading() && !error()">
+
+        <!-- Empty State -->
+        <div *ngIf="groups().length === 0" class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3>No groups created yet</h3>
+            <p>Create groups to organize your students and assign specific content.</p>
+            <button class="btn-create" (click)="createGroup()">Create First Group</button>
         </div>
 
-        <nav class="nav">
-            <a class="nav-item" (click)="navigateToDashboard()">
-                <span class="nav-icon">📊</span>
-                <span>Dashboard</span>
-            </a>
-            <a class="nav-item" (click)="navigateToCourses()">
-                <span class="nav-icon">📚</span>
-                <span>My Courses</span>
-            </a>
-            <a class="nav-item active">
-                <span class="nav-icon">👥</span>
-                <span>Student Groups</span>
-            </a>
-            <a class="nav-item" (click)="navigateToEarnings()">
-                <span class="nav-icon">💰</span>
-                <span>Earnings & Payouts</span>
-            </a>
-        </nav>
-
-        <button class="sign-out" (click)="handleSignOut()">Sign Out</button>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-content">
-
-        <!-- Page Header -->
-        <header class="page-header">
-            <div class="header-content">
-                <h1>Manage Groups</h1>
-                <p>Manage and explore your learning groups</p>
-            </div>
-            <button class="btn-create" (click)="createGroup()">Create Group</button>
-        </header>
-
-        <!-- Loading State -->
-        <div *ngIf="loading()" class="loading-state">
-            <p>Loading groups...</p>
-        </div>
-
-        <!-- Error State -->
-        <div *ngIf="error() && !loading()" class="error-state">
-            <p>{{ error() }}</p>
-            <button class="btn-create" (click)="loadGroups()">Retry</button>
-        </div>
-
-        <!-- Content -->
-        <div *ngIf="!loading() && !error()">
-
-            <!-- Empty State -->
-            <div *ngIf="groups().length === 0" class="empty-state">
-                <div class="empty-icon">👥</div>
-                <h3>No groups created yet</h3>
-                <p>Create groups to organize your students and assign specific content.</p>
-                <button class="btn-create" (click)="createGroup()">Create First Group</button>
-            </div>
-
-            <!-- Groups Grid -->
-            <div *ngIf="groups().length > 0" class="groups-grid">
-                <div *ngFor="let group of groups()" class="group-card" (click)="viewGroup(group.groupId)">
-                    <div class="card-header">
-                        <div class="group-icon">
-                            <!-- Initial Letter or Icon -->
-                            {{ group.name.charAt(0).toUpperCase() }}
-                        </div>
-                        <div class="group-actions">
-                            <button class="btn-delete" (click)="deleteGroup($event, group.groupId)"
-                                [title]="'Delete Group'">
-                                🗑️
-                            </button>
-                        </div>
+        <!-- Groups Grid -->
+        <div *ngIf="groups().length > 0" class="groups-grid">
+            <div *ngFor="let group of groups()" class="group-card" (click)="viewGroup(group.groupId)">
+                <div class="card-header">
+                    <div class="group-icon">
+                        <!-- Initial Letter or Icon -->
+                        {{ group.name.charAt(0).toUpperCase() }}
                     </div>
-
-                    <div class="group-info">
-                        <h3>{{ group.name }}</h3>
-                        <p>{{ group.description || 'No description provided.' }}</p>
-                    </div>
-
-                    <div class="group-stats">
-                        <span class="stat"><strong>{{ group.studentsCount || 0 }}</strong> Students</span>
-                        <span class="stat"><strong>{{ group.coursesCount || 0 }}</strong> Courses</span>
+                    <div class="group-actions">
+                        <button class="btn-delete" (click)="deleteGroup($event, group.groupId)"
+                            [title]="'Delete Group'">
+                            🗑️
+                        </button>
                     </div>
                 </div>
-            </div>
 
+                <div class="group-info">
+                    <h3>{{ group.name }}</h3>
+                    <p>{{ group.description || 'No description provided.' }}</p>
+                </div>
+
+                <div class="group-stats">
+                    <span class="stat"><strong>{{ group.studentsCount || 0 }}</strong> Students</span>
+                    <span class="stat"><strong>{{ group.coursesCount || 0 }}</strong> Courses</span>
+                </div>
+            </div>
         </div>
-    </main>
-</div>
+
+    </div>
+</main>

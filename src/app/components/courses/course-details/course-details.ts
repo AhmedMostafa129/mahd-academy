@@ -76,7 +76,9 @@ export class CourseDetails implements OnInit {
         // If 404, redirect to courses list after 3 seconds
         if (err.status === 404) {
           setTimeout(() => {
-            this._router.navigate(['/courses']);
+            const role = this._tokenService.getUser()?.role;
+            const path = role === 'Student' ? '/student/all-courses' : '/courses';
+            this._router.navigate([path]);
           }, 3000);
         }
       },
@@ -135,7 +137,7 @@ export class CourseDetails implements OnInit {
           next: (enrollment) => {
             this.enrollmentId.set(enrollment.enrollmentId);
             this.enrolling.set(false);
-            
+
             // Show payment modal with enrollment data
             this.paymentModalData.set({
               type: 'course',
@@ -147,7 +149,7 @@ export class CourseDetails implements OnInit {
               customerEmail: user.email || '',
               customerFirstName: user.firstName || user.fullName?.split(' ')[0] || '',
               customerLastName: user.lastName || user.fullName?.split(' ').slice(1).join(' ') || '',
-              customerPhone: user.phone || '',
+              customerPhone: user.phone || '01000000000',
             });
             this.showPaymentModal.set(true);
           },
@@ -172,7 +174,9 @@ export class CourseDetails implements OnInit {
             this.enrollmentId.set(enrollment.enrollmentId);
             this.enrolling.set(false);
             // Navigate to course content
-            this._router.navigate(['/courses', course.courseId, 'content']);
+            const role = this._tokenService.getUser()?.role;
+            const path = role === 'Student' ? `/student/courses/${course.courseId}/content` : `/courses/${course.courseId}/content`;
+            this._router.navigate([path]);
           },
           error: (err) => {
             console.error('Error enrolling:', err);
@@ -201,7 +205,9 @@ export class CourseDetails implements OnInit {
   navigateToContent(): void {
     const course = this.course();
     if (course) {
-      this._router.navigate(['/courses', course.courseId, 'content']);
+      const role = this._tokenService.getUser()?.role;
+      const path = role === 'Student' ? `/student/courses/${course.courseId}/content` : `/courses/${course.courseId}/content`;
+      this._router.navigate([path]);
     }
   }
 
@@ -239,5 +245,22 @@ export class CourseDetails implements OnInit {
     };
 
     return types[Number(contentType)] || 'Lesson';
+  }
+
+  buildImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+      return url;
+    }
+    const baseUrl = 'http://mahdacad.runasp.net/';
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return `${baseUrl}${cleanPath}`;
+  }
+
+  navigateToInstructorProfile(event: Event, instructorId: string): void {
+    event.stopPropagation();
+    const role = this._tokenService.getUser()?.role;
+    const path = role === 'Student' ? `/student/instructor-profile/${instructorId}` : `/profile/${instructorId}`;
+    this._router.navigate([path]);
   }
 }

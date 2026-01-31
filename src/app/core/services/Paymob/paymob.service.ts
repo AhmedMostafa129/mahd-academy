@@ -24,7 +24,7 @@ export class PaymobService {
     request: PaymobCoursePaymentRequest
   ): Observable<PaymentInitializationResponse> {
     return this.http.post<PaymentInitializationResponse>(
-      `http://mahd3.runasp.net/api/paymob/initialize-course-payment`,
+      `${this.apiUrl}/paymob/initialize-course-payment`,
       request
     );
   }
@@ -37,7 +37,7 @@ export class PaymobService {
     request: PaymobSubscriptionPaymentRequest
   ): Observable<PaymentInitializationResponse> {
     return this.http.post<PaymentInitializationResponse>(
-      `http://mahd3.runasp.net/api/paymob/initialize-subscription-payment`,
+      `${this.apiUrl}/paymob/initialize-subscription-payment`,
       request
     );
   }
@@ -52,7 +52,7 @@ export class PaymobService {
   ): Observable<PaymentVerificationResponse> {
     const params = transactionId ? `?transactionId=${transactionId}` : '';
     return this.http.get<PaymentVerificationResponse>(
-      `http://mahd3.runasp.net/api/paymob/verify/${paymentId}${params}`
+      `${this.apiUrl}/paymob/verify/${paymentId}${params}`
     );
   }
 

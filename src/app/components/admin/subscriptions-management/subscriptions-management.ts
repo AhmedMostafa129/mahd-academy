@@ -7,6 +7,7 @@ import {
   SubscriptionPackageDto,
   PagedResult,
 } from '../../../core/interfaces/subscription.interface';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 @Component({
   selector: 'app-subscriptions-management',
@@ -17,6 +18,7 @@ import {
 })
 export class SubscriptionsManagement implements OnInit {
   private readonly _subscriptionService = inject(SubscriptionService);
+  private readonly _notificationService = inject(NotificationService);
   private readonly _router = inject(Router);
 
   packages = signal<SubscriptionPackageDto[]>([]);
@@ -61,7 +63,7 @@ export class SubscriptionsManagement implements OnInit {
       next: (result: any) => {
         // Handle different response formats
         let packagesList: SubscriptionPackageDto[] = [];
-        
+
         if (result && result.Data && Array.isArray(result.Data)) {
           packagesList = result.Data;
         } else if (result && result.data && Array.isArray(result.data)) {
@@ -69,7 +71,7 @@ export class SubscriptionsManagement implements OnInit {
         } else if (Array.isArray(result)) {
           packagesList = result;
         }
-        
+
         this.packages.set(packagesList);
         this.pageNumber.set(result?.pageNumber || page);
         this.pageSize.set(result?.pageSize || 10);
@@ -172,35 +174,68 @@ export class SubscriptionsManagement implements OnInit {
     this.imageError.set(null);
   }
 
+  // Delete Confirmation Modal State
+  showDeleteModal = signal<boolean>(false);
+  packageToDeleteId = signal<string | null>(null);
+
+  openDeleteModal(packageId: string): void {
+    this.packageToDeleteId.set(packageId);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal.set(false);
+    this.packageToDeleteId.set(null);
+  }
+
+  confirmDelete(): void {
+    const id = this.packageToDeleteId();
+    if (!id) return;
+
+    this._subscriptionService.deletePackage(id).subscribe({
+      next: () => {
+        this._notificationService.showSuccess('Success', 'Package deleted successfully');
+        this.loadPackages(this.pageNumber());
+        this.closeDeleteModal();
+      },
+      error: (err) => {
+        console.error('Error deleting package:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to delete package');
+        this.error.set(err.message || 'Failed to delete package');
+        this.closeDeleteModal();
+      },
+    });
+  }
+
   createPackage(): void {
     const data = this.formData;
-    
+
     // Validation
     if (!data.name || data.name.trim() === '') {
       this.error.set('Package name is required');
       return;
     }
-    
+
     if (!data.description || data.description.trim() === '') {
       this.error.set('Description is required');
       return;
     }
-    
+
     if (!data.price || data.price <= 0) {
       this.error.set('Valid price is required');
       return;
     }
-    
+
     if (!data.durationDays || data.durationDays <= 0) {
       this.error.set('Valid duration is required');
       return;
     }
-    
+
     if (!data.storageLimitMB || data.storageLimitMB <= 0) {
       this.error.set('Valid storage limit is required');
       return;
     }
-    
+
     if (!data.maxStudentsCapacity || data.maxStudentsCapacity <= 0) {
       this.error.set('Valid max students capacity is required');
       return;
@@ -220,18 +255,19 @@ export class SubscriptionsManagement implements OnInit {
 
     this._subscriptionService.createPackage(packageData).subscribe({
       next: (createdPackage) => {
-        alert('Package created successfully');
-        
+        this._notificationService.showSuccess('Success', 'Package created successfully');
+
         // Upload image if selected
         if (this.selectedImageFile && createdPackage.packageId) {
           this.uploadImageForPackage(createdPackage.packageId);
         }
-        
+
         this.closeCreateModal();
         this.loadPackages(this.pageNumber());
       },
       error: (err) => {
         console.error('Error creating package:', err);
+        this._notificationService.showError('Error', err.message || 'Failed to create package');
         this.error.set(err.message || 'Failed to create package');
       },
     });
@@ -246,27 +282,27 @@ export class SubscriptionsManagement implements OnInit {
       this.error.set('Package name is required');
       return;
     }
-    
+
     if (!data.description || data.description.trim() === '') {
       this.error.set('Description is required');
       return;
     }
-    
+
     if (!data.price || data.price <= 0) {
       this.error.set('Valid price is required');
       return;
     }
-    
+
     if (!data.durationDays || data.durationDays <= 0) {
       this.error.set('Valid duration is required');
       return;
     }
-    
+
     if (!data.storageLimitMB || data.storageLimitMB <= 0) {
       this.error.set('Valid storage limit is required');
       return;
     }
-    
+
     if (!data.maxStudentsCapacity || data.maxStudentsCapacity <= 0) {
       this.error.set('Valid max students capacity is required');
       return;
@@ -293,37 +329,26 @@ export class SubscriptionsManagement implements OnInit {
       .updatePackage(pkg.packageId, packageData)
       .subscribe({
         next: () => {
-          alert('Package updated successfully');
-          
+          this._notificationService.showSuccess('Success', 'Package updated successfully');
+
           // Upload image if selected
           if (this.selectedImageFile && pkg.packageId) {
             this.uploadImageForPackage(pkg.packageId);
           }
-          
+
           this.closeEditModal();
           this.loadPackages(this.pageNumber());
         },
         error: (err) => {
           console.error('Error updating package:', err);
+          this._notificationService.showError('Error', err.message || 'Failed to update package');
           this.error.set(err.message || 'Failed to update package');
         },
       });
   }
 
   deletePackage(packageId: string): void {
-    if (!confirm('Are you sure you want to delete this package? This action cannot be undone.'))
-      return;
-
-    this._subscriptionService.deletePackage(packageId).subscribe({
-      next: () => {
-        alert('Package deleted successfully');
-        this.loadPackages(this.pageNumber());
-      },
-      error: (err) => {
-        console.error('Error deleting package:', err);
-        this.error.set(err.message || 'Failed to delete package');
-      },
-    });
+    this.openDeleteModal(packageId);
   }
 
   // Image handling methods
@@ -366,18 +391,18 @@ export class SubscriptionsManagement implements OnInit {
       next: (response) => {
         this.isUploadingImage.set(false);
         console.log('Image uploaded successfully:', response);
-        
+
         // Update the package in the list with the new image URL
-        const updatedPackages = this.packages().map(pkg => 
+        const updatedPackages = this.packages().map(pkg =>
           pkg.packageId === packageId ? { ...pkg, imageUrl: response.imageUrl } : pkg
         );
         this.packages.set(updatedPackages);
-        
+
         // If this is the currently edited package, update it too
         if (this.selectedPackage() && this.selectedPackage()!.packageId === packageId) {
           this.selectedPackage.set({ ...this.selectedPackage()!, imageUrl: response.imageUrl });
         }
-        
+
         // Reset image selection
         this.selectedImageFile = null;
         this.imagePreview = null;
@@ -396,18 +421,18 @@ export class SubscriptionsManagement implements OnInit {
     this._subscriptionService.deletePackageImage(packageId).subscribe({
       next: () => {
         console.log('Image deleted successfully');
-        
+
         // Update the package in the list to remove the image URL
-        const updatedPackages = this.packages().map(pkg => 
+        const updatedPackages = this.packages().map(pkg =>
           pkg.packageId === packageId ? { ...pkg, imageUrl: null } : pkg
         );
         this.packages.set(updatedPackages);
-        
+
         // If this is the currently edited package, update it too
         if (this.selectedPackage() && this.selectedPackage()!.packageId === packageId) {
           this.selectedPackage.set({ ...this.selectedPackage()!, imageUrl: null });
         }
-        
+
         // Reset image preview
         this.imagePreview = null;
         this.selectedImageFile = null;

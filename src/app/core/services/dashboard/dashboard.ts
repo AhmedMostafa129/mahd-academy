@@ -18,6 +18,6 @@ export class DashboardService {
   }
 
   getStudentDashboard(studentId: string): Observable<StudentDashboardDto> {
-    return this.http.get<StudentDashboardDto>(`http://mahd3.runasp.net/api/dashboard/student/${studentId}`);
+    return this.http.get<StudentDashboardDto>(`${environment.apiUrl}/dashboard/student/${studentId}`);
   }
 }

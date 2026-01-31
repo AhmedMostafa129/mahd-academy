@@ -3,16 +3,17 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { PaymentService } from '../../../core/services/Payment/payment';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { CourseService } from '../../../core/services/CourseService/course-service';
+import { DashboardService } from '../../../core/services/DashboardService/dashboard-service';
 import { PaymentDto, PagedResult } from '../../../core/interfaces/payment.interface';
 import { CourseDto } from '../../../core/interfaces/course.interface';
+import { forkJoin } from 'rxjs';
 
-// Import the BackButton component
-import { BackButton } from '../../shared/back-button/back-button';
+
 
 @Component({
   selector: 'app-earnings',
   standalone: true,
-  imports: [CommonModule, BackButton], // Add BackButton to imports
+  imports: [CommonModule], // Add BackButton to imports
   templateUrl: './earnings.html',
   styleUrl: './earnings.scss',
 })
@@ -20,8 +21,9 @@ export class Earnings implements OnInit {
   private readonly _paymentService = inject(PaymentService);
   private readonly _tokenService = inject(TokenService);
   private readonly _courseService = inject(CourseService);
+  private readonly _dashboardService = inject(DashboardService);
 
-  courses = signal<CourseDto[]>([]);
+  courses = signal<any[]>([]); // Changed to any[] to host extra stats
   payments = signal<PaymentDto[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
@@ -30,10 +32,10 @@ export class Earnings implements OnInit {
   selectedCourseId = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.loadCourses();
+    this.loadData();
   }
 
-  loadCourses(): void {
+  loadData(): void {
     const user = this._tokenService.getUser();
     if (!user || !user.userId) {
       this.error.set('User not found');
@@ -42,15 +44,29 @@ export class Earnings implements OnInit {
     }
 
     this.loading.set(true);
-    this._courseService.getCoursesByInstructor(user.userId, 1, 100).subscribe({
+
+    forkJoin({
+      courses: this._courseService.getCoursesByInstructor(user.userId, 1, 100),
+      dashboard: this._dashboardService.getInstructorDashboard(user.userId)
+    }).subscribe({
       next: (result) => {
-        this.courses.set(result.items);
-        this.calculateTotalRevenue();
+        const dashboardStats = result.dashboard.topCourses || [];
+        const enrichedCourses = result.courses.items.map(course => {
+          const stats = dashboardStats.find(s => s.courseId === course.courseId);
+          return {
+            ...course,
+            actualRevenue: stats ? stats.revenue : 0,
+            actualEnrollments: stats ? stats.enrollmentCount : (course.enrollmentCount || 0)
+          };
+        });
+
+        this.courses.set(enrichedCourses);
+        this.totalRevenue.set(result.dashboard.totalRevenue || 0);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading courses:', err);
-        this.error.set(err.message || 'Failed to load courses');
+        console.error('Error loading earnings data:', err);
+        this.error.set(err.message || 'Failed to load earnings data');
         this.loading.set(false);
       },
     });
@@ -68,19 +84,10 @@ export class Earnings implements OnInit {
     });
   }
 
-  calculateTotalRevenue(): void {
-    // Calculate total revenue from all courses
-    // This is a simplified version - you might want to get actual payment data
-    const total = this.courses().reduce((sum, course) => {
-      return sum + (course.price * (course.enrollmentCount || 0));
-    }, 0);
-    this.totalRevenue.set(total);
-  }
-
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-EG', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'EGP',
     }).format(amount);
   }
 

@@ -7,20 +7,32 @@
   </div>
 
   <div class="profile-container">
-    <!-- Back Button -->
-    <div class="back-button-container">
-      <app-back-button></app-back-button>
-    </div>
-    
+
     <!-- Profile Header with Avatar -->
     <div class="profile-header">
       <div class="header-content">
         <div class="avatar-wrapper">
           <div class="avatar-circle">
-            <span class="avatar-initial">{{ editModel.fullName.charAt(0).toUpperCase() || 'U' }}</span>
+            <!-- Display user photo if available -->
+            <img *ngIf="profile()?.user?.photoUrl" [src]="buildImageUrl(profile()?.user?.photoUrl)" alt="Student Photo"
+              class="avatar-image" />
+            <!-- Show initial if no photo -->
+            <span *ngIf="!profile()?.user?.photoUrl" class="avatar-initial">
+              {{ editModel.fullName.charAt(0).toUpperCase() || 'U' }}
+            </span>
             <div class="avatar-ring"></div>
             <div class="avatar-ring-2"></div>
+
+            <!-- Photo Upload Overlay -->
+            <label for="photoInput" class="photo-upload-overlay" *ngIf="!uploadingPhoto()">
+              <span class="upload-icon">+</span>
+            </label>
+            <div class="photo-upload-overlay uploading" *ngIf="uploadingPhoto()">
+              <span class="upload-spinner">⏳</span>
+            </div>
           </div>
+          <input type="file" id="photoInput" accept="image/*" (change)="onPhotoSelected($event)"
+            style="display: none;" />
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span class="status-text">Active</span>
@@ -70,13 +82,8 @@
                 Full Name
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="text" 
-                  [(ngModel)]="editModel.fullName" 
-                  name="fullName"
-                  placeholder="Enter your full name"
-                  [disabled]="loading()"
-                />
+                <input type="text" [(ngModel)]="editModel.fullName" name="fullName" placeholder="Enter your full name"
+                  [disabled]="loading()" />
               </div>
             </div>
 
@@ -86,15 +93,8 @@
                 Email Address
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="email" 
-                  [(ngModel)]="editModel.email" 
-                  name="email"
-                  placeholder="name@example.com"
-                  [disabled]="loading()"
-                  readonly
-                  class="readonly-input"
-                />
+                <input type="email" [(ngModel)]="editModel.email" name="email" placeholder="name@example.com"
+                  [disabled]="loading()" readonly class="readonly-input" />
                 <span class="input-badge">Verified</span>
               </div>
             </div>
@@ -106,13 +106,8 @@
                 <span class="optional-badge">Optional</span>
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="tel" 
-                  [(ngModel)]="editModel.phoneNumber" 
-                  name="phoneNumber"
-                  placeholder="+20 123 456 7890"
-                  [disabled]="loading()"
-                />
+                <input type="tel" [(ngModel)]="editModel.phoneNumber" name="phoneNumber" placeholder="+20 123 456 7890"
+                  [disabled]="loading()" />
               </div>
             </div>
           </div>
@@ -147,13 +142,8 @@
                 Current Password
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="password" 
-                  [(ngModel)]="changePasswordModel.currentPassword" 
-                  name="currentPassword"
-                  placeholder="Enter current password"
-                  [disabled]="changingPassword()"
-                />
+                <input type="password" [(ngModel)]="changePasswordModel.currentPassword" name="currentPassword"
+                  placeholder="Enter current password" [disabled]="changingPassword()" />
               </div>
             </div>
 
@@ -163,13 +153,8 @@
                 New Password
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="password" 
-                  [(ngModel)]="changePasswordModel.newPassword" 
-                  name="newPassword"
-                  placeholder="Enter new password"
-                  [disabled]="changingPassword()"
-                />
+                <input type="password" [(ngModel)]="changePasswordModel.newPassword" name="newPassword"
+                  placeholder="Enter new password" [disabled]="changingPassword()" />
               </div>
             </div>
 
@@ -179,13 +164,8 @@
                 Confirm New Password
               </label>
               <div class="input-wrapper">
-                <input 
-                  type="password" 
-                  [(ngModel)]="changePasswordModel.confirmPassword" 
-                  name="confirmPassword"
-                  placeholder="Confirm new password"
-                  [disabled]="changingPassword()"
-                />
+                <input type="password" [(ngModel)]="changePasswordModel.confirmPassword" name="confirmPassword"
+                  placeholder="Confirm new password" [disabled]="changingPassword()" />
               </div>
             </div>
           </div>

@@ -5,12 +5,11 @@ import { GroupService } from '../../../core/services/GroupService/group-service'
 import { GroupDto } from '../../../core/interfaces/group.interface';
 import { CourseDto } from '../../../core/interfaces/course.interface';
 import { UserDto } from '../../../core/interfaces/i-user';
-import { BackButton } from '../../shared/back-button/back-button';
 
 @Component({
   selector: 'app-student-group-details',
   standalone: true,
-  imports: [CommonModule, BackButton],
+  imports: [CommonModule],
   templateUrl: './student-group-details.html',
   styleUrl: './student-group-details.scss',
 })

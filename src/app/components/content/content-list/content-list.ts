@@ -2,7 +2,6 @@ import { Component, inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BackButton } from '../../shared/back-button/back-button';
 
 interface ContentItem {
   id: number;
@@ -16,7 +15,7 @@ interface ContentItem {
 @Component({
   selector: 'app-content-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './content-list.html',
   styleUrl: './content-list.scss',
 })

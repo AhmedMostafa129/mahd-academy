@@ -184,6 +184,57 @@ $border-color: #e2e8f0;
   animation-direction: reverse;
 }
 
+// Avatar image styling
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+// Photo upload overlay
+.photo-upload-overlay {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  border: 3px solid white;
+
+  .upload-icon {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .upload-spinner {
+    font-size: 1.5rem;
+    animation: rotate 2s linear infinite;
+  }
+
+  &:hover:not(.uploading) {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  &.uploading {
+    cursor: wait;
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  }
+}
+
 .status-indicator {
   position: absolute;
   bottom: 10px;
@@ -616,6 +667,7 @@ input {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -626,6 +678,7 @@ input {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -637,6 +690,7 @@ input {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -648,6 +702,7 @@ input {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -659,6 +714,7 @@ input {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -670,6 +726,7 @@ input {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -677,18 +734,24 @@ input {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-20px) rotate(5deg);
   }
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -698,16 +761,20 @@ input {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05);
@@ -715,9 +782,12 @@ input {
 }
 
 @keyframes blink {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }

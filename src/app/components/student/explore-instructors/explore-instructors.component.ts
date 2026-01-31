@@ -20,12 +20,12 @@ export class ExploreInstructorsComponent implements OnInit {
   instructors = signal<InstructorDto[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
-  
+
   // Pagination
   pageNumber = signal<number>(1);
   pageSize = signal<number>(12);
   totalPages = signal<number>(0);
-  
+
   // Search
   searchControl = new FormControl('');
 
@@ -74,12 +74,17 @@ export class ExploreInstructorsComponent implements OnInit {
   }
 
   navigateToInstructor(userId: string) {
-    // Navigate to courses page with instructorId query param, 
-    // OR if there is a specific instructor profile page, go there.
-    // The user mentioned "profile of each one", and existing routes have `profile/:id` (InstructorProfileComponent).
-    // Let's use that if possible, or `courses?instructorId=` if that displays their courses.
-    // Existing route: `path: 'profile/:id', component: InstructorProfileComponent`
-    this._router.navigate(['/profile', userId]);
+    this._router.navigate(['/student/instructor-profile', userId]);
+  }
+
+  buildImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+      return url;
+    }
+    const baseUrl = 'http://mahdacad.runasp.net/';
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return `${baseUrl}${cleanPath}`;
   }
 
   handleImageError(event: any) {

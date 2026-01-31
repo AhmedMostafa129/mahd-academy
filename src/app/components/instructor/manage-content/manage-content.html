@@ -4,7 +4,7 @@
   <div class="floating-element element-2">📚</div>
   <div class="floating-element element-3">⭐</div>
   <div class="floating-element element-4">💡</div>
-  
+
   <header class="page-header">
     <div class="header-content">
       <div class="header-title">
@@ -20,10 +20,19 @@
 
     <div class="header-actions">
       <button (click)="navigateToCoursesList()" class="btn-secondary">Cancel</button>
-      <button (click)="confirmDeleteCourse()" class="btn-delete" [disabled]="deleting()">🗑️ {{ deleting() ? 'Deleting...' : 'Delete Course' }}</button>
-      <button *ngIf="course()" (click)="togglePublishStatus()" [disabled]="publishing()"
-        [class.btn-publish]="!course()!.isPublished" [class.btn-unpublish]="course()!.isPublished">
-        {{ publishing() ? 'Processing...' : (course()!.isPublished ? 'Unpublish' : '🚀 Publish Course') }}
+      <button (click)="confirmDeleteCourse()" class="btn-delete" [disabled]="deleting()">🗑️ {{ deleting() ?
+        'Deleting...' : 'Delete Course' }}</button>
+
+      <!-- Publish Button -->
+      <button *ngIf="course()" (click)="attemptPublish()" [disabled]="publishing()" class="btn-publish"
+        [class.active-action]="!course()!.isPublished" [style.opacity]="course()!.isPublished ? '0.5' : '1'">
+        {{ publishing() && !course()!.isPublished ? 'Processing...' : '🚀 Publish' }}
+      </button>
+
+      <!-- Unpublish Button -->
+      <button *ngIf="course()" (click)="attemptUnpublish()" [disabled]="publishing()" class="btn-unpublish"
+        [class.active-action]="course()!.isPublished" [style.opacity]="!course()!.isPublished ? '0.5' : '1'">
+        {{ publishing() && course()!.isPublished ? 'Processing...' : '⏹️ Unpublish' }}
       </button>
     </div>
   </header>
@@ -73,7 +82,7 @@
             <td class="actions">
               <button (click)="viewLessonContent(lesson)" class="btn-view" title="View Content">👁️</button>
               <button (click)="editLesson(lesson.lessonId)" class="btn-edit">Edit</button>
-              <button (click)="deleteLesson(lesson.lessonId)" [disabled]="deleting() === lesson.lessonId"
+              <button (click)="openLessonDeleteModal(lesson.lessonId)" [disabled]="deleting() === lesson.lessonId"
                 class="btn-delete">
                 {{ deleting() === lesson.lessonId ? 'Deleting...' : 'Delete' }}
               </button>
@@ -83,7 +92,7 @@
       </table>
     </div>
   </div>
-  
+
   <!-- Course Reviews (from students who reviewed this course) -->
   <div class="course-reviews-section" *ngIf="!loading() && !error()">
     <div class="section-header">
@@ -111,7 +120,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Delete Confirmation Modal -->
   <div *ngIf="showDeleteModal()" class="modal-overlay">
     <div class="modal-content">
@@ -133,10 +142,68 @@
       </div>
       <footer class="modal-footer">
         <button type="button" class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
-        <button type="button" class="btn-danger" (click)="deleteCourse()" [disabled]="deleting()">
-          {{ deleting() ? 'Deleting...' : 'Yes, Delete Course' }}
+        <button type="button" class="btn-danger" (click)="deleteCourse()" [disabled]="deleting() === 'course'">
+          {{ deleting() === 'course' ? 'Deleting...' : 'Yes, Delete Course' }}
         </button>
       </footer>
     </div>
   </div>
+
+  <!-- Delete Confirmation Modal (Lesson) - Styled like Admin -->
+  <!-- Delete Confirmation Modal (Lesson) - Styled like Admin -->
+  <div *ngIf="showLessonDeleteModal()" class="styled-modal-overlay" (click)="closeLessonDeleteModal()">
+    <div class="styled-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeLessonDeleteModal()">×</button>
+
+      <div class="modal-icon icon-delete">⚠️</div>
+
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete this lesson? This action cannot be undone and the content will be permanently
+        removed.</p>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeLessonDeleteModal()">Cancel</button>
+        <button class="btn-confirm-delete" (click)="confirmDeleteLesson()">Delete Lesson</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publish Confirmation Modal -->
+  <div *ngIf="showPublishModal()" class="styled-modal-overlay" (click)="closePublishModal()">
+    <div class="styled-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closePublishModal()">×</button>
+
+      <div class="modal-icon icon-publish">🚀</div>
+
+      <h2>{{ course()?.isPublished ? 'Unpublish Course?' : 'Publish Course?' }}</h2>
+
+      <p>
+        {{ course()?.isPublished
+        ? 'Are you sure you want to unpublish this course? It will no longer be visible to new students.'
+        : 'Ready to share your knowledge? Publishing will make this course visible to all students on the platform.' }}
+      </p>
+
+      <div class="modal-info-box">
+        <div class="info-title">{{ course()?.title }}</div>
+        <div class="info-details">
+          <span>{{ lessons().length }} lessons</span>
+          <span>{{ courseReviews().length }} reviews</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="closePublishModal()" class="btn-cancel">Not Now</button>
+
+        <!-- Action Button based on state -->
+        <button *ngIf="!course()?.isPublished" (click)="confirmPublishToggle()" class="btn-confirm-publish">
+          Yes, Publish Now 🚀
+        </button>
+
+        <button *ngIf="course()?.isPublished" (click)="confirmPublishToggle()" class="btn-confirm-unpublish">
+          Yes, Unpublish
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
+```

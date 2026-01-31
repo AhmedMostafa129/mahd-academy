@@ -7,10 +7,13 @@ import { EnrollmentService } from '../../../core/services/Enrollment/enrollment'
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { CourseDto } from '../../../core/interfaces/course.interface';
 
+import { PaymentModal } from '../../shared/payment-modal/payment-modal';
+import { PaymentModalData, PaymentInitializationResponse } from '../../../core/interfaces/payment.interface';
+
 @Component({
   selector: 'app-browse-courses',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaymentModal],
   templateUrl: './browse-courses.html',
   styleUrl: './browse-courses.scss',
 })
@@ -26,6 +29,10 @@ export class BrowseCourses implements OnInit {
   error = signal<string | null>(null);
   searchQuery = signal<string>('');
   enrollingCourseId = signal<string | null>(null);
+
+  // Payment modal state
+  showPaymentModal = signal<boolean>(false);
+  paymentModalData = signal<PaymentModalData | null>(null);
 
   // Pagination
   currentPage = signal<number>(1);
@@ -84,35 +91,86 @@ export class BrowseCourses implements OnInit {
       return;
     }
 
-    // Enroll directly without payment check as requested
+    const course = this.courses().find(c => c.courseId === courseId);
+    if (!course) return;
+
     this.enrollingCourseId.set(courseId);
 
-    this._enrollmentService
-      .enrollInCourse({
-        courseId: courseId,
-        studentId: user.userId,
-      })
-      .subscribe({
-        next: () => {
-          this.enrollingCourseId.set(null);
-          alert('✅ Successfully enrolled in course! Redirecting to dashboard...');
-          // Navigate to dashboard with refresh parameter
-          setTimeout(() => {
-            this._router.navigate(['/student'], {
-              queryParams: { refresh: Date.now() },
+    // Check if course is paid
+    if (course.price > 0) {
+      this._enrollmentService
+        .enrollInCourse({
+          courseId: courseId,
+          studentId: user.userId,
+        })
+        .subscribe({
+          next: (enrollment) => {
+            this.enrollingCourseId.set(null);
+
+            // Show payment modal with enrollment data
+            this.paymentModalData.set({
+              type: 'course',
+              itemName: course.title,
+              itemDescription: course.description,
+              amount: course.price,
+              currency: 'EGP',
+              enrollmentId: enrollment.enrollmentId,
+              customerEmail: user.email || '',
+              customerFirstName: user.firstName || user.fullName?.split(' ')[0] || '',
+              customerLastName: user.lastName || user.fullName?.split(' ').slice(1).join(' ') || '',
+              customerPhone: user.phone || '01000000000',
             });
-          }, 1000);
-        },
-        error: (err) => {
-          console.error('Error enrolling in course:', err);
-          this.enrollingCourseId.set(null);
-          this.error.set(err.error?.message || 'Failed to enroll in course');
-        },
-      });
+            this.showPaymentModal.set(true);
+          },
+          error: (err) => {
+            console.error('Error creating enrollment:', err);
+            this.enrollingCourseId.set(null);
+            this.error.set(err.error?.message || 'Failed to enroll in course');
+          },
+        });
+    } else {
+      // Free course
+      this._enrollmentService
+        .enrollInCourse({
+          courseId: courseId,
+          studentId: user.userId,
+        })
+        .subscribe({
+          next: () => {
+            this.enrollingCourseId.set(null);
+            alert('✅ Successfully enrolled in course! Redirecting to dashboard...');
+            setTimeout(() => {
+              this._router.navigate(['/student'], {
+                queryParams: { refresh: Date.now() },
+              });
+            }, 1000);
+          },
+          error: (err) => {
+            console.error('Error enrolling in course:', err);
+            this.enrollingCourseId.set(null);
+            this.error.set(err.error?.message || 'Failed to enroll in course');
+          },
+        });
+    }
+  }
+
+  // Payment modal handlers
+  closePaymentModal(): void {
+    this.showPaymentModal.set(false);
+    this.paymentModalData.set(null);
+  }
+
+  onPaymentSuccess(response: PaymentInitializationResponse): void {
+    // Payment initialization successful - user will be redirected to Paymob
+    console.log('Payment initialized:', response);
+  }
+
+  onPaymentError(errorMessage: string): void {
+    this.error.set(errorMessage);
   }
 
   viewCourseDetails(courseId: string): void {
-    this._router.navigate(['/courses', courseId]);
+    this._router.navigate(['/student/courses', courseId]);
   }
 
   nextPage(): void {
@@ -192,7 +250,31 @@ export class BrowseCourses implements OnInit {
     });
   }
 
-  goToDashboard(): void {
-    this._router.navigate(['/student/dashboard']);
+  getCourseThumbnail(course: CourseDto): string {
+    return this.buildImageUrl(course.thumbnailUrl);
+  }
+
+  onImageError(event: any): void {
+    event.target.style.display = 'none';
+    const parent = event.target.parentElement;
+    if (parent) {
+      const placeholder = parent.querySelector('.thumbnail-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'grid';
+      }
+    }
+  }
+
+  private buildImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+
+    // If it's already a full URL (http/https) or base64, return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('data:')) {
+      return imageUrl;
+    }
+
+    // Otherwise, prepend the API base URL
+    const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    return `http://mahdacad.runasp.net/${cleanPath}`;
   }
 }

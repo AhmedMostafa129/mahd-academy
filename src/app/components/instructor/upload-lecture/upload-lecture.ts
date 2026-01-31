@@ -3,6 +3,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LessonService } from '../../../core/services/LectureService/lecture-service';
+import { AdminService } from '../../../core/services/AdminService/admin-service';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 import { Observable } from 'rxjs';
 import { LessonCreateDto, LessonContentType, LessonDto } from '../../../core/interfaces/lesson.interface';
@@ -20,8 +22,11 @@ export class UploadLecture implements OnInit {
     private readonly _route = inject(ActivatedRoute);
     private readonly _router = inject(Router);
     private readonly _lessonService = inject(LessonService);
+    private readonly _adminService = inject(AdminService);
+    private readonly _notificationService = inject(NotificationService);
     // Signals for state management
     courseId = signal<string | null>(null);
+    courseTitle = signal<string>('');
     lessonId = signal<string | null>(null);
     isEditMode = signal<boolean>(false);
     loading = signal<boolean>(false);
@@ -58,6 +63,7 @@ export class UploadLecture implements OnInit {
 
         if (courseId) {
             this.courseId.set(courseId);
+            this.loadCourseDetails(courseId);
         }
 
         if (lessonId) {
@@ -65,6 +71,17 @@ export class UploadLecture implements OnInit {
             this.isEditMode.set(true);
             this.loadLesson(courseId!, lessonId);
         }
+    }
+
+    loadCourseDetails(courseId: string) {
+        this._adminService.getCourseById(courseId).subscribe({
+            next: (course) => {
+                this.courseTitle.set(course.title);
+            },
+            error: (err) => {
+                console.error('Failed to load course details', err);
+            }
+        });
     }
 
     loadLesson(courseId: string, lessonId: string): void {
@@ -136,7 +153,8 @@ export class UploadLecture implements OnInit {
             this.executeFileUpload(this.courseId()!, this.lessonId()!, this.selectedFile()!);
         } else {
             // Auto-save metadata first
-            if (!this.validateForm()) {
+            // We pass false for checkContent because we are about to upload it!
+            if (!this.validateForm(false)) {
                 this.uploadStatus.set('error');
                 return;
             }
@@ -290,6 +308,7 @@ export class UploadLecture implements OnInit {
             next: (lesson) => {
                 console.log('Lesson created/updated successfully', lesson);
                 this.submitting.set(false);
+                this._notificationService.showSuccess('Success', 'Lesson saved successfully');
                 this.handleSuccess(courseId);
             },
             error: (err: HttpErrorResponse) => {
@@ -323,11 +342,18 @@ export class UploadLecture implements OnInit {
         this._router.navigate(['/instructor/courses']);
     }
 
-    private validateForm(): boolean {
+    private validateForm(checkContent: boolean = true): boolean {
         if (!this.lessonData.title.trim()) {
             this.error.set('Lesson title is required');
             return false;
         }
+
+        // Enforce content upload ONLY if checkContent is true
+        if (checkContent && (!this.lessonData.contentUrl || this.lessonData.contentUrl === 'http://placeholder.url')) {
+            this.error.set('Please upload content before saving.');
+            return false;
+        }
+
         return true;
     }
 

@@ -278,7 +278,7 @@ export class UsersManagement {
 
     // Otherwise, prepend the API base URL
     const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    const fullUrl = `http://mahdlms.runasp.net/${cleanPath}`;
+    const fullUrl = `http://mahdacad.runasp.net/${cleanPath}`;
     console.log('[UsersManagement] Built full URL:', fullUrl);
     return fullUrl;
   }

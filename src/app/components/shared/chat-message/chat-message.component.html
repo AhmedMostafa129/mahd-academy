@@ -1,0 +1,8 @@
+<div class="chat-message" [class.user-message]="message.sender === 'user'" [class.ai-message]="message.sender === 'ai'">
+  <div class="message-bubble">
+    <div class="message-content" [innerHTML]="message.content"></div>
+    <div class="message-timestamp">
+      {{ message.timestamp | date:'short' }}
+    </div>
+  </div>
+</div>

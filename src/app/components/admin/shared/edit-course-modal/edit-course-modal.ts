@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, injec
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminService } from '../../../../core/services/AdminService/admin-service';
+import { NotificationService } from '../../../../core/services/NotificationService/notification-service';
 
 @Component({
     selector: 'app-edit-course-modal',
@@ -18,6 +19,7 @@ export class EditCourseModalComponent implements OnChanges {
 
     private fb = inject(FormBuilder);
     private adminService = inject(AdminService);
+    private notificationService = inject(NotificationService);
 
     course: any = null;
     loading = signal<boolean>(false);
@@ -68,7 +70,17 @@ export class EditCourseModalComponent implements OnChanges {
         this.adminService.getCourseById(id).subscribe({
             next: (course: any) => {
                 this.course = course;
-                this.imagePreview = course.thumbnailUrl || null;
+                // Check multiple possible properties for the image URL
+                let img = course.thumbnailUrl || course.imagePath || course.cover || course.thumbnail || null;
+
+                // If it's a relative path, prepend base URL
+                if (img && !img.startsWith('http') && !img.startsWith('data:')) {
+                    // Remove leading slash if present
+                    if (img.startsWith('/')) img = img.substring(1);
+                    img = `http://mahdacad.runasp.net/${img}`;
+                }
+
+                this.imagePreview = img;
 
                 this.courseForm.patchValue({
                     title: course.title || '',
@@ -82,7 +94,7 @@ export class EditCourseModalComponent implements OnChanges {
             },
             error: (err) => {
                 console.error('Failed to load course', err);
-                alert('Failed to load course details');
+                this.notificationService.showError('Error', 'Failed to load course details');
                 this.loading.set(false);
                 this.onClose();
             }
@@ -91,7 +103,7 @@ export class EditCourseModalComponent implements OnChanges {
 
     saveChanges() {
         if (this.courseForm.invalid) {
-            alert('Please fill all required fields correctly');
+            this.notificationService.showError('Validation Error', 'Please fill all required fields correctly');
             return;
         }
 
@@ -99,58 +111,55 @@ export class EditCourseModalComponent implements OnChanges {
         const actualCourseId = this.course?.courseId || this.course?.id || this.course?._id || this.courseId;
 
         if (!actualCourseId) {
-            alert('Course ID is missing');
+            this.notificationService.showError('Error', 'Course ID is missing');
             return;
         }
 
         this.saving.set(true);
 
-        // If there's a selected file, convert to base64
-        if (this.selectedFile) {
-            console.log('Converting course image to base64...');
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64Image = reader.result as string;
-                this.updateCourseData(actualCourseId, base64Image);
-            };
-            reader.onerror = () => {
-                alert('Failed to read image file');
-                this.saving.set(false);
-            };
-            reader.readAsDataURL(this.selectedFile);
-        } else {
-            // No new image, call update without image
-            this.updateCourseData(actualCourseId);
-        }
-    }
-
-    private updateCourseData(courseId: string, thumbnailBase64?: string) {
+        // Prepare update data from form
         const updateData: any = {
             title: this.courseForm.get('title')?.value,
             description: this.courseForm.get('description')?.value,
             price: Number(this.courseForm.get('price')?.value),
-            category: this.courseForm.get('category')?.value || ''
+            category: this.courseForm.get('category')?.value || '',
+            // Ensure other fields are preserved if needed (though backend usually handles specific DTO mapping)
         };
 
-        // Add base64 image if provided
-        if (thumbnailBase64) {
-            updateData.thumbnailUrl = thumbnailBase64;
-        }
-
-        console.log('Sending Course Update...', { hasImage: !!thumbnailBase64 });
-
-        this.adminService.updateCourse(courseId, updateData).subscribe({
+        // Use updateCourse for text fields
+        this.adminService.updateCourse(actualCourseId, updateData).subscribe({
             next: (updatedCourse) => {
-                console.log('✅ Course updated successfully');
-                this.saving.set(false);
-                alert('Course updated successfully!');
-                this.courseUpdated.emit(updatedCourse);
-                this.onClose();
+                // If there's an image, upload it now
+                if (this.selectedFile) {
+                    console.log('Uploading course thumbnail...');
+                    this.adminService.uploadCourseThumbnail(actualCourseId, this.selectedFile).subscribe({
+                        next: (res) => {
+                            console.log('✅ Course thumbnail uploaded successfully');
+                            this.notificationService.showSuccess('Success', 'Course and thumbnail updated successfully!');
+                            this.saving.set(false);
+                            this.courseUpdated.emit({ ...updatedCourse, ...res }); // Merge results if needed or just emit updatedCourse
+                            this.onClose();
+                        },
+                        error: (err) => {
+                            console.error('❌ Thumbnail Upload Failed:', err);
+                            this.notificationService.showWarning('Warning', 'Course updated but thumbnail upload failed: ' + (err.error?.message || err.message));
+                            this.saving.set(false);
+                            this.courseUpdated.emit(updatedCourse); // Still emit course update
+                            this.onClose();
+                        }
+                    });
+                } else {
+                    console.log('✅ Course updated successfully (no image change)');
+                    this.saving.set(false);
+                    this.notificationService.showSuccess('Success', 'Course updated successfully!');
+                    this.courseUpdated.emit(updatedCourse);
+                    this.onClose();
+                }
             },
             error: (err) => {
                 console.error('❌ Course Update Failed:', err);
                 this.saving.set(false);
-                alert('Failed to update course: ' + (err.error?.message || err.message || 'Unknown error'));
+                this.notificationService.showError('Error', 'Failed to update course: ' + (err.error?.message || err.message || 'Unknown error'));
             }
         });
     }

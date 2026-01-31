@@ -5,15 +5,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CourseService } from '../../../core/services/CourseService/course-service';
 import { CourseDto, PagedResult } from '../../../core/interfaces/course.interface';
 
-// Import the BackButton component
-import { BackButton } from '../../shared/back-button/back-button';
 import { InstructorService } from '../../../core/services/InstructorService/instructor-service';
 import { InstructorDto } from '../../../core/interfaces/instructor.interface';
+import { TokenService } from '../../../core/services/TokenService/token-service';
 
 @Component({
   selector: 'app-courses-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './courses-list.html',
   styleUrl: './courses-list.scss',
 })
@@ -22,6 +21,7 @@ export class CoursesList implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   private readonly _courseService = inject(CourseService);
   private readonly _instructorService = inject(InstructorService);
+  private readonly _tokenService = inject(TokenService);
 
   // Data
   courses = signal<CourseDto[]>([]);
@@ -37,7 +37,7 @@ export class CoursesList implements OnInit {
   // Search & Filter
   searchQuery = signal<string>('');
   searchTerm = '';
-  
+
   // Instructor filter
   instructorId = signal<string | null>(null);
   instructorName = signal<string | null>(null);
@@ -161,7 +161,9 @@ export class CoursesList implements OnInit {
   }
 
   navigateToCourse(courseId: string): void {
-    this._router.navigate(['/courses', courseId]);
+    const role = this._tokenService.getUser()?.role;
+    const path = role === 'Student' ? `/student/courses/${courseId}` : `/courses/${courseId}`;
+    this._router.navigate([path]);
   }
 
   formatPrice(price: number): string {
@@ -175,5 +177,15 @@ export class CoursesList implements OnInit {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     return '⭐'.repeat(fullStars) + (hasHalfStar ? '½' : '') + '☆'.repeat(5 - fullStars - (hasHalfStar ? 1 : 0));
+  }
+
+  buildImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+      return url;
+    }
+    const baseUrl = 'http://mahdacad.runasp.net/';
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    return `${baseUrl}${cleanPath}`;
   }
 }

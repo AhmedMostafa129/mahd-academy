@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CourseService } from '../../../core/services/CourseService/course-service';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { CourseDto, PagedResult } from '../../../core/interfaces/course.interface';
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class InstructorMyCourses implements OnInit {
   private readonly _courseService = inject(CourseService);
   private readonly _tokenService = inject(TokenService);
   private readonly _router = inject(Router);
+  private readonly _notificationService = inject(NotificationService);
 
   courses = signal<CourseDto[]>([]);
   loading = signal<boolean>(true);
@@ -58,6 +60,9 @@ export class InstructorMyCourses implements OnInit {
         // Calculate stats
         this.calculateStats(result.items);
 
+        // Fetch individual stats for real numbers
+        this.fetchCourseStats(result.items);
+
         this.loading.set(false);
       },
       error: (err) => {
@@ -65,6 +70,34 @@ export class InstructorMyCourses implements OnInit {
         this.error.set(err.message || 'Failed to load courses');
         this.loading.set(false);
       },
+    });
+  }
+
+  fetchCourseStats(courses: CourseDto[]): void {
+    if (!courses || courses.length === 0) return;
+
+    courses.forEach(course => {
+      this._courseService.getCourseStatistics(course.courseId).subscribe({
+        next: (stats: any) => {
+          if (stats) {
+            this.courses.update(currentCourses =>
+              currentCourses.map(c =>
+                c.courseId === course.courseId
+                  ? {
+                    ...c,
+                    enrollmentCount: stats.studentsCount || stats.enrollmentCount || 0,
+                    lessonsCount: stats.lecturesCount || stats.lessonsCount || 0,
+                    averageRating: stats.rating || stats.averageRating || 0
+                  }
+                  : c
+              )
+            );
+            // Re-calculate overall stats with new data
+            this.calculateStats(this.courses());
+          }
+        },
+        error: (err) => console.error(`Error fetching stats for course ${course.courseId}`, err)
+      });
     });
   }
 
@@ -113,14 +146,24 @@ export class InstructorMyCourses implements OnInit {
 
     observable.subscribe({
       next: () => {
-        this.courses.update(courses =>
-          courses.map(c =>
-            c.courseId === course.courseId
-              ? { ...c, isPublished: newState }
-              : c
-          )
-        );
-        this.calculateStats(this.courses());
+        const user = this._tokenService.getUser();
+        if (user && user.userId) {
+          // Re-fetch from server to ensure perfect sync
+          this.loadCourses(user.userId);
+        } else {
+          // Fallback to local update if no user (shouldn't happen)
+          this.courses.update(courses =>
+            courses.map(c =>
+              c.courseId === course.courseId
+                ? { ...c, isPublished: newState }
+                : c
+            )
+          );
+          this.calculateStats(this.courses());
+        }
+
+        const actionDone = newState ? 'published' : 'unpublished';
+        this._notificationService.showSuccess('Success', `Course ${actionDone} successfully!`);
       },
       error: (err) => {
         console.error(`Error ${action}ing course:`, err);
@@ -134,5 +177,24 @@ export class InstructorMyCourses implements OnInit {
       style: 'currency',
       currency: 'USD',
     }).format(amount);
+  }
+
+  getImageUrl(course: any): string {
+    // Check multiple possible properties for the image URL
+    // Prioritize ThumbnailUrl as requested, then fallbacks
+    let img = course.ThumbnailUrl || course.thumbnailUrl || course.imagePath || course.cover || course.thumbnail || null;
+
+    if (!img) {
+      return 'assets/images/course-placeholder.jpg';
+    }
+
+    // If it's a relative path, prepend base URL
+    if (!img.startsWith('http') && !img.startsWith('data:')) {
+      // Remove leading slash if present
+      if (img.startsWith('/')) img = img.substring(1);
+      img = `http://mahdacad.runasp.net/${img}`;
+    }
+
+    return img;
   }
 }

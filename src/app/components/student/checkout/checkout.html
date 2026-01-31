@@ -13,10 +13,6 @@
   <div *ngIf="error() && !loading() && !success()" class="state state-error">
     <div class="error-icon">❌</div>
     <p><strong>Error:</strong> {{ error() }}</p>
-    <button type="button" class="btn btn-secondary" (click)="goBack()">
-      <span class="btn-icon">⬅️</span>
-      Go Back
-    </button>
   </div>
 
   <!-- Success State -->
@@ -30,10 +26,6 @@
   <!-- Checkout Form -->
   <div *ngIf="!loading() && !error() && !success() && course()" class="checkout-container">
     <header class="checkout-header">
-      <button type="button" class="back-btn" (click)="goBack()">
-        <span class="btn-icon">⬅️</span>
-        Back to Course
-      </button>
       <h1>💳 Secure Checkout</h1>
       <p class="subtitle">Complete your payment to enroll in the course</p>
     </header>
@@ -89,16 +81,8 @@
               <span class="label-icon">💳</span>
               Card Number
             </label>
-            <input
-              type="text"
-              class="form-input"
-              [(ngModel)]="cardNumber"
-              name="cardNumber"
-              placeholder="1234 5678 9012 3456"
-              maxlength="19"
-              (input)="formatCardNumber($event)"
-              required
-            />
+            <input type="text" class="form-input" [(ngModel)]="cardNumber" name="cardNumber"
+              placeholder="1234 5678 9012 3456" maxlength="19" (input)="formatCardNumber($event)" required />
           </div>
 
           <!-- Card Holder -->
@@ -107,14 +91,8 @@
               <span class="label-icon">👤</span>
               Card Holder Name
             </label>
-            <input
-              type="text"
-              class="form-input"
-              [(ngModel)]="cardHolder"
-              name="cardHolder"
-              placeholder="John Doe"
-              required
-            />
+            <input type="text" class="form-input" [(ngModel)]="cardHolder" name="cardHolder" placeholder="John Doe"
+              required />
           </div>
 
           <!-- Expiry & CVV -->
@@ -127,12 +105,8 @@
               <div class="expiry-inputs">
                 <select class="form-select" [(ngModel)]="expiryMonth" name="expiryMonth" required>
                   <option value="">MM</option>
-                  <option
-                    *ngFor="let month of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-                    [value]="month"
-                  >
-                    {{ month < 10 ? '0' + month : month }}
-                  </option>
+                  <option *ngFor="let month of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" [value]="month">
+                    {{ month < 10 ? '0' + month : month }} </option>
                 </select>
                 <span class="separator">/</span>
                 <select class="form-select" [(ngModel)]="expiryYear" name="expiryYear" required>
@@ -149,16 +123,8 @@
                 <span class="label-icon">🔒</span>
                 CVV
               </label>
-              <input
-                type="password"
-                class="form-input"
-                [(ngModel)]="cvv"
-                name="cvv"
-                placeholder="123"
-                maxlength="3"
-                (input)="formatCVV($event)"
-                required
-              />
+              <input type="password" class="form-input" [(ngModel)]="cvv" name="cvv" placeholder="123" maxlength="3"
+                (input)="formatCVV($event)" required />
             </div>
           </div>
 
@@ -175,6 +141,42 @@
             {{ processing() ? 'Processing Payment...' : 'Pay ' + formatPrice(course()!.price) }}
           </button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student ID Modal -->
+  <div *ngIf="showIdModal()" class="modal-overlay">
+    <div class="modal-content id-modal">
+      <div class="modal-header">
+        <div class="success-check-icon">✅</div>
+        <h2>Payment Completed!</h2>
+      </div>
+
+      <div class="modal-body">
+        <p class="arabic-instruction">
+          الرجاء الحفاظ علي ال id الخاص بك وارساله للانستركتر حتي يتمكن من اضافتك في الجروب
+        </p>
+
+        <div class="id-display-box">
+          <span class="label">Your Student ID:</span>
+          <div class="id-value-row">
+            <code class="id-code">{{ studentId }}</code>
+            <button class="btn-copy" (click)="copyToClipboard()" title="Copy ID">
+              📋 Copy
+            </button>
+          </div>
+        </div>
+
+        <p class="hint-text">
+          Please send this ID to your instructor to be added to the course group.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-dashboard" (click)="closeIdModal()">
+          Go to Dashboard
+        </button>
       </div>
     </div>
   </div>

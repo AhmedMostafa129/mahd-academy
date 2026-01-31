@@ -13,25 +13,25 @@
     animation: float 8s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     z-index: 0;
-    
+
     &.element-1 {
       top: 10%;
       left: 5%;
       animation-delay: 0s;
     }
-    
+
     &.element-2 {
       top: 20%;
       right: 10%;
       animation-delay: 2s;
     }
-    
+
     &.element-3 {
       bottom: 15%;
       left: 8%;
       animation-delay: 4s;
     }
-    
+
     &.element-4 {
       bottom: 25%;
       right: 15%;
@@ -47,12 +47,12 @@
     margin-bottom: 2rem;
     position: relative;
     z-index: 10;
-    
+
     .header {
       flex: 1;
       text-align: center;
       margin: 0;
-      
+
       h1 {
         font-size: 2rem;
         font-weight: 600;
@@ -65,28 +65,28 @@
         animation: fadeInDown 0.6s ease-out;
       }
     }
-    
+
     .back-button-container {
       z-index: 10;
-      
+
       ::ng-deep .back-button {
         background: rgba(255, 255, 255, 0.9);
         border: 1px solid rgba(30, 27, 75, 0.2);
         color: #1e1b4b;
         box-shadow: 0 4px 12px rgba(30, 27, 75, 0.15);
-        
+
         &:hover {
           background: white;
           box-shadow: 0 6px 16px rgba(30, 27, 75, 0.25);
           transform: translateY(-3px);
         }
-        
+
         .back-icon {
           color: #1e1b4b;
         }
       }
     }
-    
+
     .spacer {
       width: 120px; // Match the width of the back button for perfect centering
     }
@@ -128,7 +128,7 @@
     opacity: 0;
     transform: translateY(24px);
     animation: card-in 0.6s ease forwards;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -165,11 +165,11 @@
     opacity: 0;
     transform: translateY(24px);
     animation: card-in 0.6s ease forwards;
-    
+
     &:nth-child(2) {
       animation-delay: 0.1s;
     }
-    
+
     &:nth-child(3) {
       animation-delay: 0.2s;
     }
@@ -202,72 +202,91 @@
     }
   }
 
-  .courses-list {
+  .courses-table {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-  }
-
-  .course-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
+    width: 100%;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
     overflow: hidden;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(28, 111, 43, 0.1);
-      transition: width 0.3s ease;
-      z-index: 0;
+
+    .table-header {
+      display: flex;
+      background: #f8fafc;
+      padding: 1rem;
+      border-bottom: 2px solid #e2e8f0;
+      font-weight: 600;
+      color: #64748b;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    &:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      
-      &::before {
-        width: 100%;
+    .table-row {
+      display: flex;
+      align-items: center;
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: white;
+
+      &:last-child {
+        border-bottom: none;
       }
-    }
 
-    .course-info {
-      flex: 1;
-      position: relative;
-      z-index: 1;
+      &:hover {
+        background: #f8fafc;
+        transform: scale(1.005);
+        box-shadow: inset 4px 0 0 #1c6f2b;
+      }
 
       h3 {
         font-size: 1rem;
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 0.25rem;
-      }
-
-      p {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin: 0;
+        margin: 0 0 0.25rem 0;
       }
     }
 
-    .course-revenue {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #10b981;
-      position: relative;
-      z-index: 1;
+    .col-title {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+
+      .price-badge {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+    }
+
+    .col-students {
+      flex: 1;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .count {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #334155;
+      }
+
+      .label {
+        font-size: 0.7rem;
+        color: #64748b;
+        text-transform: uppercase;
+      }
+    }
+
+    .col-revenue {
+      flex: 1;
+      text-align: right;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1c6f2b;
     }
   }
 
@@ -285,7 +304,7 @@
     background: #f9fafb;
     border-radius: 12px;
     transition: all 0.3s ease;
-    
+
     &:hover {
       background: #f1f5f9;
       transform: translateY(-2px);
@@ -318,12 +337,16 @@
 
 // Animations
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
+
   33% {
     transform: translateY(-20px) translateX(10px);
   }
+
   66% {
     transform: translateY(10px) translateX(-15px);
   }
@@ -333,6 +356,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -343,6 +367,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -354,6 +379,7 @@
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -361,10 +387,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.9;
@@ -375,30 +404,30 @@
 @media (max-width: 768px) {
   .earnings-page {
     padding: 1.5rem 1rem;
-    
+
     .header-container {
       flex-direction: column;
       gap: 1rem;
-      
+
       .header {
         order: 2;
         text-align: center;
       }
-      
+
       .back-button-container {
         order: 1;
         align-self: flex-start;
       }
-      
+
       .spacer {
         display: none;
       }
     }
-    
+
     .header h1 {
       font-size: 1.75rem;
     }
-    
+
     .revenue-card .revenue-amount {
       font-size: 2rem;
     }

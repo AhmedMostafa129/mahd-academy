@@ -4,12 +4,11 @@ import { Router } from '@angular/router';
 import { EnrollmentService } from '../../../core/services/Enrollment/enrollment';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { EnrollmentDto, PagedResult } from '../../../core/interfaces/enrollment.interface';
-import { BackButton } from '../../shared/back-button/back-button';
 
 @Component({
   selector: 'app-my-courses',
   standalone: true,
-  imports: [CommonModule, BackButton],
+  imports: [CommonModule],
   templateUrl: './my-courses.html',
   styleUrl: './my-courses.scss',
 })
@@ -76,7 +75,7 @@ export class MyCourses implements OnInit {
             this.enrollments.set(mappedEnrollments);
             this.pageNumber.set(response.pageNumber || 1);
             this.pageSize.set(response.pageSize || 10);
-            
+
             // Calculate total pages
             const calculatedTotalPages = Math.ceil(totalCount / this.pageSize());
             this.totalPages.set(calculatedTotalPages);
@@ -123,7 +122,7 @@ export class MyCourses implements OnInit {
       this.error.set('This course is no longer available.');
       return;
     }
-    this._router.navigate(['/courses', courseId]).catch(err => {
+    this._router.navigate(['/student/courses', courseId]).catch(err => {
       console.error('❌ Navigation failed:', err);
       this.error.set('Failed to navigate to course. The course may no longer exist.');
     });
@@ -166,7 +165,21 @@ export class MyCourses implements OnInit {
    * Get course thumbnail with fallback
    */
   getCourseThumbnail(enrollment: EnrollmentDto): string {
-    return enrollment.courseThumbnail || enrollment.thumbnailUrl || '';
+    const thumb = enrollment.courseThumbnail || enrollment.thumbnailUrl || '';
+    return this.buildImageUrl(thumb);
+  }
+
+  private buildImageUrl(imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+
+    // If it's already a full URL (http/https) or base64, return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('data:')) {
+      return imageUrl;
+    }
+
+    // Otherwise, prepend the API base URL
+    const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    return `http://mahdacad.runasp.net/${cleanPath}`;
   }
 
   /**

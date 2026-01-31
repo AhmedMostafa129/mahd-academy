@@ -18,7 +18,7 @@ import {
 export class AuthService {
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
-  private apiUrl = 'http://mahd3.runasp.net';
+  private apiUrl = environment.apiUrl + '/auth';
 
   /**
    * Register a new user
@@ -27,7 +27,7 @@ export class AuthService {
     const headers = new HttpHeaders({
       'X-Device-Id': environment.deviceId
     });
-    const registerapiurl=`http://mahd3.runasp.net/api/auth/register`
+    const registerapiurl = `${this.apiUrl}/register`
     console.log(registerapiurl);
     console.log('Device ID:', environment.deviceId);
 
@@ -52,7 +52,7 @@ export class AuthService {
     });
 
     return this.http.post<AuthResponseDto>(
-      `http://mahd3.runasp.net/api/auth/register`,
+      `${this.apiUrl}/register`,
       registerData,
       { headers }
     );
@@ -66,11 +66,11 @@ export class AuthService {
       'X-Device-Id': environment.deviceId
     });
 
-    console.log('Logging in user:', { apiUrl: environment.apiUrl, email: loginData.email });
+    console.log('Logging in user:', { apiUrl: this.apiUrl, email: loginData.email });
     console.log('Device ID:', environment.deviceId);
 
     return this.http.post<AuthResponseDto>(
-      `http://mahd3.runasp.net/api/auth/login`,
+      `${this.apiUrl}/login`,
       loginData,
       { headers }
     ).pipe(
@@ -90,7 +90,7 @@ export class AuthService {
     });
 
     return this.http.post<AuthResponseDto>(
-      `http://mahd3.runasp.net/api/auth/refresh-token`,
+      `${this.apiUrl}/refresh-token`,
       refreshToken,
       { headers }
     ).pipe(
@@ -104,7 +104,7 @@ export class AuthService {
   logout(): Observable<any> {
     const refreshToken = this.tokenService.getRefreshToken();
 
-    return this.http.post(`http://mahd3.runasp.net/api/auth/logout`, refreshToken).pipe(
+    return this.http.post(`${this.apiUrl}/logout`, refreshToken).pipe(
       tap(() => {
         this.tokenService.clearAll();
       })
@@ -116,7 +116,7 @@ export class AuthService {
    */
   verifyEmail(userId: string, code: string): Observable<any> {
     return this.http.post(
-      `http://mahd3.runasp.net/api/auth/verify-email?userId=${userId}&code=${code}`,
+      `${this.apiUrl}/verify-email?userId=${userId}&code=${code}`,
       {}
     );
   }
@@ -125,42 +125,42 @@ export class AuthService {
    * Resend verification code
    */
   resendVerification(email: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/auth/resend-verification`, email);
+    return this.http.post(`${this.apiUrl}/resend-verification`, email);
   }
 
   /**
    * Change password
    */
   changePassword(data: ChangePasswordDto): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/auth/change-password`, data);
+    return this.http.post(`${this.apiUrl}/change-password`, data);
   }
 
   /**
    * Request password reset
    */
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/auth/forgot-password`, { email });
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
   }
 
   /**
    * Reset password with code
    */
   resetPassword(data: ResetPasswordDto): Observable<any> {
-    return this.http.post(`http://mahd3.runasp.net/api/auth/reset-password`, data);
+    return this.http.post(`${this.apiUrl}/reset-password`, data);
   }
 
   /**
    * Get all active devices/tokens
    */
   getActiveDevices(): Observable<ActiveDeviceDto[]> {
-    return this.http.get<ActiveDeviceDto[]>(`http://mahd3.runasp.net/api/auth/devices`);
+    return this.http.get<ActiveDeviceDto[]>(`${this.apiUrl}/devices`);
   }
 
   /**
    * Revoke a specific device token
    */
   revokeDeviceToken(deviceId: string): Observable<any> {
-    return this.http.delete(`http://mahd3.runasp.net/api/auth/devices/${deviceId}`);
+    return this.http.delete(`${this.apiUrl}/devices/${deviceId}`);
   }
 
   /**

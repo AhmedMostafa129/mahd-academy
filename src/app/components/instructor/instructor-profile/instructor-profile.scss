@@ -218,12 +218,17 @@ $text-light: #718096;
     border: 4px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     position: relative;
-    overflow: hidden;
+    // Removed overflow: hidden to allow the plus icon to be outside the frame
     animation: fadeIn 0.8s ease-out;
     transition: transform 0.3s ease;
 
     &:hover {
       transform: scale(1.05);
+
+      .avatar-overlay {
+        background: #10b981;
+        transform: scale(1.1);
+      }
     }
 
     mat-icon {
@@ -238,7 +243,37 @@ $text-light: #718096;
       height: 100%;
       object-fit: cover;
       object-position: center;
+      border-radius: 50%; // Keep the image circular
+    }
+
+    .avatar-overlay {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: #34d399;
       border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 3px solid #1e1b4b; // Match header background
+      transition: all 0.3s ease;
+      z-index: 10;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      &:hover {
+        background: #10b981;
+        transform: scale(1.1);
+      }
     }
   }
 
@@ -308,6 +343,36 @@ $text-light: #718096;
       margin-bottom: 1.5rem;
       max-width: 600px;
       color: #e0e7ff;
+    }
+
+    .phone-number {
+      font-size: 1.1rem;
+      color: #c7d2fe;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      width: fit-content;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(5px);
+      }
+
+      .phone-icon {
+        font-size: 1.3rem;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+
+      .phone-text {
+        font-weight: 600;
+      }
     }
 
     .stats {

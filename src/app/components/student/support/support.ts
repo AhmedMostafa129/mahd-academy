@@ -7,7 +7,6 @@ import { SupportService } from '../../../core/services/Support/support';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { NotificationService } from '../../../core/services/NotificationService/notification-service';
 import { AdminService } from '../../../core/services/AdminService/admin-service';
-import { BackButton } from '../../shared/back-button/back-button';
 import {
   SupportTicketDto,
   SupportTicketCreateDto,
@@ -18,7 +17,7 @@ import {
 @Component({
   selector: 'app-student-support',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButton],
+  imports: [CommonModule, FormsModule],
   templateUrl: './support.html',
   styleUrl: './support.scss',
 })
@@ -58,6 +57,10 @@ export class StudentSupport implements OnInit, OnDestroy {
     subject: '',
     description: '',
   };
+
+  // Delete confirmation modal state
+  showDeleteModal = signal<boolean>(false);
+  ticketToDelete: SupportTicketDto | null = null;
 
   // Polling control
   private pollingSub?: Subscription;
@@ -245,7 +248,7 @@ export class StudentSupport implements OnInit, OnDestroy {
         console.log('✅ Ticket created successfully:', result);
         this.creating.set(false);
         this.loadTickets(1); // Reload first page
-        alert('Ticket created successfully');
+        this._notificationService.showSuccess('Success', 'Ticket created successfully');
       },
       error: (err) => {
         console.error('❌ Error creating ticket:', err);
@@ -301,11 +304,60 @@ export class StudentSupport implements OnInit, OnDestroy {
     this.loadTickets(this.pageNumber());
   }
 
-  // Navigate back to dashboard
-  backToDashboard(): void {
-    console.log('⬅️ Navigating back to dashboard');
-    this._router.navigate(['/student/dashboard']);
+  // Delete ticket - show confirmation modal
+  deleteTicket(ticket: SupportTicketDto, event: Event): void {
+    event.stopPropagation(); // Prevent card click event
+
+    console.log('🗑️ Preparing to delete ticket:', ticket.ticketId);
+    this.ticketToDelete = ticket;
+    this.showDeleteModal.set(true);
   }
+
+  // Confirm delete after modal confirmation
+  confirmDelete(): void {
+    if (!this.ticketToDelete) {
+      return;
+    }
+
+    const ticketId = this.ticketToDelete.ticketId;
+    console.log('🗑️ Confirming delete for ticket:', ticketId);
+
+    this._supportService.deleteTicket(ticketId).subscribe({
+      next: () => {
+        console.log('✅ Ticket deleted successfully');
+        this._notificationService.showSuccess('Success', 'Ticket deleted successfully');
+
+        // Close modal
+        this.showDeleteModal.set(false);
+        this.ticketToDelete = null;
+
+        // Reload tickets list
+        this.loadTickets(this.pageNumber());
+
+        // If the deleted ticket was currently selected, deselect it
+        if (this.selectedTicket()?.ticketId === ticketId) {
+          this.selectedTicket.set(null);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error deleting ticket:', err);
+        const errorMsg = err.error?.message || err.message || 'Failed to delete ticket';
+        this._notificationService.showError('Error', errorMsg);
+
+        // Close modal even on error
+        this.showDeleteModal.set(false);
+        this.ticketToDelete = null;
+      }
+    });
+  }
+
+  // Cancel delete
+  cancelDelete(): void {
+    console.log('❌ Delete cancelled');
+    this.showDeleteModal.set(false);
+    this.ticketToDelete = null;
+  }
+
 
   // Check for resolved tickets and show notifications
   private checkForResolvedTickets(newTickets: SupportTicketDto[]): void {

@@ -1,0 +1,38 @@
+<div class="chat-container" dir="rtl">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-content">
+            <h3 class="chat-title">🤖 المساعد الذكي</h3>
+            <button class="close-button" (click)="onClose()" aria-label="إغلاق">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Messages Area -->
+    <div class="messages-container" #messagesContainer>
+        <app-chat-message *ngFor="let message of messages" [message]="message">
+        </app-chat-message>
+
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="loading-indicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-container">
+        <div class="input-wrapper">
+            <input type="text" class="message-input" [(ngModel)]="userInput" (keypress)="onKeyPress($event)"
+                [disabled]="isLoading" placeholder="اكتب رسالتك هنا..." autocomplete="off" />
+            <button class="send-button" (click)="sendMessage()" [disabled]="!userInput.trim() || isLoading"
+                aria-label="إرسال">
+                <span class="send-icon">➤</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -499,6 +499,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -509,6 +510,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -520,6 +522,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -533,20 +536,24 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -579,5 +586,159 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 
   .payment-form {
     padding: 1.5rem;
+  }
+}
+
+// ============ ID MODAL ============
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content.id-modal {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  transform-origin: center;
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  .modal-header {
+    margin-bottom: 2rem;
+
+    .success-check-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+      animation: bounce 0.8s ease infinite;
+    }
+
+    h2 {
+      color: $primary;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+      background: $primary-gradient;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .modal-body {
+    margin-bottom: 2rem;
+
+    .arabic-instruction {
+      font-size: 1.1rem;
+      color: $text-dark;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      direction: rtl;
+    }
+
+    .id-display-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 2px dashed $success;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      .label {
+        display: block;
+        font-size: 0.9rem;
+        color: #047857;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        text-align: left;
+      }
+
+      .id-value-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        justify-content: space-between;
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+        .id-code {
+          font-family: 'Monaco', 'Courier New', monospace;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: $text-dark;
+          letter-spacing: 1px;
+        }
+
+        .btn-copy {
+          background: transparent;
+          border: none;
+          color: $success;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          padding: 0.5rem;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(16, 185, 129, 0.1);
+          }
+        }
+      }
+    }
+
+    .hint-text {
+      font-size: 0.9rem;
+      color: $text-light;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+
+    .btn-dashboard {
+      background: $primary-gradient;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+      }
+    }
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }

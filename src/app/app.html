@@ -1,4 +1,11 @@
 <div class="container-fluid">
   <router-outlet />
   <app-notification-toast />
+
+  <!-- Chatbot UI - Button always visible -->
+  <app-chat-button (chatToggle)="toggleChat()"></app-chat-button>
+
+  <!-- Chat container shown/hidden based on state -->
+  <app-chat-container *ngIf="isChatOpen" (close)="onChatClose()">
+  </app-chat-container>
 </div>

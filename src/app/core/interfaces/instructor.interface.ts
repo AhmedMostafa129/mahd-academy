@@ -5,6 +5,7 @@ export interface InstructorDto {
   email: string;
   photoUrl?: string | null;
   bio?: string | null;
+  phoneNumber?: string | null;
   coursesCount: number;
   averageRating: number;
 }

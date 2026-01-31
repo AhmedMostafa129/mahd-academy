@@ -19,7 +19,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { BackButton } from '../../shared/back-button/back-button';
+
 import { PhotoUploadDialogComponent } from '../shared/photo-upload-dialog/photo-upload-dialog';
 
 @Component({
@@ -34,7 +34,7 @@ import { PhotoUploadDialogComponent } from '../shared/photo-upload-dialog/photo-
         MatIconModule,
         MatChipsModule,
         MatProgressSpinnerModule,
-        BackButton,
+
         PhotoUploadDialogComponent
     ],
     templateUrl: './instructor-profile.html',
@@ -176,7 +176,7 @@ export class InstructorProfileComponent implements OnInit {
     }
 
     loadCourses(instructorId: string): void {
-        this._courseService.getCoursesByInstructor(instructorId).subscribe({
+        this._courseService.getCoursesByInstructor(instructorId, 1, 100).subscribe({
             next: (result: any) => {
                 // Handle PagedResult
                 let coursesList: CourseDto[] = [];
@@ -306,15 +306,18 @@ export class InstructorProfileComponent implements OnInit {
         this.publicInstructor.update(curr => curr ? { ...curr, photoUrl: newUrl } : null);
     }
 
+    getCourseLink(courseId: string): string {
+        const role = this._tokenService.getUser()?.role;
+        return role === 'Student' ? `/student/courses/${courseId}` : `/courses/${courseId}`;
+    }
+
     buildImageUrl(url: string | null | undefined): string | null {
         if (!url) return null;
         if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
             return url;
         }
         // If it's a relative path, append base URL
-        // Hardcoding base URL based on Admin implementation finding: http://mahdlms.runasp.net/
-        // ideally this comes from environment but for now matching the existing pattern
-        const baseUrl = 'http://mahdlms.runasp.net/';
+        const baseUrl = 'http://mahdacad.runasp.net/';
         const cleanPath = url.startsWith('/') ? url.substring(1) : url;
         return `${baseUrl}${cleanPath}`;
     }

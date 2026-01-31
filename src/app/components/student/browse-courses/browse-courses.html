@@ -3,11 +3,7 @@
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
     <header class="page-header">
-        <button class="btn-back-dashboard" (click)="goToDashboard()">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to Dashboard</span>
-        </button>
-        
+
         <div class="header-content">
             <h1 class="page-title">📚 Browse Courses</h1>
             <p class="page-subtitle">Discover and enroll in courses to start your learning journey</p>
@@ -49,12 +45,14 @@
         </div>
 
         <!-- Courses Grid -->
-        <div *ngIf="courses().length > 0" class="courses-grid">
+        <div *ngIf="courses().length > 0" class="courses-grid" style="margin-right: 2rem;">
             <div *ngFor="let course of courses()" class="course-card">
                 <div class="course-header">
                     <div class="course-thumbnail">
-                        <img *ngIf="course.thumbnailUrl" [src]="course.thumbnailUrl" [alt]="course.title" />
-                        <div *ngIf="!course.thumbnailUrl" class="thumbnail-placeholder">
+                        <img *ngIf="getCourseThumbnail(course)" [src]="getCourseThumbnail(course)" [alt]="course.title"
+                            (error)="onImageError($event)" />
+                        <div class="thumbnail-placeholder"
+                            [style.display]="getCourseThumbnail(course) ? 'none' : 'grid'">
                             <span>📖</span>
                         </div>
                     </div>
@@ -117,4 +115,8 @@
             </button>
         </div>
     </div>
+
+    <!-- Payment Modal -->
+    <app-payment-modal [data]="paymentModalData()" [isOpen]="showPaymentModal()" (closeModal)="closePaymentModal()"
+        (paymentSuccess)="onPaymentSuccess($event)" (paymentError)="onPaymentError($event)"></app-payment-modal>
 </div>

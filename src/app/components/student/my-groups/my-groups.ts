@@ -68,7 +68,7 @@ export class MyGroups implements OnInit {
   }
 
   /**
-   * View group details - Modified to navigate to instructor's Manage Groups page
+   * View group details
    */
   viewGroupDetails(groupId: string): void {
     if (!groupId) {
@@ -77,10 +77,9 @@ export class MyGroups implements OnInit {
       return;
     }
 
-    // Navigate to instructor's Manage Groups page instead of student group details
-    this._router.navigate(['/instructor/groups']).catch((err) => {
+    this._router.navigate(['/student/my-groups', groupId]).catch((err) => {
       console.error('❌ Navigation failed:', err);
-      this.error.set('Failed to navigate to group management. You may not have permission to access this page.');
+      this.error.set('Failed to navigate to group details.');
     });
   }
 

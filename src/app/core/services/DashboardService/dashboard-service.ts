@@ -21,7 +21,7 @@ export class DashboardService {
    */
   getStudentDashboard(studentId: string): Observable<StudentDashboardDto> {
     return this.http.get<StudentDashboardDto>(
-      `http://mahd3.runasp.net/api/dashboard/student/${studentId}`
+      `${this.apiUrl}/dashboard/student/${studentId}`
     );
   }
 
@@ -29,13 +29,53 @@ export class DashboardService {
    * Get instructor dashboard data
    */
   getInstructorDashboard(instructorId: string): Observable<InstructorDashboardDto> {
-    const url = `http://mahd3.runasp.net/api/dashboard/instructor/${instructorId}`;
-    console.log('📊 Dashboard Service:', {
-      apiUrl: environment.apiUrl,
-      fullUrl: url,
-      instructorId
-    });
-    return this.http.get<InstructorDashboardDto>(url);
+    const url = `${this.apiUrl}/dashboard/instructor/${instructorId}`;
+    return this.http.get<any>(url).pipe(
+      map(data => {
+        if (data && data.topCourses) {
+          data.topCourses = data.topCourses.map((c: any) => this.mapCourse(c));
+        }
+        return data as InstructorDashboardDto;
+      })
+    );
+  }
+
+  private mapCourse(course: any): any {
+    if (!course) return course;
+    // Normalize courseId
+    const courseId = course.courseId || course.id || course._id || '';
+
+    // Normalize isPublished
+    let isPublished = false;
+
+    // Check robustly for visibility first (CourseVisibility.Public = 0)
+    if (course.visibility !== undefined) {
+      const v = String(course.visibility).toLowerCase();
+      // 0 or Public means published
+      isPublished = v === '0' || v === 'public' || v === 'published' || course.visibility === 0;
+    }
+    // Then check explicit boolean flags
+    else if (course.isPublished !== undefined) {
+      isPublished = !!course.isPublished;
+    } else if (course.is_published !== undefined) {
+      isPublished = !!course.is_published;
+    } else if (course.Published !== undefined) {
+      isPublished = !!course.Published;
+    }
+    // Finally check status string/number
+    else if (course.status !== undefined) {
+      const s = String(course.status).toLowerCase();
+      isPublished = s === 'published' || s === 'active' || s === '1' || course.status === 1;
+    }
+
+    return {
+      ...course,
+      courseId,
+      isPublished,
+      enrollmentCount: course.enrollmentCount || course.studentsCount || 0,
+      lessonsCount: course.lessonsCount || course.lecturesCount || 0,
+      averageRating: course.averageRating || course.rating || 0
+    };
   }
 
   /**
@@ -43,7 +83,7 @@ export class DashboardService {
    */
   getAdminDashboard(): Observable<AdminDashboardDto> {
     return this.http.get<AdminDashboardDto>(
-      `http://mahd3.runasp.net/api/dashboard/admin`
+      `${this.apiUrl}/dashboard/admin`
     );
   }
 
@@ -51,21 +91,21 @@ export class DashboardService {
    * Get dashboard data (generic - for backward compatibility)
    */
   getDashboardData(): Observable<any> {
-    return this.http.get(`http://mahd3.runasp.net/api/dashboard/admin`);
+    return this.http.get(`${this.apiUrl}/dashboard/admin`);
   }
 
   /**
    * Get users list (for admin dashboard)
    */
   getUsers(): Observable<any> {
-    return this.http.get(`http://mahd3.runasp.net/api/users`);
+    return this.http.get(`${this.apiUrl}/users`);
   }
 
   /**
    * Get courses list (for admin dashboard)
    */
   getCourses(): Observable<any> {
-    return this.http.get(`http://mahd3.runasp.net/api/courses`);
+    return this.http.get(`${this.apiUrl}/courses`);
   }
 
   /**

@@ -4,10 +4,12 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth-service';
 import { AdminProfileModalComponent } from '../../shared/admin-profile-modal/admin-profile-modal';
 
+import { NotificationToast } from '../../../../components/shared/notification-toast';
+
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, AdminProfileModalComponent],
+  imports: [CommonModule, RouterModule, AdminProfileModalComponent, NotificationToast],
   templateUrl: './layout.html',
   styleUrls: ['./layout.scss']
 })

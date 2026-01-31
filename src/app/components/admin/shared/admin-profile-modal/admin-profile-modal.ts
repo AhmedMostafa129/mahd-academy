@@ -154,7 +154,8 @@ export class AdminProfileModalComponent implements OnChanges {
     if (!url) return null;
     if (url.startsWith('http') || url.startsWith('data:')) return url;
     const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-    return `http://mahdlms.runasp.net/${cleanPath}`;
+    // Use the correct base URL from environment or constant
+    return `http://mahdacad.runasp.net/${cleanPath}`;
   }
 
   onPhotoSelected(event: any) {

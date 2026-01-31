@@ -49,14 +49,14 @@
     <div *ngIf="!loading() && !error() && courses().length > 0" class="courses-grid">
       <div *ngFor="let course of courses(); let i = index" class="course-card" [style.animation-delay]="i * 0.1 + 's'">
         <div class="course-image">
-          <img [src]="course.thumbnailUrl || 'assets/images/course-placeholder.jpg'" [alt]="course.title">
-          <button 
-            *ngIf="course.isPublished"
-            class="status-badge btn-status published"
-            (click)="togglePublishStatus(course, $event)"
-            title="Click to unpublish"
-          >
+          <img [src]="getImageUrl(course)" [alt]="course.title">
+          <button *ngIf="course.isPublished" class="status-badge btn-status published"
+            (click)="togglePublishStatus(course, $event)" title="Click to unpublish">
             Published
+          </button>
+          <button *ngIf="!course.isPublished" class="status-badge btn-status draft"
+            (click)="togglePublishStatus(course, $event)" title="Click to publish">
+            Draft
           </button>
         </div>
 

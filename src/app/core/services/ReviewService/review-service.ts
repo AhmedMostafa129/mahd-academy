@@ -32,7 +32,7 @@ export class ReviewService {
       .set('pageSize', pageSize.toString());
 
     return this.http
-      .get<any>(`http://mahd3.runasp.net/api/reviews/course/${courseId}`, { params })
+      .get<any>(`${this.apiUrl}/reviews/course/${courseId}`, { params })
       .pipe(
         tap(res => console.debug('[ReviewService] getCourseReviews raw:', res)),
         map((res: any) => ({
@@ -58,7 +58,7 @@ export class ReviewService {
       .set('pageSize', pageSize.toString());
 
     return this.http
-      .get<any>(`http://mahd3.runasp.net/api/reviews/instructor/${instructorId}`, { params })
+      .get<any>(`${this.apiUrl}/reviews/instructor/${instructorId}`, { params })
       .pipe(
         tap(res => console.debug('[ReviewService] getInstructorReviews raw:', res)),
         map((res: any) => ({
@@ -75,28 +75,28 @@ export class ReviewService {
    * Create a course review (Student or Admin)
    */
   createCourseReview(data: CourseReviewCreateDto): Observable<CourseReviewDto> {
-    return this.http.post<CourseReviewDto>(`http://mahd3.runasp.net/api/reviews/course`, data);
+    return this.http.post<CourseReviewDto>(`${this.apiUrl}/reviews/course`, data);
   }
 
   /**
    * Create an instructor review (Student or Admin)
    */
   createInstructorReview(data: InstructorReviewCreateDto): Observable<InstructorReviewDto> {
-    return this.http.post<InstructorReviewDto>(`http://mahd3.runasp.net/api/reviews/instructor`, data);
+    return this.http.post<InstructorReviewDto>(`${this.apiUrl}/reviews/instructor`, data);
   }
 
   /**
    * Update a review (Own review only)
    */
   updateReview(reviewId: string, data: ReviewUpdateDto): Observable<any> {
-    return this.http.put<any>(`http://mahd3.runasp.net/api/reviews/${reviewId}`, data);
+    return this.http.put<any>(`${this.apiUrl}/reviews/${reviewId}`, data);
   }
 
   /**
    * Delete a review (Own review or Admin)
    */
   deleteReview(reviewId: string): Observable<any> {
-    return this.http.delete<any>(`http://mahd3.runasp.net/api/reviews/${reviewId}`);
+    return this.http.delete<any>(`${this.apiUrl}/reviews/${reviewId}`);
   }
 }
 
