@@ -11,7 +11,7 @@ function generateDeviceId(): string {
 export const environment = {
   production: false,
   // pointing to production backend to bypass Vercel file replacement issues
-  apiUrl: 'http://mahdacad.runasp.net/api',
+  apiUrl: 'https://mahdacad.runasp.net/api',
   deviceId: generateDeviceId(),
   // n8n webhook URL for chatbot
   n8nWebhookUrl: 'https://sobhy012.app.n8n.cloud/webhook/23c13b50-4750-42ce-a230-bf62afaa27f8/chat'
