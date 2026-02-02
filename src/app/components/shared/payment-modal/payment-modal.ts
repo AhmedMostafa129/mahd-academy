@@ -91,30 +91,30 @@ export class PaymentModal {
         });
     } else {
       this.error.set('Invalid payment data');
-      this.loading.set(false);
-    }
+          this.loading.set(false);
+        }
   }
 
   private handlePaymentResponse(response: PaymentInitializationResponse): void {
-    this.loading.set(false);
-    this.paymentSuccess.emit(response);
+      this.loading.set(false);
+      this.paymentSuccess.emit(response);
     
-    // Store payment info for verification after redirect
-    localStorage.setItem('pendingPaymentId', response.paymentId);
-    localStorage.setItem('pendingPaymentType', this.data?.type || 'course');
+      // Store payment info for verification after redirect
+      localStorage.setItem('pendingPaymentId', response.paymentId);
+      localStorage.setItem('pendingPaymentType', this.data?.type || 'course');
     
-    // Redirect to Paymob payment page
-    window.location.href = response.paymobPaymentUrl;
-  }
+      // Redirect to Paymob payment page
+      window.location.href = response.paymobPaymentUrl;
+    }
 
   private handlePaymentError(err: any): void {
-    this.loading.set(false);
-    const errorMessage = err.error?.message || err.message || 'Payment initialization failed';
-    this.error.set(errorMessage);
-    this.paymentError.emit(errorMessage);
-  }
+      this.loading.set(false);
+      const errorMessage = err.error?.message || err.message || 'Payment initialization failed';
+      this.error.set(errorMessage);
+      this.paymentError.emit(errorMessage);
+    }
 
-  preventClose(event: Event): void {
-    event.stopPropagation();
-  }
+    preventClose(event: Event): void {
+      event.stopPropagation();
+    }
 }

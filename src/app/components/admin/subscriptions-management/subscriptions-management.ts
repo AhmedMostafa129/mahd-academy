@@ -177,15 +177,18 @@ export class SubscriptionsManagement implements OnInit {
   // Delete Confirmation Modal State
   showDeleteModal = signal<boolean>(false);
   packageToDeleteId = signal<string | null>(null);
+  packageToDeleteName = signal<string | null>(null);
 
-  openDeleteModal(packageId: string): void {
-    this.packageToDeleteId.set(packageId);
+  openDeleteModal(pkg: SubscriptionPackageDto): void {
+    this.packageToDeleteId.set(pkg.packageId);
+    this.packageToDeleteName.set(pkg.name);
     this.showDeleteModal.set(true);
   }
 
   closeDeleteModal(): void {
     this.showDeleteModal.set(false);
     this.packageToDeleteId.set(null);
+    this.packageToDeleteName.set(null);
   }
 
   confirmDelete(): void {
@@ -347,8 +350,8 @@ export class SubscriptionsManagement implements OnInit {
       });
   }
 
-  deletePackage(packageId: string): void {
-    this.openDeleteModal(packageId);
+  deletePackage(pkg: SubscriptionPackageDto): void {
+    this.openDeleteModal(pkg);
   }
 
   // Image handling methods

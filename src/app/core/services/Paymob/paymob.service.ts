@@ -57,6 +57,17 @@ export class PaymobService {
   }
 
   /**
+   * Process payment callback from Paymob
+   * This is used to confirm the payment status on the backend
+   */
+  confirmPaymentCallback(payload: any): Observable<PaymentVerificationResponse> {
+    return this.http.post<PaymentVerificationResponse>(
+      `${this.apiUrl}/paymob/callback`,
+      payload
+    );
+  }
+
+  /**
    * Build the redirect URL for payment result page
    */
   getPaymentResultUrl(paymentId: string, success: boolean): string {
