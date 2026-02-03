@@ -160,8 +160,8 @@ $text-light: #718096;
 .profile-header {
   background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
   color: #fff;
-  padding: 4rem 0 3rem;
-  margin-bottom: 3rem;
+  padding: 2.5rem 0 2rem; // Reduced padding
+  margin-bottom: 2rem; // Reduced margin
   border-radius: 0 0 32px 32px;
   position: relative;
   overflow: hidden;
@@ -208,8 +208,8 @@ $text-light: #718096;
   }
 
   .avatar-placeholder {
-    width: 140px;
-    height: 140px;
+    width: 110px; // Reduced from 140px
+    height: 110px; // Reduced from 140px
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
@@ -232,9 +232,9 @@ $text-light: #718096;
     }
 
     mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
+      font-size: 48px; // Reduced from 64px
+      width: 48px;
+      height: 48px;
       color: #fff;
     }
 
@@ -345,33 +345,182 @@ $text-light: #718096;
       color: #e0e7ff;
     }
 
-    .phone-number {
-      font-size: 1.1rem;
-      color: #c7d2fe;
-      margin-bottom: 1rem;
+    .location-age-section {
+      margin-top: 1.5rem;
+    }
+
+    .details-display {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      width: fit-content;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      .detail-item {
+        font-size: 1.1rem;
+        color: #c7d2fe;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        margin: 0; // Reset p margin
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          transform: translateX(5px);
+        }
+
+        .icon {
+          font-size: 1.3rem;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .text {
+          font-weight: 600;
+        }
+      }
+
+      .btn-icon-edit {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 6px 12px; // Adjusted padding for text
+        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px; // Space between icon and text
+        border-radius: 20px; // Pill shape
+        transition: all 0.2s;
+        margin-left: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1); // Subtle border
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+
+        span {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          color: white;
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+
+    .details-edit {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1rem;
+      border-radius: 16px;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column; // Keep main container vertical to stack actions below inputs
+      gap: 1rem;
+      width: fit-content;
+      animation: fadeIn 0.3s ease;
+      min-width: 600px; // Ensure enough space for horizontal items
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateX(5px);
+      .edit-row {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        // flex-wrap: wrap; // Prevent wrapping to keep them next to each other
+
+        &.horizontal-layout {
+          flex-direction: row;
+        }
+
+        .birthdate-group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          white-space: nowrap; // Keep label next to input
+        }
+
+        .date-label {
+          color: #e0e7ff;
+          font-weight: 600;
+          font-size: 0.95rem;
+        }
       }
 
-      .phone-icon {
-        font-size: 1.3rem;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      .detail-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        min-width: 150px;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:focus {
+          border-color: #34d399;
+          background: rgba(255, 255, 255, 0.15);
+        }
+
+        &[type="date"] {
+          color-scheme: dark; // For proper date picker contrast
+        }
       }
 
-      .phone-text {
-        font-weight: 600;
+      .details-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+
+        button {
+          padding: 0.5rem 1.25rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          border: none;
+          font-size: 0.95rem;
+          transition: transform 0.1s;
+
+          &:active {
+            transform: scale(0.98);
+          }
+
+          &.btn-save {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+
+            &:disabled {
+              opacity: 0.7;
+              cursor: not-allowed;
+            }
+
+            &:hover:not(:disabled) {
+              background: #059669;
+            }
+          }
+
+          &.btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+            }
+          }
+        }
       }
     }
 

@@ -5,14 +5,14 @@
     <header class="page-header">
 
         <div class="header-content">
-            <h1 class="page-title">📚 Browse Courses</h1>
+            <h1 class="page-title"><i class="bi bi-collection-play me-2"></i>Browse Courses</h1>
             <p class="page-subtitle">Discover and enroll in courses to start your learning journey</p>
         </div>
 
         <!-- Search Box -->
         <div class="search-container">
             <div class="search-box">
-                <span class="search-icon">🔍</span>
+                <i class="bi bi-search search-icon"></i>
                 <input type="text" placeholder="Search courses..." (input)="onSearch($event)" class="search-input" />
             </div>
         </div>
@@ -26,7 +26,7 @@
 
     <!-- Error State -->
     <div *ngIf="error() && !loading()" class="error-state">
-        <p>⚠️ {{ error() }}</p>
+        <p><i class="bi bi-exclamation-triangle me-2"></i>{{ error() }}</p>
         <button class="btn-primary" (click)="loadCourses()">Retry</button>
     </div>
 
@@ -53,12 +53,13 @@
                             (error)="onImageError($event)" />
                         <div class="thumbnail-placeholder"
                             [style.display]="getCourseThumbnail(course) ? 'none' : 'grid'">
-                            <span>📖</span>
+                            <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
                         </div>
                     </div>
 
                     <div class="course-badges">
-                        <span *ngIf="course.popular" class="badge badge-popular">⭐ Popular</span>
+                        <span *ngIf="course.popular" class="badge badge-popular"><i
+                                class="bi bi-star-fill me-1"></i>Popular</span>
                         <span class="badge badge-price">{{ formatPrice(course.price) }}</span>
                     </div>
                 </div>
@@ -69,15 +70,15 @@
 
                     <div class="course-meta">
                         <span class="meta-item">
-                            <span class="meta-icon">👨‍🏫</span>
+                            <i class="bi bi-person-workspace me-1"></i>
                             <span>{{ course.instructorName || 'Instructor' }}</span>
                         </span>
                         <span class="meta-item" *ngIf="course.enrollmentCount !== undefined">
-                            <span class="meta-icon">👥</span>
+                            <i class="bi bi-people me-1"></i>
                             <span>{{ course.enrollmentCount }} students</span>
                         </span>
                         <span class="meta-item" *ngIf="course.averageRating">
-                            <span class="meta-icon">⭐</span>
+                            <i class="bi bi-star-fill me-1 text-warning"></i>
                             <span>{{ course.averageRating | number:'1.1-1' }}</span>
                         </span>
                     </div>
@@ -85,13 +86,15 @@
 
                 <div class="course-actions">
                     <button class="btn-secondary" (click)="viewCourseDetails(course.courseId)">
-                        <span class="btn-icon">👁️</span>
+                        <i class="bi bi-eye me-1"></i>
                         <span>Details</span>
                     </button>
                     <button class="btn-primary" (click)="enrollInCourse(course.courseId)"
                         [disabled]="enrollingCourseId() === course.courseId">
-                        <span class="btn-icon">{{ enrollingCourseId() === course.courseId ? '⏳' : '✓' }}</span>
-                        <span>{{ enrollingCourseId() === course.courseId ? 'Enrolling...' : 'Enroll Now' }}</span>
+                        <i class="bi" [class.bi-hourglass-split]="enrollingCourseId() === course.courseId"
+                            [class.bi-check-lg]="enrollingCourseId() !== course.courseId"></i>
+                        <span class="ms-1">{{ enrollingCourseId() === course.courseId ? 'Enrolling...' : 'Enroll Now'
+                            }}</span>
                     </button>
                 </div>
             </div>

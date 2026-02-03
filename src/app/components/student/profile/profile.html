@@ -22,23 +22,24 @@
             </span>
             <div class="avatar-ring"></div>
             <div class="avatar-ring-2"></div>
-
-            <!-- Photo Upload Overlay -->
-            <label for="photoInput" class="photo-upload-overlay" *ngIf="!uploadingPhoto()">
-              <span class="upload-icon">+</span>
-            </label>
-            <div class="photo-upload-overlay uploading" *ngIf="uploadingPhoto()">
-              <span class="upload-spinner">⏳</span>
-            </div>
           </div>
+
+          <!-- Photo Upload Overlay - moved outside circle -->
+          <label for="photoInput" class="photo-upload-overlay" *ngIf="!uploadingPhoto()">
+            <i class="bi bi-pencil upload-icon"></i>
+          </label>
+          <div class="photo-upload-overlay uploading" *ngIf="uploadingPhoto()">
+            <span class="upload-spinner">⏳</span>
+          </div>
+
           <input type="file" id="photoInput" accept="image/*" (change)="onPhotoSelected($event)"
             style="display: none;" />
+        </div>
+        <div class="user-info">
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span class="status-text">Active</span>
           </div>
-        </div>
-        <div class="user-info">
           <h1 class="user-name">{{ editModel.fullName || 'Student' }}</h1>
           <p class="user-email">{{ editModel.email }}</p>
           <div class="user-badges">
@@ -50,6 +51,10 @@
               <span class="badge-icon">✓</span>
               Verified
             </span>
+            <button class="btn-show-group-id" (click)="showGroupId()">
+              <span class="btn-icon">🆔</span>
+              <span class="btn-text">Show Groups ID</span>
+            </button>
           </div>
         </div>
       </div>
@@ -97,6 +102,32 @@
                   [disabled]="loading()" readonly class="readonly-input" />
                 <span class="input-badge">Verified</span>
               </div>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <span class="label-icon">🌍</span>
+                Country
+                <span class="optional-badge">Optional</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="text" [(ngModel)]="editModel.country" name="country" placeholder="Egypt"
+                  [disabled]="loading()" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <span class="label-icon">📅</span>
+                Birth Date
+                <span class="optional-badge">Optional</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="date" [(ngModel)]="editModel.birthDate" name="birthDate" [disabled]="loading()" />
+              </div>
+              <p class="age-display" *ngIf="userAge !== null">
+                Age: {{ userAge }} years old
+              </p>
             </div>
 
             <div class="form-group">
@@ -178,6 +209,27 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups ID Modal -->
+  <div class="modal-overlay" *ngIf="showGroupIdModal()" (click)="closeGroupIdModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Send it to instructor to add group</h3>
+        <button class="modal-close" (click)="closeGroupIdModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="group-id-display">
+          <label>Your Groups ID:</label>
+          <div class="id-box">
+            <code>{{ profile()?.user?.userId }}</code>
+            <button class="btn-copy" (click)="copyToClipboard(profile()?.user?.userId || '')">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -67,6 +67,7 @@ export class InstructorService {
   }
 
   private mapToInstructorDto(item: any): InstructorDto {
+    console.log('Mapping Instructor:', item, 'Phone:', item.user?.phoneNumber || item.phoneNumber);
     if (item.user) {
       // Handle nested api/users response if that's what returns
       return {
@@ -75,6 +76,9 @@ export class InstructorService {
         fullName: item.user.fullName,
         email: item.user.email,
         photoUrl: item.user.photoUrl,
+        city: item.user.city,
+        country: item.user.country,
+        birthDate: item.user.birthDate,
         bio: item.instructor?.bio,
         coursesCount: item.instructor?.coursesCount || 0,
         averageRating: item.instructor?.averageRating || 0,
@@ -84,11 +88,14 @@ export class InstructorService {
     // Handle flat api/instructors response
     return {
       instructorId: item.instructorId || item.id || item.userId,
-      userId: item.userId || item.instructorId,
+      userId: item.userId || item.instructorId || item.id,
       fullName: item.fullName,
       email: item.email,
       photoUrl: item.photoUrl,
       bio: item.bio,
+      city: item.city,
+      country: item.country,
+      birthDate: item.birthDate,
       coursesCount: item.coursesCount || 0,
       averageRating: item.averageRating || 0,
     };

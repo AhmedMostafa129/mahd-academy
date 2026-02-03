@@ -38,33 +38,73 @@ export class StudentPayments implements OnInit {
   loadPayments(page: number = 1): void {
     const user = this._tokenService.getUser();
     if (!user || !user.userId) {
+      console.error('❌ User not found in token');
       this.error.set('User not found. Please login again.');
       this.loading.set(false);
       return;
     }
 
+    console.log('🔍 Loading payments for student:', user.userId, 'Page:', page);
     this.loading.set(true);
     this.error.set(null);
 
     this._paymentService.getPaymentsByStudent(user.userId, page, this.pageSize()).subscribe({
-      next: (result: PagedResult<PaymentDto>) => {
-        this.payments.set(result.items);
-        this.pageNumber.set(result.pageNumber);
-        this.pageSize.set(result.pageSize);
-        this.totalPages.set(result.totalPages);
-        this.totalCount.set(result.totalCount);
+      next: (result: any) => {
+        console.log('✅ Payments API response received:', result);
+        console.log('Response type:', typeof result);
+        console.log('Response keys:', result ? Object.keys(result) : 'null');
+
+        // Handle different response formats
+        let items: PaymentDto[] = [];
+        let totalCount = 0;
+        let totalPages = 1;
+
+        if (result) {
+          // Check if response is PagedResult format
+          if (result.items && Array.isArray(result.items)) {
+            items = result.items;
+            totalCount = result.totalCount || items.length;
+            totalPages = result.totalPages || 1;
+            console.log('📊 PagedResult format - Total payments:', totalCount);
+          }
+          // Check if response is direct array
+          else if (Array.isArray(result)) {
+            items = result;
+            totalCount = items.length;
+            totalPages = 1;
+            console.log('📊 Direct array format - Total payments:', totalCount);
+          }
+          // Unknown format
+          else {
+            console.warn('⚠️ Unexpected response format:', result);
+            items = [];
+          }
+        }
+
+        console.log('📄 Items to display:', items.length);
+
+        this.payments.set(items);
+        this.pageNumber.set(result?.pageNumber || page);
+        this.pageSize.set(result?.pageSize || this.pageSize());
+        this.totalPages.set(totalPages);
+        this.totalCount.set(totalCount);
 
         // Load course names for each payment
-        this.loadCourseNames(result.items);
+        if (items.length > 0) {
+          this.loadCourseNames(items);
+        }
 
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading payments:', err);
+        console.error('❌ Error loading payments:', err);
+        console.error('Status Code:', err.status);
+        console.error('Error Message:', err.message);
 
         // Check if 404 error - endpoint not implemented yet
         if (err.status === 404) {
-          console.warn('⚠️ Backend endpoint not implemented yet. Using empty state.');
+          console.warn('⚠️ Backend endpoint /payments/student/{id} not found (404)');
+          console.warn('💡 The endpoint may not be implemented yet or the route is incorrect');
           this.error.set(null);
           this.payments.set([]);
           this.totalCount.set(0);
@@ -93,7 +133,10 @@ export class StudentPayments implements OnInit {
   loadCourseNames(payments: PaymentDto[]): void {
     const uniqueCourseIds = [...new Set(payments.map((p) => p.courseId))];
 
+    console.log('📚 Loading course names for', uniqueCourseIds.length, 'unique courses');
+
     if (uniqueCourseIds.length === 0) {
+      console.log('ℹ️ No courses to load');
       return;
     }
 

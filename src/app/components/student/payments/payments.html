@@ -1,6 +1,6 @@
 <div class="payments-page">
   <header class="page-header">
-    <h1>💳 Payment History</h1>
+    <h1><i class="bi bi-credit-card-fill me-2"></i>Payment History</h1>
     <p class="subtitle">View all your course payments and transaction details.</p>
   </header>
 
@@ -29,7 +29,7 @@
         <div class="payment-info-main">
           <div class="payment-id">#{{ payment.paymentId.substring(0, 8) }}</div>
           <div class="payment-date">
-            <span class="date-icon">📅</span>
+            <i class="bi bi-calendar3 me-1"></i>
             {{ payment.createdAt | date : 'mediumDate' }}
           </div>
         </div>
@@ -41,7 +41,7 @@
 
       <div class="payment-body">
         <div class="course-info" (click)="viewCourse(payment.courseId)">
-          <span class="course-icon">🏛️</span>
+          <i class="bi bi-journal-bookmark-fill me-2"></i>
           <div class="course-details">
             <p class="course-label">Course</p>
             <p class="course-name">{{ getCourseName(payment.courseId) }}</p>
@@ -50,7 +50,7 @@
 
         <div class="payment-details">
           <div class="detail-item">
-            <span class="detail-icon">💳</span>
+            <i class="bi bi-credit-card me-2"></i>
             <div class="detail-content">
               <span class="label">Payment Method</span>
               <span class="value">Credit Card</span>
@@ -63,7 +63,7 @@
               <span class="label">Transaction ID</span>
               <span class="value">{{
                 payment.paymentIntentId || payment.paymentId.substring(0, 12)
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
           <span class="status-text">{{ payment.status || 'Completed' }}</span>
         </div>
         <button type="button" class="btn-view-course" (click)="viewCourse(payment.courseId)">
-          <span class="btn-icon">👁️</span>
+          <i class="bi bi-eye me-1"></i>
           View Course
         </button>
       </div>
@@ -84,23 +84,14 @@
 
   <!-- Pagination -->
   <div *ngIf="totalPages() > 1 && !loading() && !error()" class="pagination">
-    <button
-      type="button"
-      class="page-btn"
-      [disabled]="pageNumber() === 1"
-      (click)="goToPage(pageNumber() - 1)"
-    >
+    <button type="button" class="page-btn" [disabled]="pageNumber() === 1" (click)="goToPage(pageNumber() - 1)">
       Previous
     </button>
 
     <span class="page-info"> Page {{ pageNumber() }} of {{ totalPages() }} </span>
 
-    <button
-      type="button"
-      class="page-btn"
-      [disabled]="pageNumber() === totalPages()"
-      (click)="goToPage(pageNumber() + 1)"
-    >
+    <button type="button" class="page-btn" [disabled]="pageNumber() === totalPages()"
+      (click)="goToPage(pageNumber() + 1)">
       Next
     </button>
   </div>

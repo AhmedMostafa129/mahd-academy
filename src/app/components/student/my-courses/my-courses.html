@@ -7,7 +7,7 @@
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-content">
-      <h1>📚 My Courses</h1>
+      <h1><i class="bi bi-journal-bookmark-fill me-2"></i>My Courses</h1>
       <p class="subtitle">Track your enrolled courses and continue learning.</p>
     </div>
   </header>
@@ -65,7 +65,7 @@
 
           <!-- Enrollment Date -->
           <p class="enrollment-date">
-            <span class="date-icon">📅</span>
+            <i class="bi bi-calendar3 me-1"></i>
             Enrolled {{ enrollment.enrollmentDate | date : 'mediumDate' }}
           </p>
 
@@ -96,19 +96,19 @@
           <div class="card-actions">
             <button type="button" class="btn btn-primary" (click)="navigateToCourse(enrollment.courseId)"
               [disabled]="loading() || !enrollment.courseId">
-              <span class="btn-icon">▶️</span>
+              <i class="bi bi-play-circle-fill me-1"></i>
               {{ !enrollment.courseId ? 'Course Unavailable' : 'Continue Course' }}
             </button>
 
             <button type="button" class="btn btn-secondary" (click)="navigateToProgress(enrollment.enrollmentId)"
               [disabled]="loading()">
-              <span class="btn-icon">📊</span>
+              <i class="bi bi-bar-chart-fill me-1"></i>
               View Progress
             </button>
 
             <button *ngIf="enrollment.isCompleted" type="button" class="btn btn-success"
               (click)="navigateToCertificate(enrollment.enrollmentId)" [disabled]="loading()">
-              <span class="btn-icon">🎓</span>
+              <i class="bi bi-award-fill me-1"></i>
               Certificate
             </button>
           </div>

@@ -64,9 +64,36 @@ export class InstructorProfileComponent implements OnInit {
     editingBio = signal<boolean>(false);
     bioDraft = signal<string>('');
     savingBio = signal<boolean>(false);
+    // Details editing (City, Country, Age)
+    editingDetails = signal<boolean>(false);
+    cityDraft = signal<string>('');
+    countryDraft = signal<string>('');
+    birthDateDraft = signal<string>('');
+    savingDetails = signal<boolean>(false);
 
     ngOnInit(): void {
         const id = this._route.snapshot.paramMap.get('id');
+
+        // Check for state passed from dashboard
+        const navState = history.state.instructorData;
+        if (navState && id) {
+            const preloadProfile: InstructorDto = {
+                instructorId: id,
+                userId: id,
+                fullName: navState.fullName || 'Instructor',
+                email: '',
+                photoUrl: navState.photoUrl,
+                bio: navState.bio || 'Bio not available',
+                city: navState.city || '',
+                country: navState.country || '',
+                birthDate: navState.birthDate || '',
+                coursesCount: 0,
+                averageRating: 0
+            };
+            this.publicInstructor.set(preloadProfile);
+            this.loading.set(false); // Show immediately
+        }
+
         if (id) {
             // Load everything in parallel/independently
             this.loadProfile(id);
@@ -93,7 +120,6 @@ export class InstructorProfileComponent implements OnInit {
             error: (err) => {
                 console.warn('Instructor profile not found via public endpoint, trying user endpoint...', err);
                 // If public instructor endpoint fails (e.g. 404), try fetching as a user directly
-                // assuming the ID passed might be a userId
                 this._userService.getUserById(instructorId).subscribe({
                     next: (userResp: any) => {
                         // Construct a minimal InstructorDto from User data
@@ -105,14 +131,35 @@ export class InstructorProfileComponent implements OnInit {
                             email: user.email,
                             photoUrl: user.photoUrl,
                             bio: user.instructor?.bio || 'Bio not available',
+                            city: user.city,
+                            country: user.country,
+                            birthDate: user.birthDate,
                             coursesCount: 0, // We'll rely on course load to update this if needed
                             averageRating: 0
                         };
                         this.handleInstructorLoad(fallbackProfile);
                     },
                     error: (userErr: any) => {
-                        console.error('Failed to load user profile as fallback:', userErr);
-                        this.error.set('Failed to load instructor profile');
+                        console.warn('User profile fallback not accessible (likely 403 for students):', userErr.status);
+
+                        // Fallback: Use existing state (from router) or create skeleton
+                        const current = this.publicInstructor();
+                        const skeletonProfile: InstructorDto = {
+                            instructorId: instructorId,
+                            userId: instructorId,
+                            // Use existing name if we have it (from router state)
+                            fullName: current?.fullName && current.fullName !== 'Instructor' ? current.fullName : 'Instructor',
+                            email: '',
+                            // Keep existing photo if valid
+                            photoUrl: current?.photoUrl || null,
+                            bio: current?.bio || 'Profile information unavailable',
+                            city: current?.city || null,
+                            country: current?.country || null,
+                            birthDate: current?.birthDate || null,
+                            coursesCount: 0,
+                            averageRating: 0
+                        };
+                        this.publicInstructor.set(skeletonProfile);
                         this.loading.set(false);
                     }
                 });
@@ -187,21 +234,38 @@ export class InstructorProfileComponent implements OnInit {
                 }
                 this.courses.set(coursesList);
 
-                // If profile failed to load (404), try to populate basic info from the first course
-                if (!this.publicInstructor() && coursesList.length > 0) {
+                // If profile is missing OR just has generic "Instructor" name, try to improve it from course data
+                const currentProfile = this.publicInstructor();
+                if (coursesList.length > 0) {
                     const first = coursesList[0];
-                    // We create a partial/mock instructor DTO
-                    const mockProfile: InstructorDto = {
-                        instructorId: instructorId,
-                        userId: '', // Unknown if not in course DTO, so ownership check might fail (safe)
-                        fullName: first.instructorName || 'Instructor',
-                        email: '', // Unknown
-                        photoUrl: null,
-                        bio: 'Bio not available',
-                        coursesCount: result.totalCount || coursesList.length,
-                        averageRating: 0 // Calculate if needed or leave 0
-                    };
-                    this.publicInstructor.set(mockProfile);
+
+                    if (!currentProfile || currentProfile.fullName === 'Instructor') {
+                        // We create or update provided DTO
+                        const improvedProfile: InstructorDto = {
+                            ...(currentProfile || {
+                                instructorId: instructorId,
+                                userId: instructorId,
+                                email: '',
+                                photoUrl: null,
+                                reviewsCount: 0,
+                                topBadges: [],
+                                studentsCount: 0 // Initialize missing properties
+                            } as any),
+                            fullName: first.instructorName || currentProfile?.fullName || 'Instructor',
+                            coursesCount: result.totalCount || coursesList.length,
+                        };
+
+                        // If we didn't have a photo, maybe course has one? (Unlikely but possible if course dto had it)
+                        // But assume we keep existing photo if any.
+
+                        this.publicInstructor.set(improvedProfile);
+                    } else {
+                        // Data is good, just update counts
+                        this.publicInstructor.update(curr => curr ? ({
+                            ...curr,
+                            coursesCount: result.totalCount || coursesList.length
+                        }) : null);
+                    }
                 }
 
                 // Now load students for these courses
@@ -219,6 +283,10 @@ export class InstructorProfileComponent implements OnInit {
 
     loadStudents(courses: CourseDto[]): void {
         if (courses.length === 0) return;
+
+        // Students don't have permission to view enrollments, so skip this to avoid 403 errors
+        const role = this._tokenService.getUser()?.role;
+        if (role === 'Student') return;
 
         // We need to fetch enrollments for each course and aggregate unique students.
         // This might be heavy if there are many courses. Ideally backend should have getStudentsByInstructor endpoint.
@@ -292,6 +360,67 @@ export class InstructorProfileComponent implements OnInit {
                 this.savingBio.set(false);
             }
         });
+    }
+
+    toggleEditDetails(): void {
+        this.editingDetails.update(v => !v);
+        if (this.publicInstructor()) {
+            const p = this.publicInstructor()!;
+            this.cityDraft.set(p.city || '');
+            this.countryDraft.set(p.country || '');
+            // Format existing birthDate for input type="date" (yyyy-MM-dd)
+            if (p.birthDate) {
+                // Assuming backend returns standard ISO string, we take the date part
+                const datePart = p.birthDate.split('T')[0];
+                this.birthDateDraft.set(datePart);
+            } else {
+                this.birthDateDraft.set('');
+            }
+        }
+    }
+
+    saveDetails(): void {
+        if (!this.publicInstructor()) return;
+
+        this.savingDetails.set(true);
+        const instructor = this.publicInstructor()!;
+
+        const payload: any = {
+            city: this.cityDraft(),
+            country: this.countryDraft(),
+            birthDate: this.birthDateDraft() ? new Date(this.birthDateDraft()).toISOString() : null
+        };
+
+        this._userService.updateUser(instructor.userId, payload).subscribe({
+            next: (updated: any) => {
+                this.publicInstructor.update(curr => curr ? {
+                    ...curr,
+                    city: updated.city || this.cityDraft(),
+                    country: updated.country || this.countryDraft(),
+                    birthDate: updated.birthDate || this.birthDateDraft()
+                } : curr);
+                this.savingDetails.set(false);
+                this.editingDetails.set(false);
+            },
+            error: (err: any) => {
+                console.error('Failed to save details:', err);
+                this.savingDetails.set(false);
+                this.error.set('Failed to save details');
+                setTimeout(() => this.error.set(null), 3000);
+            }
+        });
+    }
+
+    calculateAge(birthDate: string | null | undefined): number | null {
+        if (!birthDate) return null;
+        const today = new Date();
+        const birthDateObj = new Date(birthDate);
+        let age = today.getFullYear() - birthDateObj.getFullYear();
+        const m = today.getMonth() - birthDateObj.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDateObj.getDate())) {
+            age--;
+        }
+        return age;
     }
 
     openPhotoDialog(): void {

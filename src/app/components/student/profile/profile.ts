@@ -30,8 +30,13 @@ export class StudentProfile implements OnInit {
   editModel = {
     fullName: '',
     email: '',
-    phoneNumber: ''
+    phoneNumber: '',
+    country: '',
+    birthDate: ''
   };
+
+  // Groups ID modal state
+  showGroupIdModal = signal<boolean>(false);
 
   // Simple change password form
   changePasswordModel: ChangePasswordDto = {
@@ -105,7 +110,9 @@ export class StudentProfile implements OnInit {
         this.editModel = {
           fullName: data.user.fullName,
           email: data.user.email,
-          phoneNumber: data.phones && data.phones.length > 0 ? data.phones[0].phoneNumber : ''
+          phoneNumber: data.phones && data.phones.length > 0 ? data.phones[0].phoneNumber : '',
+          country: data.user.country || '',
+          birthDate: data.user.birthDate ? data.user.birthDate.split('T')[0] : ''
         };
         this.loading.set(false);
       },
@@ -127,6 +134,8 @@ export class StudentProfile implements OnInit {
     const updateData = {
       fullName: this.editModel.fullName,
       email: this.editModel.email,
+      country: this.editModel.country,
+      birthDate: this.editModel.birthDate ? new Date(this.editModel.birthDate).toISOString() : undefined
       // phoneNumber: this.editModel.phoneNumber // Add if backend supports it
     };
 
@@ -166,5 +175,39 @@ export class StudentProfile implements OnInit {
         this.changingPassword.set(false);
       },
     });
+  }
+
+  showGroupId(): void {
+    this.showGroupIdModal.set(true);
+  }
+
+  closeGroupIdModal(): void {
+    this.showGroupIdModal.set(false);
+  }
+
+  copyToClipboard(text: string): void {
+    navigator.clipboard.writeText(text).then(() => {
+      this._notificationService.showSuccess('Success', 'ID copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      this._notificationService.showError('Error', 'Failed to copy ID');
+    });
+  }
+
+  calculateAge(birthDate: string | null | undefined): number | null {
+    if (!birthDate) return null;
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const m = today.getMonth() - birthDateObj.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDateObj.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
+  get userAge(): number | null {
+    const birthDate = this.profile()?.user?.birthDate;
+    return this.calculateAge(birthDate);
   }
 }

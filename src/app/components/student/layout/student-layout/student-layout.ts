@@ -3,11 +3,12 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth-service';
 import { TokenService } from '../../../../core/services/TokenService/token-service';
+import { Footer } from '../../../layout/footer/footer';
 
 @Component({
     selector: 'app-student-layout',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, Footer],
     templateUrl: './student-layout.html',
     styleUrl: './student-layout.scss',
 })
@@ -17,6 +18,15 @@ export class StudentLayout {
     private readonly _tokenService = inject(TokenService);
 
     isCollapsed = signal<boolean>(true);
+    showFooter = signal<boolean>(true);
+
+    constructor() {
+        this._router.events.subscribe(() => {
+            const url = this._router.url;
+            // Hide footer on instructor profile and student profile pages
+            this.showFooter.set(!url.includes('/instructor-profile/') && !url.includes('/student/profile'));
+        });
+    }
 
     toggleSidebar(): void {
         this.isCollapsed.update((v) => !v);

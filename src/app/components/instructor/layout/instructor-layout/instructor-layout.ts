@@ -6,11 +6,12 @@ import { AuthService } from '../../../../core/services/auth/auth-service';
 
 import { SubscriptionService } from '../../../../core/services/SubscriptionService/subscription-service';
 import { NotificationService } from '../../../../core/services/NotificationService/notification-service';
+import { Footer } from '../../../layout/footer/footer';
 
 @Component({
     selector: 'app-instructor-layout',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, Footer],
     templateUrl: './instructor-layout.html',
     styleUrl: './instructor-layout.scss',
 })
@@ -23,6 +24,15 @@ export class InstructorLayout implements OnInit {
 
     // Sidebar state
     isCollapsed = signal<boolean>(true);
+    showFooter = signal<boolean>(true);
+
+    constructor() {
+        this._router.events.subscribe(() => {
+            const url = this._router.url;
+            // Hide footer on profile view pages
+            this.showFooter.set(!url.includes('/profile/view/') && !url.includes('/instructor-profile/'));
+        });
+    }
 
     // User info for sidebar
     instructorId = signal<string | null>(null);

@@ -1,46 +1,59 @@
 <footer class="app-footer">
   <div class="footer-content">
-    <!-- Right Section: Contact -->
-    <div class="footer-section footer-contact">
-      <div class="section-title">للتواصل مع فريق MAHD Learning</div>
-      <div class="phone">{{ phone }}</div>
-      <div class="social-icons">
-        <a *ngFor="let link of socialLinksRight" [href]="link.url" target="_blank" rel="noopener" 
-           class="social-icon" [title]="link.label">
-          {{ link.icon }}
-        </a>
-      </div>
+
+    <!-- Brand Section -->
+    <div class="footer-section">
+      <h3 class="footer-title">
+        <span class="footer-logo">🎓</span>
+        MAHD<span class="logo-accent">Learning</span>
+      </h3>
+      <p class="footer-description">
+        Empowering learners worldwide with accessible, high-quality education.
+      </p>
     </div>
 
-    <!-- Middle Section: Design & Dev -->
-    <div class="footer-section footer-design">
-      <div class="section-title">تصميم و تطوير</div>
-      <ul>
-        <li *ngFor="let item of designDev">
-          <a [href]="item.url">{{ item.label }}</a>
-        </li>
+    <!-- Quick Links -->
+    <div class="footer-section">
+      <h4 class="footer-heading">Quick Links</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/courses">Browse Courses</a></li>
+        <li><a routerLink="/about">About Us</a></li>
+        <li><a routerLink="/instructors">Become Instructor</a></li>
+        <li><a routerLink="/pricing">Pricing</a></li>
       </ul>
-      <div class="social-icons">
-        <a *ngFor="let link of socialLinks" [href]="link.url" target="_blank" rel="noopener" 
-           class="social-icon" [title]="link.label">
-          {{ link.icon }}
-        </a>
-      </div>
     </div>
 
-    <!-- Left Section: Secondary Stages -->
-    <div class="footer-section footer-stages">
-      <div class="section-title">المراحل الثانوية</div>
-      <ul>
-        <li *ngFor="let stage of secondaryStages">
-          <a [href]="stage.url">{{ stage.label }}</a>
-        </li>
+    <!-- Support -->
+    <div class="footer-section">
+      <h4 class="footer-heading">Support</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/help">Help Center</a></li>
+        <li><a routerLink="/faq">FAQ</a></li>
+        <li><a routerLink="/support">Contact Support</a></li>
+        <li><a routerLink="/terms">Terms of Service</a></li>
       </ul>
+    </div>
+
+    <!-- Contact a Team Member (Replaces Contact Us) -->
+    <div class="footer-section">
+      <h4 class="footer-heading">Contact a team member</h4>
+      <div class="social-links">
+        <a *ngFor="let link of socialLinks" [href]="link.url" class="social-link" target="_blank" rel="noopener"
+          [title]="link.label">
+          <i [class]="link.icon"></i>
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Copyright -->
-  <div class="footer-copyright">
-    <p>All copy rights reserved {{ currentYear }} © MAHD Learning - جميع الحقوق محفوظة</p>
+  <div class="footer-bottom">
+    <p class="copyright">
+      © {{ currentYear }} <span class="gradient-text">MAHD Learning</span>. All rights reserved.
+    </p>
+    <div class="footer-badges">
+      <span class="footer-badge">🔒 Secure</span>
+      <span class="footer-badge">✓ Trusted</span>
+      <span class="footer-badge">⚡ Fast</span>
+    </div>
   </div>
 </footer>

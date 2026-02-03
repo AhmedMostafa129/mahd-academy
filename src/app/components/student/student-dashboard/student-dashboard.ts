@@ -56,10 +56,13 @@ export class StudentDashboard implements OnInit {
     this._instructorService.getTopInstructors(4).subscribe({
       next: (instructors) => {
         const mappedInstructors = instructors.map(instr => ({
-          id: instr.userId,
+          id: instr.instructorId, // Use instructorId as it is robustly mapped
           name: instr.fullName,
           title: instr.bio || 'Instructor',
           avatarUrl: instr.photoUrl,
+          city: instr.city,
+          country: instr.country,
+          birthDate: instr.birthDate,
           rating: instr.averageRating,
           totalStudents: instr.coursesCount, // API doesn't return student count yet? check this
           latestReview: null
@@ -164,8 +167,19 @@ export class StudentDashboard implements OnInit {
     this._router.navigate(['/student/all-courses'], { queryParams: { instructorId } });
   }
 
-  navigateToInstructorProfile(instructorId: string): void {
-    this._router.navigate(['/student/instructor-profile', instructorId]);
+  navigateToInstructorProfile(instructor: any): void {
+    this._router.navigate(['/student/instructor-profile', instructor.id], {
+      state: {
+        instructorData: {
+          fullName: instructor.name,
+          photoUrl: instructor.avatarUrl,
+          bio: instructor.title, // Using title/bio from dashboard
+          city: instructor.city,
+          country: instructor.country,
+          birthDate: instructor.birthDate
+        }
+      }
+    });
   }
 
   buildImageUrl(url: string | null | undefined): string | null {

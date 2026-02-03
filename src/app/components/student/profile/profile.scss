@@ -135,9 +135,9 @@ $border-color: #e2e8f0;
 }
 
 .avatar-circle {
-  width: 140px;
+  width: 120px;
   height: 140px;
-  border-radius: 50%;
+  border-radius: 24px;
   background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
   display: grid;
   place-items: center;
@@ -147,15 +147,17 @@ $border-color: #e2e8f0;
   box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 6px solid white;
+  border: 1px solid #000000;
+  padding: 0;
+  overflow: hidden;
 
   &:hover {
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.05) rotate(2deg);
     box-shadow: 0 20px 50px rgba(16, 185, 129, 0.3);
 
     .avatar-ring,
     .avatar-ring-2 {
-      animation-play-state: paused;
+      animation-play-state: running;
     }
   }
 }
@@ -169,7 +171,7 @@ $border-color: #e2e8f0;
 .avatar-ring-2 {
   position: absolute;
   inset: -15px;
-  border-radius: 50%;
+  border-radius: 28px;
   border: 3px solid transparent;
   border-top-color: #34d399;
   border-right-color: #34d399;
@@ -182,13 +184,14 @@ $border-color: #e2e8f0;
   border-right-color: #a78bfa;
   animation-duration: 4s;
   animation-direction: reverse;
+  border-radius: 32px;
 }
 
 // Avatar image styling
 .avatar-image {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 24px;
   object-fit: cover;
   position: relative;
   z-index: 1;
@@ -197,10 +200,11 @@ $border-color: #e2e8f0;
 // Photo upload overlay
 .photo-upload-overlay {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 40px;
-  height: 40px;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  width: 35px;
+  height: 35px;
   background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   border-radius: 50%;
   display: grid;
@@ -213,8 +217,7 @@ $border-color: #e2e8f0;
 
   .upload-icon {
     color: white;
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 1.1rem;
     line-height: 1;
   }
 
@@ -224,7 +227,7 @@ $border-color: #e2e8f0;
   }
 
   &:hover:not(.uploading) {
-    transform: scale(1.1);
+    transform: translateX(50%) scale(1.15);
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   }
@@ -236,17 +239,15 @@ $border-color: #e2e8f0;
 }
 
 .status-indicator {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background: white;
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: pulse 2s ease-in-out infinite;
+  margin-bottom: 0.5rem;
 }
 
 .status-dot {
@@ -297,6 +298,7 @@ $border-color: #e2e8f0;
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .badge {
@@ -337,6 +339,38 @@ $border-color: #e2e8f0;
 
 .badge-icon {
   font-size: 1.1rem;
+}
+
+// ============ SHOW GROUPS ID BUTTON ============
+.btn-show-group-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  animation: scaleIn 0.5s ease-out 0.6s both;
+
+  .btn-icon {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 // ============ HEADER DECORATION ============
@@ -790,6 +824,141 @@ input {
 
   50% {
     opacity: 0.5;
+  }
+}
+
+// ============ AGE DISPLAY ============
+.age-display {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #10b981;
+  font-weight: 600;
+  font-style: italic;
+}
+
+// ============ GROUPS ID MODAL ============
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.3s ease;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s ease;
+  line-height: 1;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.group-id-display {
+  label {
+    display: block;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .id-box {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: #f0fdf4;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    border: 2px solid #34d399;
+
+    code {
+      flex: 1;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      color: #166534;
+      font-weight: 700;
+      word-break: break-all;
+    }
+  }
+}
+
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.2rem;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+  white-space: nowrap;
+
+  span {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 

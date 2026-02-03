@@ -9,31 +9,16 @@ import { CommonModule } from '@angular/common';
   styleUrl: './footer.scss',
 })
 export class Footer {
-  // Footer sections
-  secondaryStages = [
-    { label: 'الأول الثانوي', url: '#' },
-    { label: 'الثاني الثانوي', url: '#' },
-    { label: 'الثالث الثانوي', url: '#' }
-  ];
-
-  designDev = [
-    { label: 'اصطيليا A+', url: '#' }
-  ];
-
-  // Social links
+  // Social links - Team Contact
   socialLinks = [
-    { icon: '☎️', label: 'Phone', url: 'tel:+201556751595' },
-    { icon: '💬', label: 'WhatsApp', url: 'https://wa.me/201556751595' },
-    { icon: '👍', label: 'Facebook', url: 'https://facebook.com' }
+    { icon: 'bi bi-whatsapp', label: 'WhatsApp', url: 'https://wa.me/201090038706' },
+    { icon: 'bi bi-instagram', label: 'Instagram', url: 'https://www.instagram.com/ahmed_tawfiq9?igsh=MXRyZG0yZDA4cTkwdg==' },
+    { icon: 'bi bi-facebook', label: 'Facebook', url: 'https://www.facebook.com/share/1HUVBnuf5o/' },
+    { icon: 'bi bi-linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/ahmed-mostafa-792533328' }
   ];
 
-  socialLinksRight = [
-    { icon: '☎️', label: 'Phone', url: 'tel:+201556751595' },
-    { icon: '💬', label: 'WhatsApp', url: 'https://wa.me/201556751595' },
-    { icon: '▶️', label: 'YouTube', url: 'https://youtube.com' },
-    { icon: '👍', label: 'Facebook', url: 'https://facebook.com' }
-  ];
-
-  phone = '01556751595';
   currentYear = new Date().getFullYear();
+
+
+
 }

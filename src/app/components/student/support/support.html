@@ -12,7 +12,7 @@
   <!-- Page Title with Icon -->
   <div class="page-title-wrapper">
     <div class="title-icon">
-      <span class="icon-emoji">🎫</span>
+      <i class="bi bi-headset icon-emoji"></i>
       <div class="icon-ring"></div>
     </div>
     <div class="title-content">
@@ -21,7 +21,7 @@
     </div>
     <div class="title-actions">
       <button class="btn btn-primary btn-new-ticket" (click)="openCreate()">
-        <span class="btn-icon">➕</span>
+        <i class="bi bi-plus-lg me-1"></i>
         <span class="btn-text">New Ticket</span>
         <span class="btn-arrow">→</span>
       </button>
@@ -65,7 +65,7 @@
 
         <div class="form-group">
           <label>
-            <span class="label-icon">📝</span>
+            <i class="bi bi-pencil-square me-1"></i>
             Subject
           </label>
           <input type="text" [(ngModel)]="createModel.subject" placeholder="Brief description of your issue" />
@@ -73,7 +73,7 @@
 
         <div class="form-group">
           <label>
-            <span class="label-icon">💬</span>
+            <i class="bi bi-chat-left-text me-1"></i>
             Description
           </label>
           <textarea rows="5" [(ngModel)]="createModel.description"
@@ -87,7 +87,7 @@
           <span class="btn-text">Cancel</span>
         </button>
         <button type="button" class="btn btn-submit" (click)="submitTicket()">
-          <span class="btn-icon">✔️</span>
+          <i class="bi bi-check-lg me-1"></i>
           <span class="btn-text">Submit Ticket</span>
           <span class="btn-arrow">→</span>
         </button>
@@ -122,7 +122,7 @@
           <span class="btn-text">Cancel</span>
         </button>
         <button type="button" class="btn btn-delete-confirm" (click)="confirmDelete()">
-          <span class="btn-icon">🗑️</span>
+          <i class="bi bi-trash3 me-1"></i>
           <span class="btn-text">Delete</span>
         </button>
       </div>
@@ -218,7 +218,7 @@
           </span>
         </div>
         <div class="ticket-date-wrapper">
-          <span class="date-icon">📅</span>
+          <i class="bi bi-calendar3 me-1"></i>
           <span>{{ ticket.createdAt | date : 'MMM d, y' }}</span>
         </div>
       </div>
@@ -227,12 +227,12 @@
         <h4 class="ticket-subject">{{ ticket.subject }}</h4>
         <div class="ticket-meta">
           <div class="meta-item">
-            <span class="meta-icon">🕒</span>
+            <i class="bi bi-clock me-1"></i>
             <span>{{ ticket.createdAt | date : 'shortTime' }}</span>
           </div>
           <div class="meta-divider">•</div>
           <div class="meta-item">
-            <span class="meta-icon">🎫</span>
+            <i class="bi bi-tag me-1"></i>
             <span>ID: {{ ticket.ticketId | slice : 0 : 8 }}</span>
           </div>
         </div>

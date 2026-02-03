@@ -6,14 +6,37 @@
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-content">
-      <button type="button" class="back-btn" (click)="navigateBack()">
-        <span class="btn-icon">⬅️</span>
-        Back
-      </button>
-      <h1>👥 My Groups</h1>
-      <p class="subtitle">View and manage your group memberships.</p>
+      <div class="header-title-section">
+        <h1><i class="bi bi-people-fill me-2"></i>My Groups</h1>
+        <button type="button" class="btn-show-group-id" (click)="showGroupId()">
+          <i class="bi bi-person-badge-fill btn-icon"></i>
+          <span class="btn-text">show My ID</span>
+        </button>
+        <p class="subtitle">View and manage your group memberships.</p>
+      </div>
     </div>
   </header>
+
+  <!-- Groups ID Modal -->
+  <div class="modal-overlay" *ngIf="showGroupIdModal()" (click)="closeGroupIdModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Send it to instructor to add group</h3>
+        <button class="modal-close" (click)="closeGroupIdModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="group-id-display">
+          <label>Your Groups ID:</label>
+          <div class="id-box">
+            <code>{{ userId() }}</code>
+            <button class="btn-copy" (click)="copyToClipboard(userId())">
+              <i class="bi bi-clipboard me-1"></i> Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Loading State -->
   <div *ngIf="loading()" class="state state-loading">
@@ -43,12 +66,8 @@
   <div *ngIf="!loading() && !error() && groups().length > 0" class="groups-container">
     <!-- Grid Layout -->
     <div class="groups-grid">
-      <div
-        *ngFor="let group of groups(); trackBy: trackByGroupId"
-        class="group-card"
-        (click)="viewGroupDetails(group.groupId)"
-        [attr.data-group-id]="group.groupId"
-      >
+      <div *ngFor="let group of groups(); trackBy: trackByGroupId" class="group-card"
+        (click)="viewGroupDetails(group.groupId)" [attr.data-group-id]="group.groupId">
         <!-- Group Icon -->
         <div class="group-icon-wrapper">
           <div class="group-icon">
@@ -90,12 +109,8 @@
 
           <!-- Action Button -->
           <div class="card-actions">
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="viewGroupDetails(group.groupId); $event.stopPropagation()"
-              [disabled]="loading()"
-            >
+            <button type="button" class="btn btn-primary"
+              (click)="viewGroupDetails(group.groupId); $event.stopPropagation()" [disabled]="loading()">
               <span class="btn-icon">👁️</span>
               View Group
             </button>
@@ -107,12 +122,8 @@
     <!-- Pagination -->
     <div *ngIf="totalPages() > 1" class="pagination-section">
       <nav class="pagination">
-        <button
-          type="button"
-          class="page-btn prev-btn"
-          [disabled]="pageNumber() === 1 || loading()"
-          (click)="goToPage(pageNumber() - 1)"
-        >
+        <button type="button" class="page-btn prev-btn" [disabled]="pageNumber() === 1 || loading()"
+          (click)="goToPage(pageNumber() - 1)">
           <span class="btn-icon">⬅️</span>
           Previous
         </button>
@@ -122,12 +133,8 @@
           <span class="page-stats">({{ groups().length }} groups)</span>
         </span>
 
-        <button
-          type="button"
-          class="page-btn next-btn"
-          [disabled]="pageNumber() === totalPages() || loading()"
-          (click)="goToPage(pageNumber() + 1)"
-        >
+        <button type="button" class="page-btn next-btn" [disabled]="pageNumber() === totalPages() || loading()"
+          (click)="goToPage(pageNumber() + 1)">
           Next
           <span class="btn-icon">➡️</span>
         </button>

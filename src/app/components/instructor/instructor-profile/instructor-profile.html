@@ -48,11 +48,49 @@
             </div>
           </ng-container>
 
-          <!-- Phone Number Display -->
-          <p class="phone-number" *ngIf="publicInstructor() as p">
-            <span class="phone-icon">📱</span>
-            <span class="phone-text">{{ p.phoneNumber || 'Not provided' }}</span>
-          </p>
+
+          <!-- Location & Age Section -->
+          <div class="location-age-section">
+            <ng-container *ngIf="!editingDetails()">
+              <div class="details-display" *ngIf="publicInstructor() as p">
+                <p class="detail-item" *ngIf="p.city || p.country">
+                  <mat-icon class="icon">place</mat-icon>
+                  <span>
+                    {{ p.city }}{{ p.city && p.country ? ', ' : '' }}{{ p.country }}
+                  </span>
+                </p>
+                <p class="detail-item" *ngIf="p.birthDate">
+                  <mat-icon class="icon">calendar_month</mat-icon>
+                  <span>{{ calculateAge(p.birthDate) }} years old</span>
+                </p>
+
+                <button *ngIf="isOwnProfile()" class="btn-icon-edit" (click)="toggleEditDetails()" title="Edit Details">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
+                </button>
+              </div>
+            </ng-container>
+
+            <div *ngIf="editingDetails()" class="details-edit">
+              <div class="edit-row horizontal-layout">
+                <input type="text" class="detail-input" [ngModel]="cityDraft()" (ngModelChange)="cityDraft.set($event)"
+                  placeholder="City">
+                <input type="text" class="detail-input" [ngModel]="countryDraft()"
+                  (ngModelChange)="countryDraft.set($event)" placeholder="Country">
+                <div class="birthdate-group">
+                  <label class="date-label">Birth Date:</label>
+                  <input type="date" class="detail-input" [ngModel]="birthDateDraft()"
+                    (ngModelChange)="birthDateDraft.set($event)">
+                </div>
+              </div>
+              <div class="details-actions">
+                <button class="btn-save" (click)="saveDetails()" [disabled]="savingDetails()">
+                  {{ savingDetails() ? 'Saving...' : 'Save' }}
+                </button>
+                <button class="btn-cancel" (click)="toggleEditDetails()">Cancel</button>
+              </div>
+            </div>
+          </div>
 
           <div class="stats">
             <div class="stat-item">

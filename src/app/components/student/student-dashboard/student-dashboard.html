@@ -20,7 +20,7 @@
   <section class="hero-welcome">
     <div class="hero-content">
       <div class="welcome-badge">
-        <span class="badge-icon">✨</span>
+        <i class="bi bi-stars badge-icon text-warning me-1"></i>
         <span>Welcome Back to Learning</span>
       </div>
 
@@ -179,7 +179,7 @@
             <button class="btn-primary" (click)="navigateToInstructor(instr.id); $event.stopPropagation()">
               View Courses
             </button>
-            <button class="btn btn-secondary" (click)="navigateToInstructorProfile(instr.id); $event.stopPropagation()">
+            <button class="btn btn-secondary" (click)="navigateToInstructorProfile(instr); $event.stopPropagation()">
               Profile
             </button>
           </div>

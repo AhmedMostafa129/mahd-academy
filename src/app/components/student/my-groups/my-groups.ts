@@ -5,6 +5,8 @@ import { GroupService } from '../../../core/services/GroupService/group-service'
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { GroupDto, PagedResult } from '../../../core/interfaces/group.interface';
 
+import { NotificationService } from '../../../core/services/NotificationService/notification-service';
+
 @Component({
   selector: 'app-my-groups',
   standalone: true,
@@ -16,6 +18,7 @@ export class MyGroups implements OnInit {
   private readonly _groupService = inject(GroupService);
   private readonly _tokenService = inject(TokenService);
   private readonly _router = inject(Router);
+  private readonly _notificationService = inject(NotificationService);
 
   groups = signal<GroupDto[]>([]);
   loading = signal<boolean>(true);
@@ -23,6 +26,10 @@ export class MyGroups implements OnInit {
   pageNumber = signal<number>(1);
   pageSize = signal<number>(10);
   totalCount = signal<number>(0);
+
+  // Groups ID modal state
+  showGroupIdModal = signal<boolean>(false);
+  userId = computed(() => this._tokenService.getUser()?.userId || '');
 
   totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
 
@@ -83,8 +90,22 @@ export class MyGroups implements OnInit {
     });
   }
 
-  navigateBack(): void {
-    this._router.navigate(['/student']);
+  showGroupId(): void {
+    this.showGroupIdModal.set(true);
+  }
+
+  closeGroupIdModal(): void {
+    this.showGroupIdModal.set(false);
+  }
+
+  copyToClipboard(text: string): void {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      this._notificationService.showSuccess('Success', 'ID copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      this._notificationService.showError('Error', 'Failed to copy ID');
+    });
   }
 
   /**

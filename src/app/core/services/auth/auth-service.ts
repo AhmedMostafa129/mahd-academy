@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenService } from '../TokenService/token-service';
 import {
@@ -139,7 +139,28 @@ export class AuthService {
    * Request password reset
    */
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+    console.log('🔍 AuthService.forgotPassword - Email received:', email);
+    console.log('🔍 AuthService.forgotPassword - API URL:', `${this.apiUrl}/forgot-password`);
+    console.log('🔍 AuthService.forgotPassword - Sending as plain JSON string:', JSON.stringify(email));
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    // Backend expects email as a plain JSON string, not as an object
+    return this.http.post(`${this.apiUrl}/forgot-password`, JSON.stringify(email), { headers }).pipe(
+      tap(response => {
+        console.log('✅ AuthService.forgotPassword - Success response:', response);
+      }),
+      catchError((error: any) => {
+        console.error('❌ AuthService.forgotPassword - Error:', error);
+        console.error('❌ AuthService.forgotPassword - Error body:', error.error);
+        console.error('❌ AuthService.forgotPassword - Error status:', error.status);
+        console.error('❌ AuthService.forgotPassword - Validation errors:', error.error?.errors);
+        console.error('❌ AuthService.forgotPassword - Full error object:', JSON.stringify(error.error, null, 2));
+        throw error;
+      })
+    );
   }
 
   /**

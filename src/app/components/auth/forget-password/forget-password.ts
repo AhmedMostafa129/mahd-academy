@@ -15,29 +15,35 @@ export class ForgetPassword {
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
 
-  email = signal<string>('');
+  email: string = '';
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
   success = signal<boolean>(false);
 
   onSubmit(): void {
-    if (!this.email()) {
+    if (!this.email) {
       this.error.set('Please enter your email address');
       return;
     }
+
+    console.log('🔍 Forgot Password - Email value:', this.email);
+    console.log('🔍 Forgot Password - Email type:', typeof this.email);
+    console.log('🔍 Forgot Password - Email length:', this.email.length);
 
     this.loading.set(true);
     this.error.set(null);
     this.success.set(false);
 
-    this._authService.forgotPassword(this.email()).subscribe({
+    this._authService.forgotPassword(this.email).subscribe({
       next: () => {
+        console.log('✅ Forgot Password - Success!');
         this.success.set(true);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error sending reset email:', err);
-        console.log('Full error details:', err.error); // Log the response body
+        console.error('❌ Forgot Password - Error sending reset email:', err);
+        console.log('❌ Forgot Password - Full error details:', err.error);
+        console.log('❌ Forgot Password - Error status:', err.status);
         this.error.set(err.error?.message || err.message || 'Failed to send reset email');
         this.loading.set(false);
       },

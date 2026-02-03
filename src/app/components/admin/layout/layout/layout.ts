@@ -5,11 +5,12 @@ import { AuthService } from '../../../../core/services/auth/auth-service';
 import { AdminProfileModalComponent } from '../../shared/admin-profile-modal/admin-profile-modal';
 
 import { NotificationToast } from '../../../../components/shared/notification-toast';
+import { Footer } from '../../../layout/footer/footer';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, AdminProfileModalComponent, NotificationToast],
+  imports: [CommonModule, RouterModule, AdminProfileModalComponent, NotificationToast, Footer],
   templateUrl: './layout.html',
   styleUrls: ['./layout.scss']
 })
