@@ -12,10 +12,12 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth/auth-service';
 import { RegisterRequestDto, UserRole } from '../../../core/interfaces/auth.interface';
 
+import { Footer } from '../../layout/footer/footer';
+
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, NgIf, CommonModule, RouterLink, Footer],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

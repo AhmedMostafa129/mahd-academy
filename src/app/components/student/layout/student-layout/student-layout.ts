@@ -20,6 +20,10 @@ export class StudentLayout {
     isCollapsed = signal<boolean>(true);
     showFooter = signal<boolean>(true);
 
+    isDashboard(): boolean {
+        return this._router.url === '/student' || this._router.url === '/student/';
+    }
+
     constructor(private authService: AuthService, private router: Router) {
         this._authService = authService;
         this._router = router;

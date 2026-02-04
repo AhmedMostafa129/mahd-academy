@@ -5,16 +5,15 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #eff6ff 100%);
   color: #1f2937;
-  overflow: hidden;
 }
 
 .login-page {
   position: relative;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 4rem 2rem 0; // Top padding for nav, bottom for footer flow
   display: flex;
+  flex-direction: column; // Stack cards and footer
   align-items: center;
-  justify-content: center;
 }
 
 // ============ BACKGROUND ORBS ============
@@ -122,6 +121,7 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(52, 211, 153, 0.1);
   border: 2px solid #e5e7eb;
   animation: scaleIn 0.6s ease-out;
+  margin-bottom: 4rem; // Space before footer
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;

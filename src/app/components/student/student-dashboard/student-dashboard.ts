@@ -9,10 +9,12 @@ import { CourseService } from '../../../core/services/CourseService/course-servi
 import { InstructorService } from '../../../core/services/InstructorService/instructor-service';
 import { ReviewService } from '../../../core/services/ReviewService/review-service';
 
+import { Footer } from '../../layout/footer/footer';
+
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Footer],
   templateUrl: './student-dashboard.html',
   styleUrl: './student-dashboard.scss',
 })

@@ -56,35 +56,21 @@
         <p class="card-subtitle">Start learning today - it's free!</p>
       </div>
 
-      <form
-        [formGroup]="registerForm"
-        (ngSubmit)="registerSubmit()"
-        class="register-form"
-        novalidate
-      >
+      <form [formGroup]="registerForm" (ngSubmit)="registerSubmit()" class="register-form" novalidate>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">
               <span class="label-icon">👤</span>
               <span>Full Name</span>
             </label>
-            <input
-              type="text"
-              formControlName="fullName"
-              class="form-input"
-              placeholder="Enter your full name"
+            <input type="text" formControlName="fullName" class="form-input" placeholder="Enter your full name"
               [class.input-error]="
                 fullNameControl?.invalid && (fullNameControl?.dirty || fullNameControl?.touched)
-              "
-              [class.input-success]="fullNameControl?.valid && fullNameControl?.dirty"
-            />
-            <small
-              *ngIf="
+              " [class.input-success]="fullNameControl?.valid && fullNameControl?.dirty" />
+            <small *ngIf="
                 fullNameControl?.hasError('minlength') &&
                 (fullNameControl?.dirty || fullNameControl?.touched)
-              "
-              class="error-message"
-            >
+              " class="error-message">
               <span class="error-icon">⚠️</span>
               Name must be at least 3 characters
             </small>
@@ -95,22 +81,13 @@
               <span class="label-icon">📧</span>
               <span>Email Address</span>
             </label>
-            <input
-              type="email"
-              formControlName="email"
-              class="form-input"
-              placeholder="your.email@example.com"
+            <input type="email" formControlName="email" class="form-input" placeholder="your.email@example.com"
               [class.input-error]="
                 emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)
-              "
-              [class.input-success]="emailControl?.valid && emailControl?.dirty"
-            />
-            <small
-              *ngIf="
+              " [class.input-success]="emailControl?.valid && emailControl?.dirty" />
+            <small *ngIf="
                 emailControl?.hasError('email') && (emailControl?.dirty || emailControl?.touched)
-              "
-              class="error-message"
-            >
+              " class="error-message">
               <span class="error-icon">⚠️</span>
               Enter a valid email address
             </small>
@@ -121,23 +98,14 @@
               <span class="label-icon">🔒</span>
               <span>Password</span>
             </label>
-            <input
-              type="password"
-              formControlName="password"
-              class="form-input"
-              placeholder="Create a strong password"
+            <input type="password" formControlName="password" class="form-input" placeholder="Create a strong password"
               [class.input-error]="
                 passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)
-              "
-              [class.input-success]="passwordControl?.valid && passwordControl?.dirty"
-            />
-            <small
-              *ngIf="
+              " [class.input-success]="passwordControl?.valid && passwordControl?.dirty" />
+            <small *ngIf="
                 passwordControl?.hasError('pattern') &&
                 (passwordControl?.dirty || passwordControl?.touched)
-              "
-              class="error-message"
-            >
+              " class="error-message">
               <span class="error-icon">⚠️</span>
               At least 6 characters required
             </small>
@@ -148,28 +116,19 @@
               <span class="label-icon">🔐</span>
               <span>Confirm Password</span>
             </label>
-            <input
-              type="password"
-              formControlName="confirmPassword"
-              class="form-input"
-              placeholder="Re-enter your password"
-              [class.input-error]="
+            <input type="password" formControlName="confirmPassword" class="form-input"
+              placeholder="Re-enter your password" [class.input-error]="
                 (confirmPasswordControl?.invalid || registerForm.hasError('passwordMismatch')) &&
                 (confirmPasswordControl?.dirty || confirmPasswordControl?.touched)
-              "
-              [class.input-success]="
+              " [class.input-success]="
                 confirmPasswordControl?.valid &&
                 !registerForm.hasError('passwordMismatch') &&
                 confirmPasswordControl?.dirty
-              "
-            />
-            <small
-              *ngIf="
+              " />
+            <small *ngIf="
                 registerForm.hasError('passwordMismatch') &&
                 (confirmPasswordControl?.dirty || confirmPasswordControl?.touched)
-              "
-              class="error-message"
-            >
+              " class="error-message">
               <span class="error-icon">⚠️</span>
               Passwords do not match
             </small>
@@ -181,14 +140,9 @@
             <span class="label-icon">🎭</span>
             <span>I want to join as</span>
           </label>
-          <select
-            formControlName="role"
-            class="form-select"
-            [class.input-error]="
+          <select formControlName="role" class="form-select" [class.input-error]="
               roleControl?.invalid && (roleControl?.dirty || roleControl?.touched)
-            "
-            [class.input-success]="roleControl?.valid && roleControl?.dirty"
-          >
+            " [class.input-success]="roleControl?.valid && roleControl?.dirty">
             <option value="" disabled selected>Select your role</option>
             <option value="0">🎓 Student - Learn new skills</option>
             <option value="1">👨‍🏫 Instructor - Teach and inspire</option>
@@ -197,12 +151,8 @@
 
         <!-- Subscription packages selection removed from registration -->
 
-        <button
-          type="submit"
-          class="btn-submit"
-          [disabled]="registerForm.invalid || isLoading"
-          [class.loading]="isLoading"
-        >
+        <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || isLoading"
+          [class.loading]="isLoading">
           <span *ngIf="!isLoading" class="btn-content">
             <span>Create My Account</span>
             <span class="btn-arrow">→</span>
@@ -237,4 +187,5 @@
       </form>
     </div>
   </div>
+  <app-footer></app-footer>
 </section>
