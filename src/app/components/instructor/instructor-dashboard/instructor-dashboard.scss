@@ -175,6 +175,7 @@ $text-light: #718096;
 
     a {
       background: $primary-gradient;
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-decoration: none;
@@ -795,5 +796,56 @@ $text-light: #718096;
       margin: 0;
       line-height: 1.5;
     }
+  }
+}
+
+// ============ MOBILE RESPONSIVE FIXES ============
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem !important;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem !important;
+
+    .page-title {
+      font-size: 1.5rem !important;
+    }
+
+    .btn-primary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .subscription-card {
+    padding: 1.5rem !important;
+
+    .subscription-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .subscription-details {
+      grid-template-columns: 1fr !important;
+      gap: 1.5rem !important;
+    }
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr !important;
   }
 }

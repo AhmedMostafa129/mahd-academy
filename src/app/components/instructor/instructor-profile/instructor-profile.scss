@@ -970,3 +970,164 @@ $text-light: #718096;
     color: #d1d5db;
   }
 }
+
+// ============ MOBILE RESPONSIVE FIXES ============
+@media (max-width: 768px) {
+  .profile-page {
+    .back-button-top-left {
+      top: 1rem;
+      left: 1rem;
+    }
+  }
+
+  .profile-header {
+    padding: 2rem 0 1.5rem;
+    border-radius: 0 0 24px 24px;
+    margin-bottom: 1.5rem;
+
+    .profile-info {
+      gap: 1.25rem;
+      padding: 0 1rem;
+    }
+
+    .avatar-placeholder {
+      width: 90px !important;
+      height: 90px !important;
+      border-width: 3px !important;
+
+      mat-icon {
+        font-size: 36px !important;
+        width: 36px;
+        height: 36px;
+      }
+
+      .avatar-overlay {
+        width: 32px;
+        height: 32px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+
+    .info-content {
+      h1 {
+        font-size: 1.8rem !important;
+      }
+
+      .specialization {
+        font-size: 1rem !important;
+        margin-bottom: 1rem !important;
+      }
+
+      .details-display {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 0.75rem !important;
+
+        .detail-item {
+          width: 100%;
+          justify-content: center;
+          font-size: 0.95rem !important;
+          padding: 0.6rem 1rem !important;
+        }
+
+        .btn-icon-edit {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+
+      .details-edit {
+        min-width: 0 !important;
+        width: 100% !important;
+        padding: 1rem !important;
+
+        .edit-row {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 0.75rem !important;
+
+          .birthdate-group {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+
+        .detail-input {
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+
+        .details-actions {
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
+
+      .stats {
+        gap: 0.75rem !important;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .stat-item {
+          padding: 0.75rem 1rem !important;
+          min-width: 100px !important;
+          flex: 1;
+
+          .value {
+            font-size: 1.25rem !important;
+          }
+
+          .label {
+            font-size: 0.75rem !important;
+          }
+        }
+      }
+    }
+  }
+
+  .content-section {
+    padding-bottom: 2rem;
+    padding-top: 0;
+
+    h2 {
+      font-size: 1.4rem !important;
+      margin-bottom: 1rem !important;
+    }
+  }
+
+  .students-list {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .reviews-list {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .bio-edit {
+    padding: 1rem !important;
+
+    .bio-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

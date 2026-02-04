@@ -121,16 +121,18 @@ $active-color: $primary;
     }
   }
 
-  // Mobile: Hide sidebar by default
+  // Mobile Logic: Visible 70px sidebar as overlay by default
   @media (max-width: 768px) {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
+    transform: translateX(0); // Always visible
+    transition: width 0.3s ease;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
 
     &.collapsed {
-      // On mobile, 'collapsed' might mean visible but small, or hidden
-      // Keeping existing logic: show collapsed width
-      transform: translateX(0);
-      width: $sidebar-collapsed-width;
+      width: $sidebar-collapsed-width; // 70px
+    }
+
+    &:not(.collapsed) {
+      width: $sidebar-width; // 240px
     }
   }
 }
@@ -269,6 +271,8 @@ $active-color: $primary;
   padding: 0;
   margin: 0;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   margin-left: $sidebar-collapsed-width; // Default margin matches collapsed width
   transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   background-color: #f3f4f6;
@@ -295,23 +299,16 @@ $active-color: $primary;
   }
 
   .sidebar {
-    width: $sidebar-width;
-
-    &:not(.collapsed) {
-      transform: translateX(0);
-      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
-    }
+    width: $sidebar-width; // Full width overlay on mobile
+    position: fixed;
+    z-index: 1100;
   }
 
   .main-content {
-    margin-left: 0; // Mobile content full width
-    width: 100vw;
-    max-width: 100vw;
-  }
-
-  .sidebar.collapsed~.main-content {
-    margin-left: $sidebar-collapsed-width; // Push content if collapsed sidebar is visible on mobile
-    width: calc(100vw - #{$sidebar-collapsed-width});
+    margin-left: $sidebar-collapsed-width !important; // Match the 70px strip
+    width: calc(100% - #{$sidebar-collapsed-width}) !important;
+    max-width: calc(100% - #{$sidebar-collapsed-width}) !important;
+    overflow-x: hidden;
   }
 }
 

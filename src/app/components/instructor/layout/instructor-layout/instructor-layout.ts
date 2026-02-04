@@ -31,6 +31,11 @@ export class InstructorLayout implements OnInit {
             const url = this._router.url;
             // Hide footer on profile view pages
             this.showFooter.set(!url.includes('/profile/view/') && !url.includes('/instructor-profile/'));
+
+            // Auto-close sidebar on mobile navigation
+            if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                this.isCollapsed.set(true);
+            }
         });
     }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth-service';
 import { TokenService } from '../../../../core/services/TokenService/token-service';
@@ -13,19 +13,38 @@ import { Footer } from '../../../layout/footer/footer';
     styleUrl: './student-layout.scss',
 })
 export class StudentLayout {
-    private readonly _router = inject(Router);
-    private readonly _authService = inject(AuthService);
+    private readonly _router: Router;
+    private readonly _authService: AuthService;
     private readonly _tokenService = inject(TokenService);
 
     isCollapsed = signal<boolean>(true);
     showFooter = signal<boolean>(true);
 
-    constructor() {
+    constructor(private authService: AuthService, private router: Router) {
+        this._authService = authService;
+        this._router = router;
+
         this._router.events.subscribe(() => {
             const url = this._router.url;
-            // Hide footer on instructor profile and student profile pages
-            this.showFooter.set(!url.includes('/instructor-profile/') && !url.includes('/student/profile'));
+            // Hide footer on profile view pages
+            this.showFooter.set(!url.includes('/profile/view/') && !url.includes('/instructor-profile/'));
+
+            // Auto-close sidebar on mobile navigation
+            this.checkScreenSize();
         });
+        // Initial check on load
+        this.checkScreenSize();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize(event: Event): void {
+        this.checkScreenSize();
+    }
+
+    checkScreenSize(): void {
+        if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+            this.isCollapsed.set(true);
+        }
     }
 
     toggleSidebar(): void {

@@ -2024,3 +2024,105 @@ $text-light: #718096;
     transform: translateY(0);
   }
 }
+
+// ============ MOBILE RESPONSIVE FIXES ============
+@media (max-width: 768px) {
+  :host {
+    padding: 1rem !important;
+  }
+
+  .hero-welcome {
+    padding: 2rem 1.5rem !important;
+    margin-bottom: 2rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    border-radius: 20px !important;
+
+    .hero-title {
+      font-size: 1.8rem !important;
+      margin-bottom: 1rem !important;
+
+      br {
+        display: none;
+      }
+    }
+
+    .hero-description {
+      font-size: 1rem !important;
+      margin-bottom: 1.5rem !important;
+      max-width: 100% !important;
+    }
+
+    .hero-illustration {
+      display: none !important; // Hide large illustrations on mobile
+    }
+  }
+
+  .stats-summary {
+    gap: 0.5rem !important;
+
+    .stat-card {
+      padding: 0.75rem !important;
+      min-width: 100px !important;
+
+      .stat-icon {
+        font-size: 1.25rem !important;
+      }
+
+      .stat-value {
+        font-size: 1.15rem !important;
+      }
+
+      .stat-label {
+        font-size: 0.75rem !important;
+      }
+    }
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+      padding: 0.8rem 1.5rem !important;
+    }
+  }
+
+  .content-section {
+    padding: 1.25rem !important;
+    border-radius: 16px !important;
+
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem !important;
+
+      h2 {
+        font-size: 1.25rem !important;
+      }
+
+      .btn-secondary {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+
+  .enrollment-card,
+  .exam-card {
+    padding: 1.25rem !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.5rem !important;
+
+    .enrollment-progress,
+    .exam-actions {
+      width: 100% !important;
+      min-width: 0 !important;
+      align-items: flex-start !important;
+    }
+  }
+}

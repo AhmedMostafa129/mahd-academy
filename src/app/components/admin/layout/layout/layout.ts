@@ -18,7 +18,14 @@ export class LayoutComponent {
   isCollapsed = true;
   showProfileModal = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {
+    this.router.events.subscribe(() => {
+      // Auto-close sidebar on mobile navigation
+      if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+        this.isCollapsed = true;
+      }
+    });
+  }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
