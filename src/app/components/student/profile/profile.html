@@ -52,8 +52,8 @@
               Verified
             </span>
             <button class="btn-show-group-id" (click)="showGroupId()">
-              <span class="btn-icon">🆔</span>
-              <span class="btn-text">Show Groups ID</span>
+              <i class="bi bi-person-badge-fill btn-icon"></i>
+              <span class="btn-text">show My ID</span>
             </button>
           </div>
         </div>
@@ -226,7 +226,7 @@
           <div class="id-box">
             <code>{{ profile()?.user?.userId }}</code>
             <button class="btn-copy" (click)="copyToClipboard(profile()?.user?.userId || '')">
-              <span>📋</span> Copy
+              <i class="bi bi-clipboard me-1"></i> Copy
             </button>
           </div>
         </div>

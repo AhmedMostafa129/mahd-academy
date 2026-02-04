@@ -29,8 +29,8 @@ export class InstructorLayout implements OnInit {
     constructor() {
         this._router.events.subscribe(() => {
             const url = this._router.url;
-            // Hide footer on profile view pages
-            this.showFooter.set(!url.includes('/profile/view/') && !url.includes('/instructor-profile/'));
+            // Hide footer on profile view pages (both when viewing others' profiles and own profile)
+            this.showFooter.set(!url.includes('/profile/view/'));
 
             // Auto-close sidebar on mobile navigation
             if (typeof window !== 'undefined' && window.innerWidth <= 768) {

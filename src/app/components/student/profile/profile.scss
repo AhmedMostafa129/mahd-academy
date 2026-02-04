@@ -840,8 +840,8 @@ input {
 .modal-overlay {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 70px; // Offset by sidebar width
+  width: calc(100% - 70px); // Fill remaining width
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
@@ -860,10 +860,11 @@ input {
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
   animation: scaleIn 0.3s ease;
   overflow: hidden;
+  margin: 1rem; // Add margin to prevent sticking to edges
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  background: linear-gradient(135deg, #1c6f2b 0%, #0b3c2b 100%);
   color: white;
   padding: 1.5rem 2rem;
   display: flex;
@@ -872,8 +873,10 @@ input {
 
   h3 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
+    line-height: 1.4;
+    padding-right: 1rem; // Space for close button
   }
 }
 
@@ -916,17 +919,43 @@ input {
     gap: 1rem;
     align-items: center;
     background: #f0fdf4;
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.2rem;
     border-radius: 16px;
-    border: 2px solid #34d399;
+    border: 2px solid #1c6f2b;
 
     code {
       flex: 1;
       font-family: 'Courier New', monospace;
-      font-size: 1.1rem;
-      color: #166534;
+      font-size: 1rem;
+      color: #0b3c2b;
       font-weight: 700;
       word-break: break-all;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 1.2rem 1.5rem;
+
+    h3 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .group-id-display .id-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    code {
+      text-align: center;
+      font-size: 0.95rem;
     }
   }
 }

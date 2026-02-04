@@ -19,6 +19,7 @@ $border-color: #e2e8f0;
 
 .support-page {
   padding: 2.5rem;
+  padding-bottom: 5rem; // Extra padding to prevent footer overlap
   max-width: 1400px;
   margin: 0 auto;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #dbeafe 100%);

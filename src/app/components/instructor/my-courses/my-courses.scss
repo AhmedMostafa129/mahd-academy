@@ -12,7 +12,7 @@ $border-color: #e2e8f0;
 
 .instructor-my-courses {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1rem; // Reduced for narrow devices
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #dbeafe 100%);
   position: relative;
   overflow-x: hidden;
@@ -165,9 +165,9 @@ $border-color: #e2e8f0;
 // Stats Grid - Quick overview
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(2, 1fr); // Force 2x2 grid on all screens
+  gap: 1rem;
+  margin-bottom: 2rem;
   width: 100%;
 
   .stat-card {
@@ -195,16 +195,16 @@ $border-color: #e2e8f0;
 
     .label {
       color: #718096;
-      font-size: 0.9rem;
+      font-size: 0.75rem; // Smaller font for tight spaces
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .value {
-      font-size: 1.8rem;
+      font-size: 1.4rem; // Slightly smaller to avoid overflow
       font-weight: 800;
       color: $text-dark;
       background: $primary-gradient;
@@ -482,17 +482,28 @@ $border-color: #e2e8f0;
     gap: 1.5rem;
     text-align: center;
 
+    h1 {
+      font-size: 1.7rem; // Better fit for mobile
+    }
+
     .btn-create {
       width: 100%;
       justify-content: center;
+      padding: 0.7rem 1.5rem;
     }
   }
 
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr; // Single column for course cards on narrow screens
+    gap: 1.5rem;
   }
 
   .content-wrapper {
-    padding: 0 1rem;
+    padding: 0;
   }
 }

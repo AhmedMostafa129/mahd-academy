@@ -249,15 +249,15 @@ $subscription-inactive: #9ca3af;
 
   .packages-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
     margin-top: 1rem;
   }
 
   .package-card {
     border: none;
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: $card-shadow;
     position: relative;
@@ -308,19 +308,22 @@ $subscription-inactive: #9ca3af;
 
       .package-actions {
         display: flex;
-        gap: 0.75rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
 
         button {
-          padding: 0.5rem 1rem;
+          padding: 0.5rem 0.9rem;
           border: none;
           border-radius: 12px;
           cursor: pointer;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 600;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
           position: relative;
           overflow: hidden;
+          white-space: nowrap;
 
           &::before {
             content: '';
@@ -907,6 +910,101 @@ $subscription-inactive: #9ca3af;
         &:active {
           transform: translateY(-2px);
           box-shadow: 0 8px 15px -5px rgba(225, 29, 72, 0.4);
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+
+      h1 {
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .btn-create {
+        width: 100%;
+      }
+    }
+
+    .packages-section {
+      padding: 1.5rem;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+    }
+
+    .packages-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .package-card {
+      padding: 1.25rem;
+
+      .package-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+
+        h3 {
+          font-size: 1.3rem;
+        }
+
+        .package-actions {
+          justify-content: stretch;
+
+          button {
+            flex: 1;
+          }
+        }
+      }
+
+      .package-body {
+        .description {
+          font-size: 1rem;
+        }
+
+        .package-details {
+          .detail-item {
+            padding: 0.6rem;
+
+            .label {
+              font-size: 0.9rem;
+            }
+
+            .value {
+              font-size: 0.95rem;
+
+              &.price {
+                font-size: 1.2rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .package-card {
+      .package-header {
+        .package-actions {
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
         }
       }
     }

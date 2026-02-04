@@ -1,4 +1,6 @@
 <div class="d-flex student-layout">
+    <!-- Mobile Backdrop -->
+    <div class="mobile-backdrop d-md-none" *ngIf="!isCollapsed()" (click)="toggleSidebar()"></div>
     <!-- Sidebar -->
     <aside class="sidebar" [class.collapsed]="isCollapsed()">
         <div class="sidebar-header">
@@ -6,9 +8,6 @@
                 <i class="bi bi-mortarboard-fill logo-icon"></i>
                 <span class="logo-text">MAHD Hub</span>
             </div>
-            <button class="btn btn-sm btn-icon toggle-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
-                <i class="bi" [class.bi-chevron-left]="!isCollapsed()" [class.bi-chevron-right]="isCollapsed()"></i>
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -68,14 +67,21 @@
                         <span class="link-text">Profile</span>
                     </a>
                 </li>
-
                 <li class="mt-auto nav-item footer-link">
-                    <a class="nav-link text-danger" (click)="handleSignOut()" style="cursor: pointer;">
+                    <a (click)="handleSignOut()" class="nav-link text-danger" style="cursor: pointer;">
                         <i class="bi bi-box-arrow-right"></i>
                         <span class="link-text">Sign Out</span>
                     </a>
                 </li>
             </ul>
+
+            <!-- Bottom Toggle Button -->
+            <div class="sidebar-footer">
+                <button class="btn btn-sm btn-icon sidebar-toggle-v2" (click)="toggleSidebar()"
+                    [title]="isCollapsed() ? 'Expand Sidebar' : 'Collapse Sidebar'">
+                    <i class="bi" [class.bi-chevron-right]="isCollapsed()" [class.bi-chevron-left]="!isCollapsed()"></i>
+                </button>
+            </div>
         </nav>
     </aside>
 

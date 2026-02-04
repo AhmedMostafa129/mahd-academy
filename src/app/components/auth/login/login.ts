@@ -11,12 +11,11 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth/auth-service';
 import { LoginRequestDto, UserRole } from '../../../core/interfaces/auth.interface';
 
-import { Footer } from '../../layout/footer/footer';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, RouterLink, Footer],
+  imports: [ReactiveFormsModule, NgIf, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

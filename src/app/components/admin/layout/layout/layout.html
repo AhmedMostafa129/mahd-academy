@@ -1,4 +1,6 @@
 <div class="d-flex admin-layout">
+  <!-- Mobile Backdrop -->
+  <div class="mobile-backdrop d-md-none" *ngIf="!isCollapsed" (click)="toggleSidebar()"></div>
 
   <!-- Sidebar -->
   <aside class="sidebar" [class.collapsed]="isCollapsed">
@@ -7,9 +9,6 @@
         <i class="bi bi-mortarboard-fill logo-icon"></i>
         <span class="logo-text">LearnHub</span>
       </div>
-      <button class="btn btn-sm btn-icon toggle-btn" (click)="toggleSidebar()">
-        <i class="bi" [class.bi-chevron-left]="!isCollapsed" [class.bi-chevron-right]="isCollapsed"></i>
-      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -100,6 +99,14 @@
           </a>
         </li>
       </ul>
+
+      <!-- Bottom Toggle Button -->
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-icon sidebar-toggle-v2" (click)="toggleSidebar()"
+          [title]="isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+          <i class="bi" [class.bi-chevron-right]="isCollapsed" [class.bi-chevron-left]="!isCollapsed"></i>
+        </button>
+      </div>
     </nav>
   </aside>
 
