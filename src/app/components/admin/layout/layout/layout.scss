@@ -187,11 +187,10 @@ $active-color: $primary;
 
       .nav-link {
         display: flex !important;
-        justify-content: center !important;
+        justify-content: flex-start !important; // Keep start alignment, icon has fixed width
         align-items: center !important;
-        padding: 0 !important;
+        padding: 10px 0 !important; // Match desktop padding
         width: 100% !important;
-        height: 54px !important;
         margin: 4px 0 !important;
         border-radius: 0 !important;
         transition: none !important;
@@ -201,7 +200,7 @@ $active-color: $primary;
         i {
           margin: 0 !important;
           font-size: 1.25rem !important;
-          width: 24px !important;
+          width: 70px !important; // Ensure fixed width
           height: 24px !important;
           display: flex !important;
           align-items: center !important;
@@ -505,20 +504,37 @@ $active-color: $primary;
       // }
     }
 
+    // Mobile Expanded State - Show Text
     &:not(.collapsed) {
       width: $sidebar-width !important;
+
+      .logo-text,
+      .link-text,
+      .nav-header {
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        width: auto !important;
+      }
+
+      // Ensure footer stays correct
+      .sidebar-footer {
+        width: 100%;
+        justify-content: center;
+      }
     }
   }
-
-  // Move logic for 'collapsed' state on mobile is handled by base .sidebar.collapsed
 
   // Sidebar footer pinned to bottom
   .sidebar-footer {
     display: flex !important;
     position: relative; // Inside flex container (sidebar), it stays at bottom
     flex-shrink: 0; // Don't shrink
-    min-height: 60px;
-    margin-top: auto; // Push to bottom if nav is short
+    min-height: 50px; // Reduced height
+    margin-top: 0; // Remove gap to move up
+    bottom: auto !important; // Reset desktop absolute positioning
+    left: auto !important;
+    padding-bottom: 10px; // Reduced padding to move up
   }
 
   .main-content {

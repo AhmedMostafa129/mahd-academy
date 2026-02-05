@@ -185,22 +185,21 @@ $active-color: $primary;
             }
 
             .nav-link {
-                display: flex !important; // Switch to Flex for better stability
-                justify-content: center !important;
+                display: flex !important;
+                justify-content: flex-start !important; // Keep start alignment
                 align-items: center !important;
-                padding: 0 !important;
+                padding: 10px 0 !important; // Match desktop padding
                 width: 100% !important;
-                height: 54px !important;
                 margin: 4px 0 !important;
                 border-radius: 0 !important;
                 transition: none !important;
                 transform: none !important;
-                border: none !important; // Ensure no borders cause shifts
+                border: none !important;
 
                 i {
                     margin: 0 !important;
                     font-size: 1.25rem !important;
-                    width: 24px !important;
+                    width: 70px !important; // Custom fixed width
                     height: 24px !important;
                     display: flex !important;
                     align-items: center !important;
@@ -497,14 +496,25 @@ $active-color: $primary;
 
                 .logo-area {
                     justify-content: center !important;
+                    /* Remove justify-content: center */
                     width: 100% !important;
                 }
             }
         }
 
+        // Mobile Expanded State - Show Text
         &:not(.collapsed) {
-            transform: translateX(0);
-            width: $sidebar-width !important; // Ensure width when toggled open
+            width: $sidebar-width !important;
+            transform: translateX(0); // Ensure it's visible when expanded
+
+            .logo-text,
+            .link-text,
+            .nav-header {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: block !important;
+                width: auto !important;
+            }
 
             // When manually opened, allow normal layout
             &:hover {
@@ -516,6 +526,13 @@ $active-color: $primary;
     // Show toggle button on mobile
     .sidebar-footer {
         display: flex !important;
+        position: relative;
+        bottom: auto !important; // Reset inherited absolute position
+        left: auto !important;
+        margin-top: 0; // Remove gap to move up
+        padding-bottom: 10px; // Reduced padding
+        flex-shrink: 0;
+        min-height: 50px;
     }
 
     .main-content {

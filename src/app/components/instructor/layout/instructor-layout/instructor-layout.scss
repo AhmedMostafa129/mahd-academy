@@ -499,8 +499,18 @@ $active-color: $primary;
             }
         }
 
+        // Mobile Expanded State - Show Text
         &:not(.collapsed) {
             width: $sidebar-width !important;
+
+            .logo-text,
+            .link-text,
+            .nav-header {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: block !important;
+                width: auto !important;
+            }
         }
     }
 
@@ -509,8 +519,11 @@ $active-color: $primary;
         display: flex !important;
         position: relative; // Inside flex container
         flex-shrink: 0;
-        min-height: 60px;
-        margin-top: auto;
+        min-height: 50px;
+        margin-top: 0; // Remove gap to move up
+        bottom: auto !important; // Reset desktop absolute positioning
+        left: auto !important;
+        padding-bottom: 10px; // Reduced padding
     }
 
     .main-content {
