@@ -505,11 +505,26 @@ $text-light: #718096;
       }
 
       .subscription-info {
+        display: flex;
+        justify-content: space-between; // Far right on desktop
+        align-items: center;
+        flex: 1;
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
         h3 {
-          margin: 0 0 0.5rem 0;
+          margin: 0; // Remove bottom margin for flex alignment
           font-size: 1.5rem;
           font-weight: 700;
           color: $text-dark;
+
+          @media (max-width: 768px) {
+            margin-bottom: 0.5rem;
+          }
         }
 
         .subscription-status {
