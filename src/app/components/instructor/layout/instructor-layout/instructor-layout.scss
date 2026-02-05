@@ -80,22 +80,29 @@ $active-color: $primary;
         }
 
         .nav-link {
-            justify-content: center;
+            // justify-content: center; // Removed: Base style handles alignment
             padding: 12px 0;
 
             i {
-                margin-right: 0;
-                font-size: 1.4rem;
+                // margin-right: 0; // Already 0 in base
+                // font-size: 1.4rem; // Already 1.4rem in base
             }
         }
 
         .sidebar-header {
-            padding: 20px 0;
-            justify-content: center;
+            padding: 20px 0; // Consistent padding
+            justify-content: flex-start; // Always start from left
 
             .logo-area {
-                justify-content: center;
-                width: 100%;
+                justify-content: flex-start; // Always left aligned
+                width: 100%; // Fill width
+
+                .logo-icon {
+                    min-width: $sidebar-collapsed-width; // 70px fixed width
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
             }
 
             // Hide toggle button in hover-to-expand mode
@@ -119,22 +126,17 @@ $active-color: $primary;
             }
 
             .nav-link {
-                justify-content: flex-start;
-                padding: 10px 16px;
-
-                i {
-                    margin-right: 14px;
-                    font-size: 1.25rem;
-                }
+                // Base styles handle everything
             }
 
             .sidebar-header {
-                padding: 24px 24px 20px;
+                padding: 20px 0; // Consistent padding
                 justify-content: space-between;
 
                 .logo-area {
                     justify-content: flex-start;
                     width: auto;
+                    flex: 1;
                 }
 
                 .toggle-btn {
@@ -349,7 +351,8 @@ $active-color: $primary;
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px 16px;
+    padding: 10px 0; // Fixed padding to prevent shift
+
 
     &::-webkit-scrollbar {
         width: 4px;
@@ -392,7 +395,8 @@ $active-color: $primary;
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 10px 16px;
+    width: 100%; // Ensure full width click target
+    padding: 10px 0; // consistent padding
     color: #555;
     text-decoration: none;
     border-radius: 12px;
@@ -400,14 +404,19 @@ $active-color: $primary;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
+    cursor: pointer; // Ensure pointer cursor
+
 
     i {
-        font-size: 1.25rem;
-        margin-right: 14px;
+        font-size: 1.4rem; // increased to match collapsed
+        margin-right: 0; // removed margin
         color: #999;
-        transition: color 0.2s, margin-right 0.2s;
-        min-width: 24px;
+        transition: color 0.2s;
+        min-width: $sidebar-collapsed-width; // 70px fixed width
         text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     &:hover {
@@ -476,8 +485,40 @@ $active-color: $primary;
         z-index: 1100;
         transform: translateX(0);
 
+        // DISABLE HOVER EXPANSION ON MOBILE
+        &:hover {
+            width: $sidebar-collapsed-width !important;
+            box-shadow: none !important;
+
+            .logo-text,
+            .link-text,
+            .nav-header {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                display: none !important;
+            }
+
+            .nav-link {
+                justify-content: center !important;
+                padding: 0 !important;
+
+                i {
+                    margin-right: 0 !important;
+                }
+            }
+
+            .sidebar-header {
+                padding: 24px 0 !important;
+
+                .logo-area {
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+            }
+        }
+
         &:not(.collapsed) {
-            width: $sidebar-width;
+            width: $sidebar-width !important;
         }
     }
 

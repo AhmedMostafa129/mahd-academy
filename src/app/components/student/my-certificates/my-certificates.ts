@@ -41,8 +41,18 @@ export class MyCertificates implements OnInit {
     this._enrollmentService
       .getEnrollmentsByStudent(user.userId, 1, 100)
       .subscribe({
-        next: (result: PagedResult<EnrollmentDto>) => {
-          const completed = result.items.filter((e) => e.isCompleted);
+        next: (result: any) => {
+          // Robust check for items, supporting PagedResult, direct array, or other structures
+          let items: EnrollmentDto[] = [];
+          if (result?.items) {
+            items = result.items;
+          } else if (Array.isArray(result)) {
+            items = result;
+          } else if (result?.data) {
+            items = result.data;
+          }
+
+          const completed = items.filter((e) => e.isCompleted || e.progressPercentage === 100);
           this.certificates.set(completed);
           this.loading.set(false);
         },

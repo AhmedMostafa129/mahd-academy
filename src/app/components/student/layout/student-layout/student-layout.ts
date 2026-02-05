@@ -30,8 +30,10 @@ export class StudentLayout {
 
         this._router.events.subscribe(() => {
             const url = this._router.url;
-            // Hide footer on profile view pages
-            this.showFooter.set(!url.includes('/profile/view/') && !url.includes('/instructor-profile/'));
+            // Hide footer on profile view pages and dashboard
+            const isProfile = url.includes('/profile/view/') || url.includes('/instructor-profile/') || url.includes('/student/profile');
+            const isDashboard = url === '/student' || url === '/student/';
+            this.showFooter.set(!isProfile && !isDashboard);
 
             // Auto-close sidebar on mobile navigation
             this.checkScreenSize();

@@ -470,9 +470,46 @@ $active-color: $primary;
         z-index: 1100;
         transform: translateX(0);
 
+        // DISABLE HOVER EXPANSION ON MOBILE
+        &:hover {
+            width: $sidebar-collapsed-width !important;
+            box-shadow: none !important;
+
+            .logo-text,
+            .link-text,
+            .nav-header {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                display: none !important;
+            }
+
+            .nav-link {
+                justify-content: center !important;
+                padding: 0 !important;
+
+                i {
+                    margin-right: 0 !important;
+                }
+            }
+
+            .sidebar-header {
+                padding: 24px 0 !important;
+
+                .logo-area {
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+            }
+        }
+
         &:not(.collapsed) {
             transform: translateX(0);
-            width: $sidebar-width;
+            width: $sidebar-width !important; // Ensure width when toggled open
+
+            // When manually opened, allow normal layout
+            &:hover {
+                width: $sidebar-width !important;
+            }
         }
     }
 

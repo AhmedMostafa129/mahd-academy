@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { EnrollmentService } from '../../../core/services/Enrollment/enrollment';
 import { TokenService } from '../../../core/services/TokenService/token-service';
 import { EnrollmentDto, PagedResult } from '../../../core/interfaces/enrollment.interface';
+import { CourseService } from '../../../core/services/CourseService/course-service';
+import { CourseDto } from '../../../core/interfaces/course.interface';
 
 @Component({
   selector: 'app-my-courses',
@@ -14,6 +16,7 @@ import { EnrollmentDto, PagedResult } from '../../../core/interfaces/enrollment.
 })
 export class MyCourses implements OnInit {
   private readonly _enrollmentService = inject(EnrollmentService);
+  private readonly _courseService = inject(CourseService);
   private readonly _tokenService = inject(TokenService);
   private readonly _router = inject(Router);
 
@@ -61,13 +64,19 @@ export class MyCourses implements OnInit {
 
           if (items && items.length > 0) {
             // Map and log each enrollment with course details
-            const mappedEnrollments = items.map((item: any, index: number) => {
+            const mappedEnrollments: EnrollmentDto[] = items.map((item: any, index: number) => {
+              // Detailed logging to debug image issues
               console.log(`🔄 Mapping enrollment ${index + 1}:`, {
                 enrollmentId: item.enrollmentId,
                 courseId: item.courseId,
                 courseTitle: item.courseTitle || item.courseName,
-                progress: item.progressPercentage || item.progress || 0,
-                status: item.status || (item.isCompleted ? 'Completed' : 'In Progress')
+                images: {
+                  courseThumbnail: item.courseThumbnail,
+                  thumbnailUrl: item.thumbnailUrl,
+                  courseImage: item.courseImage,
+                  imageUrl: item.imageUrl,
+                  nestedThumbnail: item.course?.thumbnailUrl
+                }
               });
               return item;
             });
@@ -80,6 +89,31 @@ export class MyCourses implements OnInit {
             const calculatedTotalPages = Math.ceil(totalCount / this.pageSize());
             this.totalPages.set(calculatedTotalPages);
             this.totalCount.set(totalCount);
+
+            // FALLBACK PROTOCOL: If images are missing, fetch course details
+            // This handles the case where Enrollment API doesn't return course images
+            mappedEnrollments.forEach((enrollment) => {
+              const hasImage = this.getCourseThumbnail(enrollment) !== '';
+              if (!hasImage && enrollment.courseId) {
+                console.log(`⚠️ Missing image for course ${enrollment.courseId}, fetching details...`);
+                this._courseService.getCourseById(enrollment.courseId).subscribe({
+                  next: (courseDto: CourseDto) => {
+                    if (courseDto.thumbnailUrl) {
+                      console.log(`✅ Fixed image for course ${enrollment.courseId}:`, courseDto.thumbnailUrl);
+                      this.enrollments.update(current => {
+                        return current.map(e => {
+                          if (e.enrollmentId === enrollment.enrollmentId) {
+                            return { ...e, courseThumbnail: courseDto.thumbnailUrl };
+                          }
+                          return e;
+                        });
+                      });
+                    }
+                  },
+                  error: (err: any) => console.error(`❌ Failed to fetch course details for ${enrollment.courseId}`, err)
+                });
+              }
+            });
 
             console.log('📊 Enrollment stats:', {
               count: mappedEnrollments.length,
@@ -164,8 +198,15 @@ export class MyCourses implements OnInit {
   /**
    * Get course thumbnail with fallback
    */
-  getCourseThumbnail(enrollment: EnrollmentDto): string {
-    const thumb = enrollment.courseThumbnail || enrollment.thumbnailUrl || '';
+  getCourseThumbnail(enrollment: any): string {
+    // Check various potential property names for robustness
+    const thumb = enrollment.courseThumbnail ||
+      enrollment.thumbnailUrl ||
+      enrollment.courseImage ||
+      enrollment.imageUrl ||
+      enrollment.course?.thumbnailUrl ||
+      enrollment.course?.courseThumbnail ||
+      '';
     return this.buildImageUrl(thumb);
   }
 
@@ -177,9 +218,10 @@ export class MyCourses implements OnInit {
       return imageUrl;
     }
 
-    // Otherwise, prepend the API base URL
+    // Otherwise, prepend the API base URL (using HTTPS)
     const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    return `http://mahdacad.runasp.net/${cleanPath}`;
+    // Use https domain as per project update
+    return `https://mahdacad.runasp.net/${cleanPath}`;
   }
 
   /**
