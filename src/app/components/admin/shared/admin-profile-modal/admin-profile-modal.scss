@@ -107,6 +107,10 @@
 @media (max-width: 768px) {
   .modal-dialog {
     margin: 0.5rem;
+    margin-left: 75px !important;
+    /* Offset by sidebar (70px + 5px gap) */
+    max-width: calc(100% - 85px) !important;
+    /* Prevent overflow */
   }
 
   .modal-body {

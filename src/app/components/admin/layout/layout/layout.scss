@@ -109,160 +109,150 @@ $active-color: $primary;
       }
     }
 
-    // Hover State Logic (Expand on Hover)
-    &:hover {
-      width: $sidebar-width;
-      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-
-      .logo-text,
-      .link-text,
-      .nav-header {
-        opacity: 1;
-        visibility: visible;
-        width: auto;
-        transition: opacity 0.3s 0.1s; // Delay text appearance slightly
-      }
-
-      // .nav-link {
-      //   // Base styles handle everything
-      // }
-
-      .sidebar-header {
-        padding: 20px 0; // Consistent padding
-        justify-content: space-between;
-
-        .logo-area {
-          justify-content: flex-start;
-          width: auto;
-          flex: 1;
-        }
-
-        .toggle-btn {
-          display: none !important;
-        }
-      }
-    }
   }
 
 
-  // Mobile Logic: 70px strip by default, expands as overlay
+  // Consolidated Mobile Logic
   @media (max-width: 768px) {
-    transform: translateX(0); // Always visible
-    transition: width 0.3s ease;
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
-    z-index: 1100;
+    .sidebar {
+      transform: translateX(0); // Always visible
+      transition: width 0.3s ease;
+      box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+      z-index: 1100;
 
-    &.collapsed {
-      width: $sidebar-collapsed-width !important; // 70px
+      &.collapsed {
+        width: $sidebar-collapsed-width !important; // 70px
 
-      .sidebar-header {
-        padding: 24px 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .logo-area {
-          gap: 0;
+        .sidebar-header {
+          padding: 24px 0;
+          display: flex;
           justify-content: center;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-      }
+          align-items: center;
 
-      .sidebar-nav {
-        padding: 10px 0 !important;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .logo-text,
-      .link-text,
-      .nav-header {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: opacity 0.1s ease !important;
-      }
-
-      .nav-link {
-        display: flex !important;
-        justify-content: flex-start !important; // Keep start alignment, icon has fixed width
-        align-items: center !important;
-        padding: 10px 0 !important; // Match desktop padding
-        width: 100% !important;
-        margin: 4px 0 !important;
-        border-radius: 0 !important;
-        transition: none !important;
-        transform: none !important;
-        border: none !important;
-
-        i {
-          margin: 0 !important;
-          font-size: 1.25rem !important;
-          width: 70px !important; // Ensure fixed width
-          height: 24px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          flex-shrink: 0 !important;
-          transition: none !important;
-          transform: none !important;
-          color: #999;
-        }
-
-        &:hover {
-          background-color: transparent !important;
-          transform: none !important;
-
-          i {
-            color: $primary !important;
+          .logo-area {
+            gap: 0;
+            justify-content: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
           }
         }
 
-        &.active,
-        &:active,
-        &:focus {
-          background-color: transparent !important;
-          transform: none !important;
-          position: relative;
-          margin: 4px 0 !important;
+        .sidebar-nav {
+          padding: 15px 0 !important; // More air at the top
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px !important; // Consistent vertical spacing
+        }
+
+        .logo-text,
+        .link-text,
+        .nav-header {
+          display: none !important; // Completely hide for layout stability
+          opacity: 0 !important;
+          visibility: hidden !important;
+        }
+
+        .nav-link {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          padding: 0 !important;
+          width: 100% !important;
+          height: 50px !important; // Fixed height per item
+          margin: 0 !important;
+          border-radius: 0 !important;
+          transition: none !important;
           border: none !important;
-          outline: none !important;
+          position: relative;
+          overflow: visible !important;
+
+          i {
+            margin: 0 !important;
+            font-size: 1.4rem !important; // Slightly larger for clarity
+            width: 28px !important;
+            height: 28px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            transition: color 0.2s ease !important;
+            color: #a0aec0 !important; // Grayish like the image
+            z-index: 2;
+          }
+
+          &:hover {
+            background-color: transparent !important;
+
+            i {
+              color: $primary !important;
+            }
+          }
+
+          &.active {
+            background-color: transparent !important;
+
+            i {
+              color: $primary !important;
+            }
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%) !important;
+              width: 42px;
+              height: 42px;
+              background-color: rgba($primary, 0.1) !important;
+              border-radius: 12px;
+              z-index: 1;
+              transition: none !important;
+            }
+          }
+        }
+
+        // DISABLE HOVER EXPANSION ON MOBILE
+        &:hover {
+          width: $sidebar-collapsed-width !important;
           box-shadow: none !important;
 
-          i {
-            color: $active-color !important;
-            transform: none !important;
+          .logo-text,
+          .link-text,
+          .nav-header {
+            display: none !important;
           }
+        }
+      }
 
-          &::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) !important;
-            width: 44px;
-            height: 44px;
-            background-color: $active-bg !important;
-            border-radius: 12px;
-            z-index: -1;
-            transition: none !important;
-          }
+      &:not(.collapsed) {
+        width: $sidebar-collapsed-width !important; // FORCE COLLAPSED ON MOBILE
+
+        .logo-text,
+        .link-text,
+        .nav-header {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
         }
       }
     }
 
-    &:not(.collapsed) {
-      width: $sidebar-width !important; // 240px
+    .sidebar-footer {
+      display: flex !important;
+      position: relative;
+      padding-bottom: 20px;
+      justify-content: center;
+      bottom: auto !important;
+      left: auto !important;
+    }
 
-      .logo-text,
-      .link-text,
-      .nav-header {
-        opacity: 1 !important;
-        visibility: visible !important;
-        width: auto !important;
-      }
+    .main-content {
+      margin-left: $sidebar-collapsed-width !important; // Fixed 70px strip
+      width: calc(100% - #{$sidebar-collapsed-width}) !important;
+      max-width: calc(100% - #{$sidebar-collapsed-width}) !important;
+      overflow-x: hidden;
     }
   }
 }
@@ -425,7 +415,7 @@ $active-color: $primary;
   &.active {
     background-color: $active-bg;
     color: $active-color;
-    font-weight: 600;
+    // font-weight: 600; // Removed to prevent text shift
 
     i {
       color: $active-color;
@@ -460,90 +450,18 @@ $active-color: $primary;
   background-color: #f3f4f6;
 }
 
-/* Mobile Toggle Button (Removed as per v2) */
-.mobile-open-btn {
-  display: none !important;
-}
 
 // When sidebar is NOT collapsed (manually expanded)
 .sidebar:not(.collapsed) {
   width: $sidebar-width;
 }
 
-/* Mobile Responsive Adjustments */
-@media (max-width: 768px) {
-  .admin-layout {
-    flex-direction: row;
-  }
-
-  .sidebar {
-    width: $sidebar-collapsed-width;
-    position: fixed;
-    z-index: 1100;
-    transform: translateX(0);
-
-    // DISABLE HOVER EXPANSION ON MOBILE
-    &:hover {
-      width: $sidebar-collapsed-width !important;
-      box-shadow: none !important;
-
-      .logo-text,
-      .link-text,
-      .nav-header {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        display: none !important;
-      }
-
-      // .nav-link {
-      //   // Use base styles which are now fixed-width stabilized
-      // }
-
-      // .sidebar-header {
-      //   // Base styles
-      // }
-    }
-
-    // Mobile Expanded State - Show Text
-    &:not(.collapsed) {
-      width: $sidebar-width !important;
-
-      .logo-text,
-      .link-text,
-      .nav-header {
-        opacity: 1 !important;
-        visibility: visible !important;
-        display: block !important;
-        width: auto !important;
-      }
-
-      // Ensure footer stays correct
-      .sidebar-footer {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  }
-
-  // Sidebar footer pinned to bottom
-  .sidebar-footer {
-    display: flex !important;
-    position: relative; // Inside flex container (sidebar), it stays at bottom
-    flex-shrink: 0; // Don't shrink
-    min-height: 50px; // Reduced height
-    margin-top: 0; // Remove gap to move up
-    bottom: auto !important; // Reset desktop absolute positioning
-    left: auto !important;
-    padding-bottom: 10px; // Reduced padding to move up
-  }
-
-  .main-content {
-    margin-left: $sidebar-collapsed-width !important; // Fixed 70px strip
-    width: calc(100% - #{$sidebar-collapsed-width}) !important;
-    max-width: calc(100% - #{$sidebar-collapsed-width}) !important;
-    overflow-x: hidden;
-  }
+.sidebar:not(.collapsed)~.main-content {
+  margin-left: $sidebar-width;
+  width: calc(100vw - #{$sidebar-width});
+  max-width: calc(100vw - #{$sidebar-width});
 }
+
 
 /* Tablet Adjustments */
 @media (min-width: 769px) and (max-width: 1024px) {

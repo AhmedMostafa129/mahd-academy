@@ -170,69 +170,62 @@ $active-color: $primary;
             }
 
             .sidebar-nav {
-                padding: 10px 0 !important;
+                padding: 15px 0 !important; // More air at the top
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                gap: 12px !important; // INCREASED SPACING AS REQUESTED
             }
 
             .logo-text,
             .link-text,
             .nav-header {
+                display: none !important; // Completely hide for layout stability
                 opacity: 0 !important;
                 visibility: hidden !important;
-                transition: opacity 0.1s ease !important;
             }
 
             .nav-link {
                 display: flex !important;
-                justify-content: flex-start !important; // Keep start alignment
+                justify-content: center !important;
                 align-items: center !important;
-                padding: 10px 0 !important; // Match desktop padding
+                padding: 0 !important;
                 width: 100% !important;
-                margin: 4px 0 !important;
+                height: 52px !important; // Fixed height per item for consistency
+                margin: 0 !important;
                 border-radius: 0 !important;
                 transition: none !important;
-                transform: none !important;
                 border: none !important;
+                position: relative;
+                overflow: visible !important;
 
                 i {
                     margin: 0 !important;
-                    font-size: 1.25rem !important;
-                    width: 70px !important; // Custom fixed width
-                    height: 24px !important;
+                    font-size: 1.4rem !important; // Slightly larger for clarity
+                    width: 28px !important;
+                    height: 28px !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
                     flex-shrink: 0 !important;
-                    transition: none !important;
-                    transform: none !important;
-                    color: #999;
+                    transition: color 0.2s ease !important;
+                    color: #94a3b8 !important; // Muted blue-gray
+                    z-index: 2;
                 }
 
                 &:hover {
                     background-color: transparent !important;
-                    transform: none !important;
 
                     i {
                         color: $primary !important;
                     }
                 }
 
-                &.active,
-                &:active,
-                &:focus {
+                &.active {
                     background-color: transparent !important;
-                    transform: none !important;
-                    position: relative;
-                    margin: 4px 0 !important; // Enforce margin stability
-                    border: none !important;
-                    outline: none !important;
-                    box-shadow: none !important;
 
                     i {
-                        color: $active-color !important;
-                        transform: none !important;
+                        color: $primary !important;
                     }
 
                     &::before {
@@ -241,11 +234,11 @@ $active-color: $primary;
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%) !important;
-                        width: 44px;
-                        height: 44px;
-                        background-color: $active-bg !important;
+                        width: 42px;
+                        height: 42px;
+                        background-color: rgba($primary, 0.1) !important;
                         border-radius: 12px;
-                        z-index: -1;
+                        z-index: 1;
                         transition: none !important;
                     }
                 }
@@ -415,7 +408,7 @@ $active-color: $primary;
     &.active {
         background-color: $active-bg;
         color: $active-color;
-        font-weight: 600;
+        // font-weight: 600; // Removed to prevent text shift
 
         i {
             color: $active-color;
@@ -446,9 +439,11 @@ $active-color: $primary;
     background-color: #f7fafc;
 }
 
-/* Mobile Toggle Button (Removed as per v2) */
-.mobile-open-btn {
-    display: none !important;
+// Hover Effect: Shift and Resize main content when sidebar expands
+.sidebar.collapsed:hover~.main-content {
+    margin-left: $sidebar-width;
+    width: calc(100vw - #{$sidebar-width});
+    max-width: calc(100vw - #{$sidebar-width});
 }
 
 /* Sidebar NOT collapsed (manually expanded) */

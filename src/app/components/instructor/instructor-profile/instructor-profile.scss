@@ -261,7 +261,7 @@ $text-light: #718096;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       border: 3px solid #1e1b4b; // Match header background
       transition: all 0.3s ease;
-      z-index: 10;
+      z-index: 20; // Increased to ensure visibility
 
       mat-icon {
         font-size: 24px;
@@ -274,6 +274,15 @@ $text-light: #718096;
         background: #10b981;
         transform: scale(1.1);
       }
+    }
+  }
+
+  /* Ensure SweetAlert2 (or any global modal) is above sidebar */
+  ::ng-deep .swal2-container {
+    z-index: 2000 !important;
+
+    @media (max-width: 768px) {
+      padding-left: 70px !important; // Offset by sidebar width
     }
   }
 
