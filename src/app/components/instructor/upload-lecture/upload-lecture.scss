@@ -27,25 +27,25 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         animation: float 8s ease-in-out infinite;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
         z-index: 0;
-        
+
         &.element-1 {
             top: 10%;
             left: 5%;
             animation-delay: 0s;
         }
-        
+
         &.element-2 {
             top: 20%;
             right: 10%;
             animation-delay: 2s;
         }
-        
+
         &.element-3 {
             bottom: 25%;
             left: 8%;
             animation-delay: 4s;
         }
-        
+
         &.element-4 {
             bottom: 15%;
             right: 15%;
@@ -76,7 +76,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
             height: 6px;
             background: $primary-gradient;
         }
-        
+
         &::after {
             content: '';
             position: absolute;
@@ -176,7 +176,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         .file-input {
             padding: 1rem;
             background: #f8fafc;
-            
+
             &:hover {
                 background: #f1f5f9;
             }
@@ -241,7 +241,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
             background: black;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
-            
+
             &:hover {
                 transform: scale(1.02);
             }
@@ -272,7 +272,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
                 opacity: 0.7;
                 cursor: not-allowed;
             }
-            
+
             &::before {
                 content: '';
                 position: absolute;
@@ -299,7 +299,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
                 border-color: #cbd5e0;
                 transform: translateY(-3px);
                 box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-                
+
                 &::before {
                     width: 300px;
                     height: 300px;
@@ -316,7 +316,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
             &:hover:not(:disabled) {
                 transform: translateY(-3px);
                 box-shadow: 0 10px 30px rgba(28, 111, 43, 0.4);
-                
+
                 &::before {
                     width: 300px;
                     height: 300px;
@@ -340,7 +340,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
             &:hover:not(:disabled) {
                 transform: translateY(-3px);
                 box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
-                
+
                 &::before {
                     width: 300px;
                     height: 300px;
@@ -381,8 +381,12 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 2000; // Above sidebar (1100)
         animation: fadeIn 0.3s ease-out;
+
+        @media (max-width: 768px) {
+            padding-left: 70px; // Offset for mobile sidebar strip
+        }
 
         .modal-content {
             background: white;
@@ -604,6 +608,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         opacity: 0;
         transform: translateY(24px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -644,6 +649,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -654,6 +660,7 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
         opacity: 0;
         transform: translateY(-50px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -661,12 +668,16 @@ $hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) translateX(0);
     }
+
     33% {
         transform: translateY(-20px) translateX(10px);
     }
+
     66% {
         transform: translateY(10px) translateX(-15px);
     }
