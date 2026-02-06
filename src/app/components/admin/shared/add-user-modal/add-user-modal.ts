@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { AuthService } from '../../../../core/services/auth/auth-service';
 import { AdminService } from '../../../../core/services/AdminService/admin-service';
 import { RegisterRequestDto, UserRole } from '../../../../core/interfaces/auth.interface';
+import { NotificationService } from '../../../../core/services/NotificationService/notification-service';
 
 @Component({
     selector: 'app-add-user-modal',
@@ -20,6 +21,7 @@ export class AddUserModalComponent {
     private _fb = inject(FormBuilder);
     private _authService = inject(AuthService);
     private _adminService = inject(AdminService);
+    private _notificationService = inject(NotificationService);
 
     step = signal<1 | 2>(1); // 1: Details, 2: Verification
     loading = signal<boolean>(false);
@@ -230,7 +232,12 @@ export class AddUserModalComponent {
         const finalUserId = this.pendingUserId;
         this.pendingUserId = null;
         this.onClose();
-        alert(message || 'User successfully added and verified!');
+
+        if (message) {
+            this._notificationService.warning(message);
+        } else {
+            this._notificationService.success('User successfully added and verified!');
+        }
     }
 
     onPhotoSelected(event: any) {

@@ -50,6 +50,7 @@ import {
         gap: 12px;
         max-width: 400px;
         pointer-events: none;
+        align-items: flex-end;
       }
 
       .notification-toast {
@@ -65,7 +66,7 @@ import {
         animation: slideInRight 0.3s ease-out;
         border-left: 4px solid;
         pointer-events: all;
-        min-width: 350px;
+        min-width: 300px;
 
         &:hover {
           transform: translateX(-5px);

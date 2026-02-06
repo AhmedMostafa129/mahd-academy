@@ -38,8 +38,27 @@ export class NotificationService {
   /**
    * Show info notification
    */
+  /**
+   * Show info notification
+   */
   showInfo(title: string, message: string): void {
     this.addNotification('info', title, message);
+  }
+
+  success(message: string): void {
+    this.showSuccess('Success', message);
+  }
+
+  error(message: string): void {
+    this.showError('Error', message);
+  }
+
+  warning(message: string): void {
+    this.showWarning('Warning', message);
+  }
+
+  info(message: string): void {
+    this.showInfo('Info', message);
   }
 
   /**
